@@ -1,0 +1,25 @@
+{
+    "tahapan": [
+        {
+            "tag": "pembukaan",
+            "answer":[
+                "Halo DNS, terima kasih sudah datang ke sesi konseling ini. Saya ingin memastikan bahwa ini adalah ruang yang aman untukmu dan saya di sini untuk mendengarkan serta membantumu. Bagaimana perasaanmu hari ini?",
+                "Tidak apa-apa, DNS. Kita bisa berbicara dengan santai, dan saya akan membantu sebisa mungkin agar kamu merasa nyaman. Kamu tidak perlu khawatir tentang cara menyampaikan ceritamu, karena saya di sini untuk mendengarkan.",
+                "Halo JMP, terima kasih sudah datang ke sesi konseling ini. Saya ingin memastikan bahwa ini adalah ruang yang aman untukmu. Saya di sini untuk mendengarkan dan membantumu. Bagaimana perasaanmu hari ini?",
+                "Tidak perlu terburu-buru. Kita bisa berbicara dengan santai. Kamu bisa memulai dari apa yang paling ingin kamu ceritakan dulu.",
+                "Halo D, terima kasih sudah datang ke sesi konseling ini. Saya ingin memastikan bahwa ini adalah ruang yang aman untukmu. Saya di sini untuk mendengarkan dan membantumu. Bagaimana perasaanmu hari ini?",
+                "Saya menghargai keterbukaanmu. Saya melihat dari hasil SRQ-29 bahwa ada beberapa hal yang mungkin mengganggu keseharianmu, terutama terkait kesehatan fisik dan kecemasan. Apakah kamu ingin menceritakan lebih lanjut?",
+                "Halo RIM, terima kasih sudah datang ke sesi konseling ini. Saya ingin memastikan bahwa ini adalah ruang yang aman untukmu. Saya di sini untuk mendengarkan dan membantumu. Bagaimana perasaanmu hari ini?",
+                "Itu sangat baik. Tidak perlu terburu-buru, kita bisa berbicara dengan santai. Kamu bisa mulai dari apa yang paling ingin kamu ceritakan terlebih dahulu.",
+                "Halo AMK, terima kasih sudah datang ke sesi konseling ini. Saya ingin menegaskan bahwa ini adalah ruang yang aman untukmu. Saya di sini untuk mendengarkan dan membantumu sebisa mungkin. Bagaimana perasaanmu hari ini?",
+                "Halo AH, terima kasih sudah datang ke sesi konseling ini. Saya ingin menegaskan bahwa ini adalah ruang yang aman untukmu. Saya di sini untuk mendengarkan dan membantumu sebisa mungkin. Bagaimana perasaanmu hari ini?",
+                "Halo CCW, terima kasih sudah datang ke sesi konseling ini. Saya ingin memastikan bahwa ini adalah tempat yang aman untuk berbicara. Saya di sini untuk mendengarkan dan membantumu. Bagaimana perasaanmu hari ini?",
+                "Saya mengerti bahwa ini bisa menjadi hal yang sulit untukmu. Bisa kamu ceritakan lebih lanjut tentang apa yang membuatmu merasa seperti itu?",
+                "Halo DE, terima kasih sudah datang ke sesi konseling ini. Saya ingin memastikan bahwa ini adalah tempat yang aman untuk berbicara. Saya di sini untuk mendengarkan dan membantu. Bagaimana perasaanmu hari ini?",
+                "Saya mengerti bahwa ini pasti sangat sulit untukmu. Bisa kamu ceritakan lebih lanjut tentang apa yang terjadi?",
+                "Halo GB, selamat datang kembali. Saya senang kamu memutuskan untuk datang untuk sesi lanjutan ini. Bagaimana perasaanmu hari ini?",
+                ""
+            ]
+        }
+    ]
+}
