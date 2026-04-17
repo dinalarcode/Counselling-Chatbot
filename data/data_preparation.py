@@ -2,8 +2,10 @@ import re
 import torch
 import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer
+from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset, DataLoader
 from transformers import AutoTokenizer
+from config import opt
 
 pd.set_option('display.max_columns', None)
 dsqi = pd.read_csv('dataset_multiintent.csv', encoding='latin-1') # dsqi = dataset question intent
@@ -84,5 +86,20 @@ train_dataload = DataLoader(
 batch = next(iter(train_dataload))
 print("Input IDs (question):", batch['input_ids'].shape)
 print("Labels (Kunci intent):", batch['labels'].shape)
+
+# membelah data menjadi 80% training, 20% validasi
+df_train, df_val = train_test_split(dsqi_encoded, test_size=0.2, random_state=42)
+
+# define 2 dataset
+train_dataload = DataLoader(dataframe=df_train, tokenizer=tokenizer)
+val_dataload = DataLoader(dataframe=df_val, tokenizer=tokenizer)
+
+# membuat dua antrian data untuk train dan validasi
+train_dataload = DataLoader(
+    dataset_train, batch_size=opt.batch_size, shuffle=True
+)
+val_dataload = DataLoader(
+    dataset_train, batch_size=opt.batch_size, shuffle=False
+)
 
 
