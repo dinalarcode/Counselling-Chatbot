@@ -1,24 +1,28 @@
 import torch
 import torch.nn as nn
-from transformers import AdamW
+from torch.optim import AdamW
 from sklearn.metrics import f1_score, accuracy_score
 import numpy as np
 import os
 
+from tqdm import tqdm
+
 from data.data_preparation import train_dataload, tokenized_intent, listof_intent, val_dataload
-from bert_model import BertModel
+from models.multilabel.bert_model import BertModel
 from config import opt
 
-def train():
+def train():        
     """Main training pipeline"""
     
+    print("Loading model and optimizer...")
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     torch.backends.cudnn.enabled = False
 
     jumlah_inten = len(listof_intent)
-    model = BertModel(opt.model_name, jumlah_inten)
+    model = BertModel(opt.MODEL_NAME, jumlah_inten)
 
     model = model.to(device)
+    print("Model loaded successfully in: ", device)
 
     # optimizer, criterion
     optimizer = AdamW(model.parameters(), weight_decay=0.01, lr=opt.learning_rate_bert)
@@ -26,6 +30,8 @@ def train():
 
     intent_ids = tokenized_intent['input_ids'].to(device)
     intent_mask = tokenized_intent['attention_mask'].to(device)
+
+    best_val_f1 = 0
 
     # Start training
     for epoch in range(opt.epochs):
@@ -36,6 +42,10 @@ def train():
         total_train_loss = 0
         all_predict = []
         all_target = []
+
+        # progress bar
+        train_loop = tqdm(train_dataload, desc="Training", leave=False)
+
         for step, batch in enumerate(train_dataload):
             optimizer.zero_grad()
 
@@ -61,12 +71,17 @@ def train():
             train_loss.backward()
             optimizer.step()
 
+            total_train_loss += train_loss.item()
+
             probs = torch.sigmoid(logits).detach().cpu().numpy()
             preds = (probs >= opt.thresold).astype(int)
             targets = labels.detach().cpu().numpy()
 
             all_predict.extend(preds)
             all_target.extend(targets)
+
+            # update progress bar
+            train_loop.set_postfix({'train_loss': train_loss.item()})
 
         print('Average train loss: {:.4f} '.format(total_train_loss / len(train_dataload)))
         
@@ -78,6 +93,10 @@ def train():
     val_loss_total = 0
     vall_predict = []
     vall_target = []
+
+    #progress bar validation
+    val_loop = tqdm(val_dataload, desc="Validation", leave=False)
+
     with torch.no_grad():
         for step, batch in enumerate(val_dataload):
             pertanyaan_ids = batch['input_ids'].to(device)
@@ -103,6 +122,8 @@ def train():
 
             vall_predict.extend(preds)
             vall_target.extend(targets)
+
+            val_loop.set_postfix({'val_loss': val_loss.item()})
 
     # hitung skor validasi
     val_avg_loss = val_loss_total / len(val_dataload)

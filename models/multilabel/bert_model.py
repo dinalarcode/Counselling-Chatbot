@@ -1,9 +1,10 @@
+import requests
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 import numpy as np
-from transformers import AutoTokenizer, AutoModel, BertConfig, BertForNextSentencePrediction
+from transformers import AutoTokenizer, AutoModel, BertConfig, BertModel
 
 class BertLayerNorm(nn.Module):
     def __init__(self, hidden_size, eps=1e-12):
@@ -80,7 +81,7 @@ class BertEmbedding(nn.Module):
             model_dict.update(pre_model_dict)
             self.bert.load_state_dict(model_dict)
 
-    def forward(self, input_ids, mask, seg_tensors=None):
+    def forward(self, utterance_ids, utterance_mask, label_ids=None, Label_mask=None):
         """
         BERT outputs:
         last_hidden_states: (b, t, h)
@@ -88,12 +89,25 @@ class BertEmbedding(nn.Module):
         hidden_states: 13 x (b, t, h), embed to last layer embedding
         attentions: 12 x (b, num_heads, t, t)
         """
-        last_hidden_states, pooled_output, hidden_states, attentions = self.bert(input_ids, token_type_ids=seg_tensors, attention_mask=mask)
+        # Automodel return model bukan tuple
+        outputs = self.bert(
+            input_ids=utterance_ids,
+            attention_mask=utterance_mask,
+            output_hidden_states=True,
+            output_attentions=True,
+            return_dict=True
+        )
+        
+        # ekstrak output yang diperlukan
+        last_hidden_states = outputs.last_hidden_states
+        pooled_output = outputs.pooler_output
+        hidden_states = outputs.hidden_states
+        attentions = outputs.attentions
 
-        pooled_output = self.transform(last_hidden_states, pooled_output, hidden_states, attentions, mask) # (b, h)
+        pooled_output = self.transform(last_hidden_states, pooled_output, hidden_states, attentions, utterance_mask) # (b, h)
         logits = self.multi_learn(pooled_output)
 
-        return last_hidden_states, pooled_output, logits
+        return logits
         # loss = self.bert(input_ids, attention_mask=mask, labels=labels)
         # return loss
     
@@ -207,10 +221,10 @@ class BertEmbedding(nn.Module):
         return logits
 
 
-class BertForNextSentence(nn.Module):
+class BertModel(nn.Module):
     
     def __init__(self, config, num_labels=2):
-        super(BertForNextSentence, self).__init__()
+        super(BertModel, self).__init__()
         self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
         self.num_labels = num_labels
         self.bert = AutoModel.from_pretrained('indobenchmark/indobert-base-p1', output_hidden_states=True, output_attentions=True)

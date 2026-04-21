@@ -1,4 +1,4 @@
-import re
+import requests
 import torch
 import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer
@@ -8,11 +8,11 @@ from transformers import AutoTokenizer
 from config import opt
 
 pd.set_option('display.max_columns', None)
-dsqi = pd.read_csv('dataset_multiintent.csv', encoding='latin-1') # dsqi = dataset question intent
+dsqi = pd.read_csv('data\dataset_multiintent.csv', encoding='latin-1') # dsqi = dataset question intent
 
 tokenizer = AutoTokenizer.from_pretrained('indobenchmark/indobert-base-p1')
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-tokenizer.to(device)
+# tokenizer.to(device)
 
 # Pecah string intent yang dibatasi titik koma (;) menjadi sebuah List
 dsqi['intent_list'] = dsqi['Intent'].apply(lambda x: x.split('; '))
@@ -91,15 +91,15 @@ print("Labels (Kunci intent):", batch['labels'].shape)
 df_train, df_val = train_test_split(dsqi_encoded, test_size=0.2, random_state=42)
 
 # define 2 dataset
-train_dataload = DataLoader(dataframe=df_train, tokenizer=tokenizer)
-val_dataload = DataLoader(dataframe=df_val, tokenizer=tokenizer)
+train_data = LABANDataset(dataframe=df_train, tokenizer=tokenizer)
+val_data = LABANDataset(dataframe=df_val, tokenizer=tokenizer)
 
 # membuat dua antrian data untuk train dan validasi
 train_dataload = DataLoader(
-    dataset_train, batch_size=opt.batch_size, shuffle=True
+    train_data, batch_size=opt.BATCH_SIZE, shuffle=True
 )
 val_dataload = DataLoader(
-    dataset_train, batch_size=opt.batch_size, shuffle=False
+    val_data, batch_size=opt.BATCH_SIZE, shuffle=False
 )
 
 
