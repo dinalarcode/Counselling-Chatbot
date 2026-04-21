@@ -1,2 +1,1 @@
-from .bert_model import BertModel
-from .train import train
+from .run_trainer import train

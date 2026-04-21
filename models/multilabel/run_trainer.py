@@ -6,9 +6,9 @@ import numpy as np
 import os
 
 from tqdm import tqdm
-
+from transformers import AutoModel, BertConfig
 from data.data_preparation import train_dataload, tokenized_intent, listof_intent, val_dataload
-from models.multilabel.bert_model import BertModel
+from models.multilabel.bert_model import BertEmbedding
 from config import opt
 
 def train():        
@@ -19,18 +19,18 @@ def train():
     torch.backends.cudnn.enabled = False
 
     jumlah_inten = len(listof_intent)
-    model = BertModel(opt.MODEL_NAME, jumlah_inten)
+    config = BertConfig.from_pretrained(opt.MODEL_NAME)
+    model = BertEmbedding(config, num_labels=jumlah_inten)
 
     model = model.to(device)
     print("Model loaded successfully in: ", device)
 
     # optimizer, criterion
-    optimizer = AdamW(model.parameters(), weight_decay=0.01, lr=opt.learning_rate_bert)
+    optimizer = AdamW(model.parameters(), weight_decay=0.01, lr=opt.LEARNING_RATE)
     criterion = nn.BCEWithLogitsLoss(reduction='sum').to(device)
 
     intent_ids = tokenized_intent['input_ids'].to(device)
     intent_mask = tokenized_intent['attention_mask'].to(device)
-
     best_val_f1 = 0
 
     # Start training
@@ -46,7 +46,7 @@ def train():
         # progress bar
         train_loop = tqdm(train_dataload, desc="Training", leave=False)
 
-        for step, batch in enumerate(train_dataload):
+        for step, batch in enumerate(train_loop):
             optimizer.zero_grad()
 
             # ambil data pertanyaan
@@ -61,9 +61,9 @@ def train():
             # data yang telah diambil dimasukkan ke LABAN
             logits = model(
                 utterance_ids=pertanyaan_ids,
-                attention_mask=attention_mask,
-                intent_ids=intent_ids,
-                intent_mask=intent_mask,
+                utterance_mask=attention_mask,
+                label_ids=intent_ids,
+                Label_mask=intent_mask,
             )
 
             # hitung error dan koreksi
@@ -98,8 +98,8 @@ def train():
     val_loop = tqdm(val_dataload, desc="Validation", leave=False)
 
     with torch.no_grad():
-        for step, batch in enumerate(val_dataload):
-            pertanyaan_ids = batch['input_ids'].to(device)
+        for step, batch in enumerate(val_loop):
+            pertanyaan_ids_ids = batch['input_ids'].to(device)
             attention_mask = batch['attention_mask'].to(device)
             labels = batch['labels'].to(device)
 
@@ -107,10 +107,10 @@ def train():
             intent_mask = tokenized_intent['attention_mask'].to(device)
 
             logits = model(
-                utterance_ids=pertanyaan_ids,
-                attention_mask=attention_mask,
-                intent_ids=intent_ids,
-                intent_mask=intent_mask,
+                utterance_ids=pertanyaan_ids_ids,
+                utterance_mask=attention_mask,
+                label_ids=intent_ids,
+                Label_mask=intent_mask,
             )
 
             val_loss = criterion(logits, labels)
@@ -142,5 +142,4 @@ def train():
         print('Model saved to checkpoint/IndoBERT_multi_label.pt')
     
 if __name__ == '__main__':
-    import fire
-    fire.Fire()
+    train()

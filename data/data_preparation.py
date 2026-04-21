@@ -8,7 +8,7 @@ from transformers import AutoTokenizer
 from config import opt
 
 pd.set_option('display.max_columns', None)
-dsqi = pd.read_csv('data\dataset_multiintent.csv', encoding='latin-1') # dsqi = dataset question intent
+dsqi = pd.read_csv('data/dataset_multiintent.csv', encoding='latin-1') # dsqi = dataset question intent
 
 tokenizer = AutoTokenizer.from_pretrained('indobenchmark/indobert-base-p1')
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

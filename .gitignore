@@ -1,0 +1,10 @@
+/_pycache_/
+/*.pyc
+/*.pyd
+/*.pyo
+/*.pym
+
+checkpoint/
+/*pt
+
+venv/

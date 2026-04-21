@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 import numpy as np
-from transformers import AutoTokenizer, AutoModel, BertConfig, BertModel
+from transformers import AutoTokenizer, AutoModel, BertConfig, BertForSequenceClassification
 
 class BertLayerNorm(nn.Module):
     def __init__(self, hidden_size, eps=1e-12):
@@ -28,7 +28,7 @@ class BertEmbedding(nn.Module):
         # self.bert = BertForSequenceClassification.from_pretrained("bert-base-uncased", num_labels)
         self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
         self.num_labels = num_labels
-        self.bert = AutoModel.from_pretrained('indobenchmark/indobert-base-p1', output_hidden_states=True, output_attentions=True)
+        self.bert = AutoModel.from_pretrained('indobenchmark/indobert-base-p1', output_hidden_states=True, output_attentions=True, ignore_mismatched_sizes=True)
         self.dropout = nn.Dropout(0.1)
         self.classifier = nn.Linear(config.hidden_size, num_labels)
         nn.init.xavier_normal_(self.classifier.weight)
@@ -84,7 +84,7 @@ class BertEmbedding(nn.Module):
     def forward(self, utterance_ids, utterance_mask, label_ids=None, Label_mask=None):
         """
         BERT outputs:
-        last_hidden_states: (b, t, h)
+        last_hidden_state: (b, t, h)
         pooled_output: (b, h), from output of a linear classifier + tanh
         hidden_states: 13 x (b, t, h), embed to last layer embedding
         attentions: 12 x (b, num_heads, t, t)
@@ -98,31 +98,34 @@ class BertEmbedding(nn.Module):
             return_dict=True
         )
         
+        if utterance_ids is None:
+            print('No input ids')
+
         # ekstrak output yang diperlukan
-        last_hidden_states = outputs.last_hidden_states
+        last_hidden_state = outputs.last_hidden_state
         pooled_output = outputs.pooler_output
         hidden_states = outputs.hidden_states
         attentions = outputs.attentions
 
-        pooled_output = self.transform(last_hidden_states, pooled_output, hidden_states, attentions, utterance_mask) # (b, h)
+        pooled_output = self.transform(last_hidden_state, pooled_output, hidden_states, attentions, utterance_mask) # (b, h)
         logits = self.multi_learn(pooled_output)
 
         return logits
         # loss = self.bert(input_ids, attention_mask=mask, labels=labels)
         # return loss
     
-    def transform(self, last_hidden_states, pooled_output, hidden_states, attentions, mask):
+    def transform(self, last_hidden_state, pooled_output, hidden_states, attentions, mask):
         
         if self.mode == 'max-pooling':
             # Method 1: max pooling
-            pooled_output, indexes = torch.max(last_hidden_states * mask[:,:,None], dim=1)
+            pooled_output, indexes = torch.max(last_hidden_state * mask[:,:,None], dim=1)
         
         elif self.mode == 'self-attentive':
             # Method 2: self-attentive network
-            b, _, _ = last_hidden_states.shape
+            b, _, _ = last_hidden_state.shape
             vectors = self.context_vector.unsqueeze(0).repeat(b, 1, 1)
 
-            h = self.tanh(self.linear1(last_hidden_states)) # (b, t, h)
+            h = self.tanh(self.linear1(last_hidden_state)) # (b, t, h)
             scores = torch.bmm(h, vectors) # (b, t, 4)
             scores = nn.Softmax(dim=1)(scores) # (b, t, 4)
             outputs = torch.bmm(scores.permute(0, 2, 1), h).view(b, -1) # (b, 4h)
@@ -130,17 +133,17 @@ class BertEmbedding(nn.Module):
         
         elif self.mode == 'self-attentive-mean':
             # Method 2: self-attentive network
-            b, _, _ = last_hidden_states.shape
-            vector = torch.mean(last_hidden_states, dim=1).unsqueeze(2)
+            b, _, _ = last_hidden_state.shape
+            vector = torch.mean(last_hidden_state, dim=1).unsqueeze(2)
 
-            #h = self.tanh(self.linear1(last_hidden_states)) # (b, t, h)
-            scores = torch.bmm(last_hidden_states, vector) # (b, t, 1)
+            #h = self.tanh(self.linear1(last_hidden_state)) # (b, t, h)
+            scores = torch.bmm(last_hidden_state, vector) # (b, t, 1)
             scores = nn.Softmax(dim=1)(scores) # (b, t, 1)
-            pooled_output = torch.bmm(scores.permute(0, 2, 1), last_hidden_states).squeeze(1) # (b, h)
+            pooled_output = torch.bmm(scores.permute(0, 2, 1), last_hidden_state).squeeze(1) # (b, h)
 
         elif self.mode == 'h-max-pooling':
             # Method 3: hierarchical max pooling
-            b, t, h = last_hidden_states.shape
+            b, t, h = last_hidden_state.shape
             N = len(hidden_states)
             final_vectors = torch.zeros(b, h, N).to(self.device)
             for i in range(len(hidden_states)):
@@ -221,31 +224,47 @@ class BertEmbedding(nn.Module):
         return logits
 
 
-class BertModel(nn.Module):
+class BertForNextSentence(nn.Module):
     
     def __init__(self, config, num_labels=2):
-        super(BertModel, self).__init__()
+        super(BertForNextSentence, self).__init__()
         self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
         self.num_labels = num_labels
-        self.bert = AutoModel.from_pretrained('indobenchmark/indobert-base-p1', output_hidden_states=True, output_attentions=True)
+        self.bert = AutoModel.from_pretrained('indobenchmark/indobert-base-p1', num_labels=num_labels, output_hidden_states=True, output_attentions=True)
         self.dropout = nn.Dropout(0.1)
-        self.classifier = nn.Linear(config.hidden_size, num_labels)
+        self.classifier = nn.Linear(self.bert.config.hidden_size, num_labels)
         nn.init.xavier_normal_(self.classifier.weight)
 
-    def forward(self, input_ids, mask, seg_tensors=None):
+    def forward(self, utterance_ids, utterance_mask, label_ids=None, Label_mask=None):
         """
         BERT outputs:
-        last_hidden_states: (b, t, h)
+        last_hidden_state: (b, t, h)
         pooled_output: (b, h), from output of a linear classifier + tanh
         hidden_states: 13 x (b, t, h), embed to last layer embedding
         attentions: 12 x (b, num_heads, t, t)
         """
-        last_hidden_states, pooled_output, hidden_states, attentions = self.bert(input_ids, token_type_ids=seg_tensors, attention_mask=mask)
+        if utterance_ids is None:
+            print('No input ids')
+        
+        # Automodel return model bukan tuple
+        outputs = self.bert(
+            input_ids=utterance_ids,
+            attention_mask=utterance_mask,
+            output_hidden_states=True,
+            output_attentions=True,
+            return_dict=True
+        )
+        
+        # ekstrak output yang diperlukan
+        last_hidden_state = outputs.last_hidden_state
+        pooled_output = outputs.pooler_output
+        hidden_states = outputs.hidden_states
+        attentions = outputs.attentions
 
-        pooled_output_d = self.dropout(pooled_output)
-        logits = self.classifier(pooled_output_d)
+        pooled_output = self.transform(last_hidden_state, pooled_output, hidden_states, attentions, utterance_mask) # (b, h)
+        logits = self.multi_learn(pooled_output)
 
-        return last_hidden_states, pooled_output, logits
+        return logits
 
 
 if __name__ == "__main__":
