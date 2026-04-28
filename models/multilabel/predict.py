@@ -6,14 +6,14 @@ from models.multilabel.bert_model import BertEmbedding
 from transformers import AutoTokenizer
 
 class predictor:
-    def __init__(self, model_path = 'checkpoint/IndoBERT_multi_label.pt', thresold = 0.5):
+    def __init__(self, model_path = 'checkpoint/IndoBERT_multi_label_zsl.pt', thresold = 0.5):
         self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device ('cpu')
         self.tokenizer = AutoTokenizer.from_pretrained('indobenchmark/indobert-base-p1')
         self.thresold = thresold
 
         # kerangka model
         jumlah_inten = len(listof_intent)
-        self.model = BertEmbedding(opt, num_labels = jumlah_inten)
+        self.model = BertEmbedding(num_labels = jumlah_inten)
 
         # memuat hasil train ke kerangka
         self.model.load_state_dict(torch.load(model_path, map_location = self.device, weights_only = True))

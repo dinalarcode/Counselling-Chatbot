@@ -20,7 +20,7 @@ def train():
 
     jumlah_inten = len(listof_intent)
     config = BertConfig.from_pretrained(opt.MODEL_NAME)
-    model = BertEmbedding(config, num_labels=jumlah_inten)
+    model = BertEmbedding(num_labels=jumlah_inten)
 
     model = model.to(device)
     print("Model loaded successfully in: ", device)
@@ -138,8 +138,8 @@ def train():
 
     if val_f1 > best_val_f1:  # Simpan model jika F1 validasi lebih besar dari sebelumnya
         best_val_f1 = val_f1
-        torch.save(model.state_dict(), 'checkpoint/IndoBERT_multi_label.pt')
-        print('Model saved to checkpoint/IndoBERT_multi_label.pt')
+        torch.save(model.state_dict(), 'checkpoint/IndoBERT_multi_label_zsl.pt')
+        print('Model saved to checkpoint/IndoBERT_multi_label_zsl.pt')
     
 if __name__ == '__main__':
     train()
