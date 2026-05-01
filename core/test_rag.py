@@ -1,4 +1,5 @@
 from core.rag_engine import RAGEngine
+from core.session_manager import SessionManager
 import logging
 
 # Set up logging to only show critical errors (suppresses transformers/langchain warnings)
@@ -8,7 +9,8 @@ def run_test():
     print("Inisialisasi RAG Engine (Loading Model & VectorDB)...")
     try:
         engine = RAGEngine()
-        print("Berhasil! RAG Engine siap digunakan.\n")
+        session = SessionManager(engine)
+        print("Berhasil! RAG Engine & Session Manager siap digunakan.\n")
     except ValueError as e:
         print(f"Error: {e}")
         print("Pastikan Anda sudah membuat file .env dan mengisi GEMINI_API_KEY.")
@@ -17,41 +19,59 @@ def run_test():
         print(f"Terjadi kesalahan saat memuat model: {e}")
         return
 
-    # List tahapan konseling
-    stages = ['pembukaan', 'pembahasan', 'intervensi', 'solusi', 'relaksasi', 'penutupan']
-    current_stage_index = 1 # Mulai dari pembahasan
+    print("=" * 60)
+    print("  SESI KONSELING INTERAKTIF (Automatic Stage Progression)")
+    print("=" * 60)
+    print("Perintah khusus:")
+    print("  'done'   → Keluar dari sesi")
+    print("  'next'   → Paksa lanjut ke tahap berikutnya (dev only)")
+    print("  'state'  → Lihat state sesi saat ini (dev only)")
+    print("=" * 60)
+    print()
 
-    print("Ketik 'done' untuk keluar.")
-    print("Ketik 'next' untuk lanjut ke tahap konseling berikutnya.\n")
-    
     while True:
-        current_stage = stages[current_stage_index]
-        print(f"--- [Tahap Saat Ini: {current_stage.upper()}] ---")
+        state = session.get_state()
+        stage_label = state['stage'].upper()
+        turn = state['turn_count']
+        print(f"--- [Tahap: {stage_label} | Giliran ke-{turn}] ---")
         pasien_input = input("Pasien : ")
-        
-        if pasien_input.lower() == 'done':
-            print("Sesi konseling diakhiri.")
+
+        if pasien_input.strip().lower() == 'done':
+            print("\nSesi konseling diakhiri. Semoga harimu menyenangkan!")
             break
-            
-        if pasien_input.lower() == 'next':
-            current_stage_index = min(current_stage_index + 1, len(stages) - 1)
-            print(f"Beralih ke tahap: {stages[current_stage_index].upper()}\n")
+
+        if pasien_input.strip().lower() == 'next':
+            new_stage = session.force_advance()
+            if new_stage:
+                print(f"[DEV] Paksa beralih ke tahap: {new_stage.upper()}\n")
+            else:
+                print("[DEV] Sudah di tahap terakhir.\n")
             continue
 
-        print("Memproses (Menganalisis Niat, Mencari di Knowledge Base, dan Menghasilkan Respons)...\n")
-        
+        if pasien_input.strip().lower() == 'state':
+            print(f"\n[DEV STATE] {state}\n")
+            continue
+
+        print("Memproses...\n")
+
         try:
-            result = engine.generate_response(pasien_input, current_stage=current_stage)
-            
-            # Print Context Used for debugging/visibility
-            context = result['context_used']
+            result = session.chat(pasien_input)
+            debug = result['debug']
+
+            # Print debug context
             print("\n[INFO KONTEKS]")
-            print(f"- Niat (Intent)  : {context['intents']}")
-            print(f"- Ayat Alkitab   : {context['bible_verses']}")
-            print(f"- Referensi QnA  : {context['example_answer'][:100]}...\n")
-            
-            # Print Final LLM Response
-            print(f"Psikolog (Gemini): \n{result['response']}\n")
+            print(f"  Tahap          : {debug['stage']}")
+            print(f"  Giliran        : {debug['turn_count']}")
+            print(f"  Intent (turn)  : {debug['intents_this_turn']}")
+            print(f"  Intent (akum.) : {debug['primary_intents']}")
+            print(f"  Ayat Alkitab   : {debug['bible_verses'][:80]}..." if debug['bible_verses'] else "  Ayat Alkitab   : -")
+
+            if debug['transitioned']:
+                print(f"  >>> TRANSISI    : {debug['stage']} -> {debug['new_stage']}")
+
+            # Print the response
+            print(f"\nPsikolog:\n{result['response']}\n")
+
         except Exception as e:
             print(f"Error saat menghasilkan respons: {e}\n")
 
