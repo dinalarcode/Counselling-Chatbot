@@ -25,9 +25,9 @@ class SessionManager:
     # Minimum turns required before a stage can transition
     MIN_TURNS = {
         'pembukaan': 1,
-        'pembahasan': 3,
-        'intervensi': 2,
-        'solusi': 2,
+        'pembahasan': 1,
+        'intervensi': 1,
+        'solusi': 1,
         'relaksasi': 1,
         'penutupan': 1,  # no transition from penutupan
     }
@@ -35,9 +35,9 @@ class SessionManager:
     # Maximum turns — force transition after this many turns (safety net)
     MAX_TURNS = {
         'pembukaan': 2,
-        'pembahasan': 10,
-        'intervensi': 5,
-        'solusi': 5,
+        'pembahasan': 4,
+        'intervensi': 3,
+        'solusi': 3,
         'relaksasi': 3,
         'penutupan': 99,  # never force-exit penutupan
     }
@@ -63,9 +63,17 @@ class SessionManager:
             r'\bkita\s+lanjut\b',
             r'\btidak\b.*\blagi\b',
             r'\bnggak\b.*\blagi\b',
+            r'^tidak$',
+            r'^nggak$',
+            r'^gak$',
+            r'^udah$',
+            r'^sudah$',
             r'\bsudah\b',
             r'\bhanya\s+itu\b',
             r'\bsepertinya\s+sudah\b',
+            r'\bbisa\b',
+            r'\bboleh\b',
+            r'\bsiap\b',
         ],
         'intervensi': [
             r'\bsaya\s+mengerti\b',
@@ -104,6 +112,8 @@ class SessionManager:
             r'\bbaik\b',
             r'\bsedikit\s+lega\b',
             r'\blega\b',
+            r'\bamin\b',
+            r'\bberkat\b',
         ],
         'penutupan': [],  # no transition from penutupan
     }

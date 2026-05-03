@@ -23,10 +23,12 @@ class RAGEngine:
         ),
         "pembahasan": (
             "Pengguna sedang menceritakan masalahnya. "
-            "Dengarkan dengan empati, validasi perasaan mereka, dan ajukan pertanyaan terbuka "
-            "untuk memahami situasi lebih dalam. "
-            "Fokus pada mendengarkan dan memahami, belum memberikan solusi atau ayat Alkitab. "
-            "Tunjukkan bahwa Anda benar-benar peduli dan mengerti perasaan mereka."
+            "Dengarkan dengan empati dan validasi perasaan mereka. "
+            "Jika masih kurang jelas, ajukan pertanyaan terbuka untuk memahami situasi. "
+            "Namun, jika pengguna sudah menceritakan inti masalahnya atau terlihat sudah selesai, "
+            "jangan terus memaksa mereka bercerita. Tanyakan secara halus apakah mereka siap "
+            "untuk mendiskusikan pandangan lain atau melangkah maju. "
+            "Fokus pada mendengarkan, belum memberikan solusi atau ayat Alkitab."
         ),
         "intervensi": (
             "Anda sudah memahami masalah pengguna dan sekarang saatnya memberikan perspektif baru. "
@@ -47,6 +49,8 @@ class RAGEngine:
             "Jelaskan makna ayat tersebut dengan lembut dalam konteks perasaan dan masalah pengguna. "
             "Ajak mereka untuk merenungkan firman Tuhan dan merasakan ketenangan dari-Nya. "
             "Gunakan nada yang menenangkan, penuh kasih, dan perlahan."
+            "Tanyakan kepada pengguna apakah mereka sudah merasa terberkati atau menunjukan tanda paham dengan firman Tuhan."
+            "Jika sudah jangan diberikan ayat terus menerus."
         ),
         "penutupan": (
             "Sesi konseling hampir selesai. Ringkas poin-poin penting yang sudah dibahas, "
@@ -59,7 +63,7 @@ class RAGEngine:
     # Stages where bible verses should be retrieved and injected
     BIBLE_VERSE_STAGES = ['relaksasi', 'solusi']
 
-    def __init__(self, model_name="gemini-2.5-flash", temperature=0.7):
+    def __init__(self, model_name="gemini-3.1-flash-lite", temperature=0.7):
         # Retrieve the API key from environment variables
         self.api_key = os.getenv("GEMINI_API_KEY")
         if not self.api_key:
@@ -78,7 +82,7 @@ class RAGEngine:
         # Initialize the Vector DB Manager (Knowledge Base)
         self.vector_db = VectorDBManager()
         # Build indices if not built
-        self.vector_db.build_ayat_index('data/dataset_ayat.csv')
+        self.vector_db.build_bible_index('data/alkitab_tb.csv')
         self.vector_db.build_qna_index('data/dataset_qna.csv')
 
         # Define the Prompt Template for the LLM
@@ -155,21 +159,28 @@ Respons Anda:
         # This prevents premature spiritual guidance before the user has shared their burden.
         # When override_intents are provided (from SessionManager's accumulated intents),
         # use them instead of the current turn's intents for more relevant verse selection.
+        # ALL intents are combined together to determine the 1 best verse.
         bible_verses = ""
+        bible_reference = ""
         intents_for_verse = override_intents if override_intents else detected_intents
         if current_stage in self.BIBLE_VERSE_STAGES and intents_for_verse:
-            primary_intent = intents_for_verse[0]
-            ayat_results = self.vector_db.get_ayat_by_intent(primary_intent, k=1)
-            if ayat_results:
-                bible_verses = ayat_results[0].metadata.get('ayat', '')
+            verse_results = self.vector_db.retrieve_verse(
+                intents=intents_for_verse,
+                user_input=user_input,
+                k=1
+            )
+            if verse_results:
+                bible_reference = verse_results[0].get('reference', '')
+                bible_verses = verse_results[0].get('text', '')
 
         # 4. Build the bible section dynamically
         # Only include in the prompt if we actually have a verse
         bible_section = ""
         if bible_verses:
+            verse_display = f"{bible_reference} (TB) \"{bible_verses}\""
             bible_section = (
                 "- Ayat Alkitab Relevan (Sertakan dan jelaskan maknanya dengan lembut dalam konteks masalah pengguna):\n"
-                f'"{bible_verses}"'
+                f'{verse_display}'
             )
 
         # 5. Format the inputs and invoke the LLM Chain
@@ -187,7 +198,7 @@ Respons Anda:
             "context_used": {
                 "intents": detected_intents,
                 "example_answer": example_answer,
-                "bible_verses": bible_verses,
+                "bible_verses": f"{bible_reference} - {bible_verses}" if bible_verses else "",
                 "stage": current_stage
             }
         }

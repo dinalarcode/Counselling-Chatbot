@@ -6,7 +6,7 @@ class KnowledgeBaseEngine:
     def __init__(self):
         self.vector_db = VectorDBManager()
         # Ensure indices are built
-        self.vector_db.build_ayat_index('data/dataset_ayat.csv')
+        self.vector_db.build_bible_index('data/alkitab_tb.csv')
         self.vector_db.build_qna_index('data/dataset_qna.csv')
         
         # Mapping for simple stages
@@ -83,12 +83,17 @@ class KnowledgeBaseEngine:
             response = "Mari kita coba melihat dari sudut pandang yang berbeda. "
             
             if detected_intents:
-                primary_intent = detected_intents[0]
-                ayat_results = self.vector_db.get_ayat_by_intent(primary_intent, k=1)
+                verse_results = self.vector_db.retrieve_verse(
+                    intents=detected_intents,
+                    user_input=user_text,
+                    k=1
+                )
                 
-                if ayat_results:
-                    ayat = ayat_results[0].metadata.get('ayat', '')
-                    response += f"\nMengingat perasaanmu tentang {primary_intent}, ingatlah firman Tuhan ini:\n{ayat}\n"
+                if verse_results:
+                    reference = verse_results[0].get('reference', '')
+                    ayat = verse_results[0].get('text', '')
+                    primary_intent = detected_intents[0]
+                    response += f"\nMengingat perasaanmu tentang {primary_intent}, ingatlah firman Tuhan ini:\n{reference} (TB) \"{ayat}\"\n"
             
             response += "\nBagaimana menurutmu tentang ayat ini dan apakah kamu merasa lebih tenang?"
             next_stage = 'relaksasi'
@@ -101,6 +106,10 @@ class KnowledgeBaseEngine:
 
 if __name__ == "__main__":
     engine = KnowledgeBaseEngine()
-    resp, stage = engine.process_turn("Saya sangat sedih dan merasa kehilangan arah", ["Perasaan Sedih dan Kehilangan"], "intervensi")
+    resp, stage = engine.process_turn(
+        "Saya sangat sedih dan merasa kehilangan arah",
+        ["Perasaan Sedih dan Kehilangan"],
+        "intervensi"
+    )
     print(resp)
     print("Next stage:", stage)
