@@ -87,19 +87,22 @@ batch = next(iter(train_dataload))
 print("Input IDs (question):", batch['input_ids'].shape)
 print("Labels (Kunci intent):", batch['labels'].shape)
 
-# membelah data menjadi 80% training, 20% validasi
-df_train, df_val = train_test_split(dsqi_encoded, test_size=0.2, random_state=42)
+# membelah data menjadi 80% training, 10% validasi, 10% test
+df_train, df_temp = train_test_split(dsqi_encoded, test_size=0.2, random_state=42)
+df_val, df_test = train_test_split(df_temp, test_size=0.5, random_state=42)
 
-# define 2 dataset
+# define 3 dataset
 train_data = LABANDataset(dataframe=df_train, tokenizer=tokenizer)
 val_data = LABANDataset(dataframe=df_val, tokenizer=tokenizer)
+test_data = LABANDataset(dataframe=df_test, tokenizer=tokenizer)
 
-# membuat dua antrian data untuk train dan validasi
+# membuat tiga antrian data untuk train, validasi, dan test
 train_dataload = DataLoader(
     train_data, batch_size=opt.BATCH_SIZE, shuffle=True
 )
 val_dataload = DataLoader(
     val_data, batch_size=opt.BATCH_SIZE, shuffle=False
 )
-
-
+test_dataload = DataLoader(
+    test_data, batch_size=opt.BATCH_SIZE, shuffle=False
+)
