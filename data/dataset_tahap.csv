@@ -1,969 +1,357 @@
-context/intent,question
-pembukaan,"Jujur, saya merasa cukup cemas sebelum datang ke sesi ini. Saya takut tidak bisa menjelaskan dengan baik tentang apa yang saya rasakan."
-pembukaan,"Saya merasa agak gugup, Kak. Saya tidak tahu bagaimana harus mulai menceritakan semuanya."
-pembukaan,"Saya merasa baik-baik saja, Kak. Awalnya saya agak terkejut ketika dipanggil, tapi saya ingin mencoba berbicara dan mendengar apa yang bisa saya lakukan untuk merasa lebih baik."
-pembukaan,"Saya merasa agak cemas, Kak. Tapi saya ingin mencoba berbicara tentang apa yang saya rasakan."
-pembukaan,"Saya merasa... biasa saja, tapi kadang saya merasa sedih. Saya masih sulit mendapatkan teman, dan saya merasa tidak terlalu berharga."
-pembukaan,"Halo Kak. Ya... saya merasa sedikit lebih baik, tapi tetap ada rasa kecewa yang sulit hilang. Saya merasa dikhianati oleh orang yang saya percayai di gereja."
-pembukaan,"Halo Kak. Sejujurnya, saya masih merasa bingung dengan pertemanan saya di kampus. Saya ingin memiliki hubungan pertemanan yang baik, tetapi saya tidak tahu bagaimana cara menghadapinya, terutama setelah apa yang terjadi dengan teman saya, B."
-pembukaan,"Halo Kak. Saya merasa cukup baik hari ini. Saya baru saja menyelesaikan ujian, dan rasanya berjalan cukup lancar. Tidak ada gangguan atau sosok mengerikan yang muncul semalam."
-pembukaan,"Halo Kak. Hari ini rasanya sedikit lebih baik, tetapi saya masih sering merasa lelah dan mudah kesal."
-pembukaan,"Halo Kak, hari ini aku merasa sedikit lebih baik, tapi tetap masih ada rasa cemas dengan kuliah"
-pembukaan,"Halo Kak, sebenarnya hari ini perasaanku lebih baik dibanding pertemuan sebelumnya. Aku mencoba beberapa hal yang kita diskusikan, seperti lebih aktif bergerak dan berlibur sebentar. Itu cukup membantu."
-pembukaan,"Baik, Kak… ya walaupun agak capek. Maaf aku telat tadi"
-pembukaan,"Baik, Kak… tapi ya, seperti yang aku bilang di kuesioner, aku masih merasa nggak nyaman dengan beberapa hal"
-pembukaan,Baik… atau mungkin tidak baik. Aku nggak tahu pasti.
-pembukaan,Baik… atau mungkin tidak terlalu baik. Aku juga nggak yakin.
-pembukaan,Baik… atau mungkin nggak baik juga. Aku nggak tahu.
-pembukaan,"Baik, Kak… tapi jujur agak capek dan masih kepikiran banyak hal"
-pembukaan,"Baik, Kak… ya walaupun masih kepikiran beberapa hal sih"
-pembukaan,"Gatau, biasa aja…"
-pembukaan,"Baik… tapi sebenarnya masih sering merasa cemas sih, Kak."
-pembukaan,"Baik, Kak. Aku memang penasaran sih, apakah yang aku lakukan untuk menghadapi masalahku selama ini sudah benar atau belum."
-pembukaan,"Baik, Kak… walaupun masih agak canggung sih karena belum pernah konseling sebelumnya"
-pembukaan,Aku tidak tahu… Aku merasa sangat lelah dan bingung dengan semuanya.
-pembukaan,"Halo Kak. Aku tidak tahu... Sejujurnya, aku merasa lebih buruk dibandingkan sesi sebelumnya."
-pembahasan,"Saya masih sering merasa tidak percaya diri dan masih mengalami konflik antara pikiran dan perasaan saya. Tapi, saya mencoba untuk lebih menyadari ketika pikiran buruk muncul."
-pembahasan,"Iya, saya masih merasa tertekan saat di rumah. Saya takut melakukan kesalahan karena ayah saya bisa marah dan memukul saya. Saya juga masih merasa canggung saat berbicara dengan teman-teman saya."
-pembahasan,"Terima kasih, Kak. Saya merasa ada banyak hal yang mengganggu pikiran saya. Saya bingung dengan hubungan saya dan juga merasa terbebani dengan kondisi keuangan keluarga saya."
-pembahasan,"Saya ingin membahas tentang hubungan saya dengan pacar dulu. Saya merasa bingung, karena kami sudah hampir tiga tahun bersama, tapi akhir-akhir ini rasanya berbeda."
-pembahasan,"Saya sering kali merasa tidak nyaman dengan hubungan ini. Setelah masuk kuliah, kami jarang bertemu karena kampus kami berbeda. Awalnya saya merasa kesal, tapi lama-lama saya juga mulai terbiasa sendiri. Saya sering menghindari komunikasi dengan dia, misalnya tidak membalas chat dan menjauh tanpa alasan yang jelas."
-pembahasan,"Dia sering bertanya kenapa saya menjauh, dan saya selalu meminta maaf. Dia biasanya bisa mengerti, tapi karena ini terjadi berkali-kali, akhirnya kami sering bertengkar. Sampai akhirnya bulan lalu dia bilang ingin break untuk introspeksi diri."
-pembahasan,"Iya, saya merasa lebih nyaman sendiri karena tidak ada tuntutan untuk selalu merespons seseorang. Tapi di sisi lain, saya merasa kehilangan. Saya juga merasa bersalah karena mungkin sikap saya yang membuat dia ingin break."
-pembahasan,"Sejak setahun terakhir, orang tua saya sering membicarakan masalah keuangan di depan saya. Saya jadi merasa terbebani dan berpikir bahwa saya hanya menambah masalah bagi keluarga."
-pembahasan,Saya sering merasa stres dan kurang fokus di kampus. Bahkan ada saat-saat di mana saya merasa ingin menyerah dan berpikir bahwa lebih baik saya tidak ada di dunia ini.
-pembahasan,"Terima kasih, Kak. Saya ingin membicarakan tentang kecemasan saya ketika harus berbicara di depan umum. Saya selalu merasa takut, tangan saya gemetar, dan sulit berkata-kata."
-pembahasan,"Saya sudah merasa seperti ini sejak lama, mungkin sejak SD. Saya pernah mengalami kejadian yang membuat saya malu saat kelas 3 SD, ketika saya berbicara dalam bahasa Jawa di depan guru dan teman-teman saya. Guru saya mengoreksi saya dan mengatakan bahwa kata yang saya gunakan memiliki arti yang berbeda dalam bahasa Indonesia."
-pembahasan,"Saya merasa malu dan salah. Saya tahu guru saya tidak bermaksud jahat, tapi setelah itu, saya selalu takut berbicara di depan orang lain karena khawatir salah bicara lagi."
-pembahasan,"Saya merasa sangat gugup. Bahkan sebelum berbicara, saya sudah berpikir bahwa saya akan salah bicara dan orang-orang akan menertawakan saya. Ketika akhirnya saya berbicara, tangan saya gemetar dan saya tidak bisa berpikir jernih."
-pembahasan,"Tentu, Kak."
-pembahasan,"Ya, saya sebenarnya paham, tapi saya takut salah bicara."
-pembahasan,Sebenarnya mereka biasa saja. Tidak ada yang mengejek atau mempermalukan saya.
-pembahasan,"Baik, Kak. Saya mengalami banyak hal sejak kecil, dan itu masih berdampak pada saya sampai sekarang."
-pembahasan,"Saya mengalami perundungan sejak SD, SMP, hingga SMA. Saya sering dikucilkan, dihina secara verbal, bahkan mengalami kekerasan fisik. Waktu SD, saya pernah dipukul dengan batako dan mata saya dimasukkan pasir oleh teman-teman saya."
-pembahasan,"Saya melapor ke orang tua saya, tapi mereka justru memarahi saya. Ayah saya memukul saya dengan selang dan berkata bahwa saya harus melawan, jangan jadi anak yang lemah."
-pembahasan,"Saya merasa kecewa dan putus asa. Saya berpikir bahwa saya harus menghadapi semuanya sendirian. Sejak itu, saya tidak pernah lagi bercerita kepada orang tua saya."
-pembahasan,"Saya mulai berbicara dengan diri sendiri dan boneka kesayangan saya. Saya menganggap boneka itu sebagai teman saya. Lalu di SMP, saya mulai melihat sosok yang hanya saya yang bisa lihat dan ajak bicara."
-pembahasan,"Iya, sosok ini datang saat saya merasa sangat sendirian. Saya juga beberapa kali mencoba mengakhiri hidup, tapi saya masih bertahan sampai sekarang."
-pembahasan,"Tidak sesering dulu, Kak. Tapi kadang-kadang saat saya sendirian atau di tempat ramai, sosok itu tiba-tiba muncul dan berbicara kepada saya."
-pembahasan,Tidak ada yang menakutkan. Kadang dia hanya mengajak saya berbicara atau menanyakan perasaan saya.
-pembahasan,"Iya, saya memang sering mengalami masalah pencernaan sejak SMP. Saya pernah terkena TB usus, dan saya juga sering kambuh maag serta asam lambung. Terakhir kali kambuh saat ospek kemarin, mungkin karena kelelahan dan pola makan yang tidak teratur."
-pembahasan,"Sudah, Kak. Saya tahu saya harus menjaga pola makan dan sudah beberapa kali berkonsultasi dengan dokter."
-pembahasan,"Sebenarnya tidak terlalu mengganggu, tapi ada saat-saat di mana saya merasa sangat lelah dan sulit berkonsentrasi. Kadang saya khawatir apakah saya bisa bertahan dengan jadwal kuliah yang padat."
-pembahasan,Iya. Saya takut kalau nanti saya tidak bisa mengatur waktu dengan baik dan akhirnya ketinggalan tugas. Saya sering merasa cemas membandingkan diri saya dengan teman-teman yang terlihat lebih bisa mengatur semuanya dengan baik.
-pembahasan,"Di rumah ada banyak konflik antara ayah dan ibu, terutama tentang peran mereka dalam keluarga. Ayah saya memiliki pola pikir yang sangat patriarkal, sementara ibu saya ingin lebih mandiri. Mereka sering bertengkar tentang hal itu."
-pembahasan,"Saya biasanya berusaha untuk tidak memperdulikan ayah dan lebih dekat dengan ibu. Saya sering keluar berdua dengan ibu, dan itu membuat saya merasa lebih tenang."
-pembahasan,"Iya, saya merasa lebih bisa bercerita dengan ibu. Tapi saya juga merasa ada jarak dengan ayah, dan saya tidak tahu apakah itu baik atau buruk."
-pembahasan,"Baik, Kak. Saya sering merasa kehilangan kesadaran atau hampir pingsan ketika mendengar bentakan atau suara keras. Saya juga merasa sering menyalahkan diri sendiri dan sulit mengekspresikan emosi saya."
-pembahasan,"Sejak kelas 12 SMA. Saat itu saya ikut pelatihan paskibra dan pelatihnya sering berteriak dengan nada tinggi. Saya mulai merasa pusing, jantung berdebar, hingga kehilangan keseimbangan."
-pembahasan,"Mungkin karena sejak kecil saya sering mendapat tekanan dari orang tua saya. Mereka menuntut saya untuk selalu mengalah dan menjaga adik saya. Ibu saya perfeksionis, dan saya merasa harus selalu memenuhi harapan mereka."
-pembahasan,"Ibu saya selalu menuntut saya untuk menjadi yang terbaik, baik dalam hal akademik maupun sikap. Saya selalu diminta untuk menjaga adik saya, meskipun saya merasa adik saya sulit diatur. Kami sering bertengkar, tapi ibu selalu berpihak pada adik saya."
-pembahasan,Saya biasanya hanya diam dan memendam perasaan saya. Saya tidak ingin marah karena takut dianggap anak yang durhaka.
-pembahasan,"Saya masih merasa ada jarak, terutama dengan ibu saya. Saya ingin bisa berkomunikasi lebih baik, tapi saya juga takut jika saya menyampaikan perasaan saya, mereka akan marah."
-pembahasan,Saya pernah mengalami bullying saat SMA. Salah satu teman saya mengajak teman-teman lain untuk menjauhi saya karena saya dianggap 'cupu'. Saya tidak melawan atau melaporkan kejadian itu karena saya tidak ingin menambah masalah.
-pembahasan,"Saya merasa sangat sendirian. Saya ingin berbicara dengan orang tua saya, tapi saya tahu mereka akan marah dan menganggap saya lemah."
-pembahasan,"Saya baik-baik saja, Kak. Tapi saya juga merasa cemas, terutama tentang tugas ospek yang harus diposting di media sosial."
-pembahasan,"Suara-suara itu mulai muncul lagi, terutama saat saya merasa diperhatikan. Saya juga masih merasa takut kalau suatu hari ada yang menghubungkan saya dengan foto yang pernah tersebar."
-pembahasan,"Beberapa hari lalu, ketika ada orang yang melihat saya dari kepala sampai kaki. Saya langsung merasa panik dan mendengar suara yang mengatakan 'kamu tidak layak dicintai'"
-pembahasan,"Saya biasanya mengabaikannya, tapi ada saat di mana saya merasa perlu diperhatikan oleh orang lain, agar saya merasa lebih baik."
-pembahasan,"Ya, saya merasa tidak aman. Rasanya seperti semua orang akan menilai saya berdasarkan masa lalu saya."
-pembahasan,Itu mungkin bisa membantu. Saya akan mencobanya.
-pembahasan,Teman saya mengatakan sesuatu yang menyebalkan tentang kejadian lama itu. Saya langsung marah dan mendorongnya.
-pembahasan,"Saya merasa cukup cemas, Kak. Saya bingung dengan apa yang harus saya lakukan mengenai beasiswa saya yang sudah pasti akan dicabut."
-pembahasan,"Saya sebenarnya bukan hanya bingung tentang beasiswa ini, Kak, tapi juga merasa bersalah. Saya belum memberi tahu ibu saya soal beasiswa yang akan dihentikan, dan saya takut mengecewakan beliau."
-pembahasan,"Ibu saya sangat bangga saya bisa kuliah di Maranatha, apalagi karena saya satu-satunya anak di keluarga yang bisa kuliah. Beliau sering membanggakan saya ke tetangga. Saya takut kalau saya memberitahu ibu, beliau akan kecewa atau sedih."
-pembahasan,"Ya… kalau saya terus menyembunyikannya, akhirnya ibu tetap akan tahu. Saya hanya tidak tahu bagaimana cara mengatakannya dengan baik."
-pembahasan,"Itu bisa jadi ide yang bagus, Kak. Kakak kedua saya yang membiayai kehidupan saya dan ibu, jadi mungkin saya bisa bicara dengannya dulu untuk mencari cara terbaik sebelum berbicara dengan ibu."
-pembahasan,"Saya tidak tahu apakah itu mungkin, tapi saya ingin mencobanya. Saya ingin merasa bahwa saya sudah melakukan segalanya sebelum benar-benar berhenti kuliah."
-pembahasan,Saya berpikir untuk mencari pekerjaan dulu. Mungkin saya bisa bekerja dan menabung untuk kembali kuliah di kemudian hari.
-pembahasan,"Sejak kecil saya merasa sulit berteman. Saya merasa teman-teman saya tidak pernah mengajak saya bermain. Bahkan saat kuliah, saya pernah memiliki teman saat orientasi mahasiswa baru, tapi mereka sepertinya tidak benar-benar menganggap saya bagian dari kelompok mereka. Mereka sering bermain bersama tanpa mengajak saya."
-pembahasan,"Sejak SD. Saya tidak punya teman. Lalu di SMP, saya menyukai seorang laki-laki, tapi dia malah mengatakan saya jelek dan gemuk. Di SMA, saya dijauhi oleh teman-teman tanpa alasan yang jelas. Saya pernah mencoba mendapatkan beasiswa ke Taiwan, tapi saat saya gagal, mereka justru tertawa dan mengatakan ingin 'meledakkan Taiwan'."
-pembahasan,"Mungkin yang di SMA... saya merasa benar-benar tidak diinginkan. Saya merasa tidak dihargai, dan itu membuat saya bertanya-tanya, 'Untuk apa saya hidup?'"
-pembahasan,"Terima kasih, Kak"
-pembahasan,Mungkin... saya bisa mencoba.
-pembahasan,"Jadi, saya punya seorang kakak laki-laki di gereja yang sudah saya anggap sebagai kakak sendiri. Kami sering bersama karena kami ada di kepanitiaan retreat yang sama. Saya selalu berusaha membantu dia, bahkan saat saya lelah atau waktu sudah malam. Tapi semua berubah sejak dia mengira saya ingin merebut pacarnya."
-pembahasan,"Saya hanya berbicara dengan pacarnya tentang perasaan saya yang merasa dimanfaatkan. Saya bilang kalau saya merasa seperti 'alat' yang membantu seseorang, tapi dia malah mengira saya mencoba mendekati pacarnya. Sejak itu, dia mulai menjauhi saya, mendiamkan saya di pertemuan, bahkan tidak menganggap saya ada di sana. Itu sangat menyakitkan karena saya tidak merasa melakukan kesalahan."
-pembahasan,"Saya awalnya bingung. Saya tidak tahu harus bagaimana. Tapi puncaknya adalah saat dia menelepon saya dan memarahi saya habis-habisan, menuduh saya selingkuh dengan pacarnya. Kata-katanya kasar, dan dia sama sekali tidak mau mendengar penjelasan saya."
-pembahasan,"Saya hanya diam. Saya takut kalau saya membela diri, dia akan semakin marah. Tapi setelah itu, saya merasa sangat kecewa dan sakit hati. Saya mulai menarik diri, bahkan saya tidak ingin berada di lantai yang sama dengannya saat ibadah."
-pembahasan,Iya. Saya mulai sulit percaya pada orang lain. Saya tidak bisa bercerita kepada teman-teman di gereja karena saya takut mereka akan membicarakan saya di belakang. Saya juga jadi lebih mudah marah kalau ada orang yang bertanya-tanya soal keadaan saya.
-pembahasan,"Ya. Saya merasa sulit untuk dekat dengan teman-teman di kampus. Saya takut jika saya terlalu terbuka, saya akan dikhianati lagi. Saya tidak ingin terlalu dekat dengan siapa pun sekarang."
-pembahasan,"Tapi sulit untuk percaya lagi, Kak. Rasanya seperti lebih baik menjauh dari semua orang daripada harus dikhianati lagi."
-pembahasan,"Saya baru tahu bahwa teman saya, B, menyebarkan isi chat saya di grup HIMA. Di chat itu, saya pernah bilang kalau saya tidak ingin berteman dengan orang lain selain yang sudah dekat dengan saya. Saya tidak mengerti kenapa B melakukan itu. Saya merasa sedih, tapi saya tidak tahu bagaimana mengungkapkan perasaan saya."
-pembahasan,"Saya tidak mengatakan apa-apa. Saya hanya diam dan berpura-pura tidak tahu. Saya pikir, lebih baik saya tidak membahasnya daripada memperkeruh keadaan."
-pembahasan,"Sejujurnya, saya merasa sedih dan sedikit marah. Tapi saya selalu berpikir bahwa menunjukkan emosi negatif itu tidak baik. Saya tidak ingin terlihat lemah di hadapan B."
-pembahasan,"Iya, saya merasa kalau saya menunjukkan bahwa saya marah atau sedih, maka saya akan terlihat kalah di mata B."
-pembahasan,"Saya cukup senang karena nilai saya meningkat. IPK saya sekarang 3.06, dan beasiswa Teknik Nusantara saya masih berlanjut."
-pembahasan,"Sebenarnya ada. Saya kesulitan mengkomunikasikan keinginan saya kepada dosen wali saya. Saya ingin mengkontrak 22 SKS, tapi karena dosen wali saya bilang 'tidak perlu ambil banyak-banyak,' saya langsung diam dan hanya mengikuti saran beliau."
-pembahasan,"Saya merasa sedikit lega, tapi tetap ada perasaan aneh. Saya merasa baik-baik saja sekarang, tapi tidak tahu apakah ini hanya sementara atau akan kembali lagi nanti."
-pembahasan,Saya masih sering marah kalau ada orang yang menegur saya atau mengabaikan saya. Rasanya ingin membalas atau bahkan melukai mereka. Tapi saya sadar kalau itu berlebihan dan saya tidak ingin kelepasan.
-pembahasan,"Tergantung. Biasanya kalau saya merasa tidak dihargai atau diabaikan, saya langsung kesal. Tapi akhir-akhir ini saya juga merasa lebih cepat marah kalau ada orang yang terlalu banyak bertanya atau ingin terlalu dekat dengan saya."
-pembahasan,"Ada seorang teman saya, G. Dia sebenarnya baik, tapi akhir-akhir ini dia sering bertanya banyak hal dan ingin selalu bersama saya. Saya tidak suka dan merasa dia terlalu menempel."
-pembahasan,"Iya, saya tidak suka rasanya. Tapi saya juga tidak ingin menyakiti perasaannya, jadi saya bingung harus bagaimana."
-pembahasan,"Iya, tapi tidak sesering sebelumnya. Kadang saya masih merasa dia mengawasi saya, terutama kalau saya akan ujian atau merasa stres. Saya juga kadang masih mencium bau melati atau darah, dan itu sangat mengganggu."
-pembahasan,"Tidak selalu. Kadang dia muncul tanpa alasan, dan itu yang membuat saya takut."
-pembahasan,Tidak! Saya tidak mau ke psikiater
-pembahasan,"Tetap saja, saya tidak ingin orang tua saya tahu."
-pembahasan,"Baik, Kak."
-pembahasan,"Iya, masih. Kadang muncul sebelum tidur atau saat saya merasa stres. Saya juga kadang masih mencium bau melati atau darah, tapi saya sudah mulai bisa mengabaikannya."
-pembahasan,"Baiklah, saya akan coba menuliskannya"
-pembahasan,"Tidak banyak berubah, saya masih sering merasa tidak nyaman di rumah. Tapi saya lebih baik saat bersama ibu. Saya merasa lebih aman bersamanya dibandingkan dengan yang lain."
-pembahasan,"Aku mencoba lebih membuka diri, mulai dari menyapa teman-teman lebih dulu. Rasanya agak canggung, tapi aku mencoba pelan-pelan."
-pembahasan,"Sejujurnya, belum ada perubahan besar. Aku masih belum punya teman yang benar-benar dekat di kampus, tapi setidaknya aku tidak lagi merasa terlalu sendirian."
-pembahasan,"Masih sulit, Kak. Aku tetap merasa bahwa materi kedokteran tidak mudah untukku. Tapi aku mencoba untuk lebih rajin membaca dan mengerjakan tugas tepat waktu"
-pembahasan,"Baik, aku akan coba."
-pembahasan,Aku masih sering berkomunikasi dengannya. Kami bertemu setiap liburan semester. Dia satu-satunya teman yang benar-benar mengerti aku.
-pembahasan,"Sebenarnya, ada masalah baru, Kak. Ibuku baru saja tahu bahwa aku pernah berpacaran. Aku benar-benar takut dan cemas setelah beliau mengetahuinya."
-pembahasan,"Beberapa waktu lalu, aku sempat pacaran diam-diam, karena ibuku memang melarangku pacaran sejak SMA. Saat beliau tahu, handphone dan tabletnya langsung disita. Bahkan semua chat dan percakapanku dengan mantan dibaca habis oleh ibuku. Aku merasa benar-benar tidak punya ruang pribadi."
-pembahasan,"Aku marah, Kak. Tapi aku juga takut. Aku tahu ibuku ingin aku fokus kuliah, tapi aku juga merasa seperti tidak bisa jadi diri sendiri. Aku merasa terlalu dikekang."
-pembahasan,"Tidak, Kak. Aku takut kalau aku mencoba bicara, malah tambah dimarahi atau dilarang lebih banyak hal lagi"
-pembahasan,Aku juga ingin bisa menghindari konflik. Tapi aku merasa seperti selalu salah di mata ibuku.
-pembahasan,"Itu masuk akal. Aku tidak mau terus-menerus merasa putus asa, jadi aku akan coba. Kak, ibuku menelepon. Aku harus angkat dulu…"
-pembahasan,"Iya, Bu... Aku pulang sekarang.."
-pembahasan,"Aku pusing banget, Kak. Aku merasa kayak nggak punya waktu buat diri sendiri. Aku kuliah, magang, terus masih harus ngurus organisasi juga. Aku nggak tahu lagi harus gimana… Aku kepikiran buat keluar dari organisasi, tapi aku nggak yakin keputusan itu benar."
-pembahasan,Iya… Awalnya aku nggak niat jadi ketua. Nama aku cuma dicantumin biar ada pilihan lebih dari satu. Tapi tiba-tiba aku malah yang kepilih
-pembahasan,"Awalnya biasa aja. Aku pikir bisa dijalanin. Tapi makin lama aku sadar kalau aku nggak punya cukup pengalaman, terus aku denger juga ada yang ngomongin aku di belakang. Katanya aku ketua yang nggak kerja."
-pembahasan,"Iya… padahal aku udah berusaha sebisa mungkin. Tapi tetap aja kayaknya aku kurang. Aku juga merasa alumni lebih mendukung kandidat lain waktu pemilihan dulu, jadi kayaknya mereka nggak suka aku dari awal"
-pembahasan,"Awalnya aku pikir cuma perasaan, tapi lama-lama ada yang bilang kalau mereka memang lebih suka kandidat yang lain"
-pembahasan,"Iya, Kak… Aku jadi kepikiran terus, padahal aku juga udah capek sama kuliah dan kerja magang"
-pembahasan,"Magang itu sebenarnya lumayan membantu aku untuk biaya jajan, jadi aku nggak mau berhenti. Tapi jadinya aku harus pintar bagi waktu. Masalahnya, aku nggak bisa. Aku sering begadang, kurang tidur, bahkan pernah nggak tidur tiga hari."
-pembahasan,"Ya, tugas banyak banget. Ada tugas kuliah, terus harus nyiapin laporan buat magang, dan ada rapat organisasi. Aku ngerasa nggak bisa ninggalin salah satu, jadi akhirnya ya udah, begadang terus."
-pembahasan,"Sering… Aku kepikiran keluar dari organisasi, tapi aku takut. Takut dibilang gagal, takut kalau aku malah bikin repot orang lain kalau pergi sekarang, takut juga kalau aku benar-benar berhenti, malah makin nggak ada yang mendukung aku."
-pembahasan,Ayah aku… dia masuk penjara bulan ini karena kasus di kantornya. Itu juga bikin aku makin kepikiran.
-pembahasan,"Iya, aku jadi ngerasa harus lebih mandiri, nggak bisa terus bergantung sama keluarga. Aku harus cari cara buat bertahan sendiri."
-pembahasan,"Ada sih beberapa teman, tapi aku nggak mau kelihatan lemah."
-pembahasan,"Aku selalu kepikiran tentang apa yang orang lain pikirkan tentang aku. Kalau ada yang lihat aku sebentar aja, aku langsung mikir… ‘apa mereka mikir aku aneh? Apa mereka nggak suka aku?’ Pokoknya overthinking terus."
-pembahasan,"Mungkin saat aku sedang bersama teman-teman atau di tempat umum. Aku sering merasa kalau mereka sedang menilai aku, terutama soal penampilan aku"
-pembahasan,"Iya… aku tahu mungkin nggak semua orang benar-benar memperhatikan aku, tapi aku tetap nggak bisa menghilangkan pikiran itu."
-pembahasan,"Iya, soalnya temanku sering cerita tentang masalah orang lain ke aku. Jadi aku kepikiran, gimana kalau dia juga cerita tentang aku ke orang lain?"
-pembahasan,"Belum… aku takut kalau aku ngomong, dia malah tersinggung dan jadi nggak mau temenan sama aku lagi."
-pembahasan,Iya… aku takut dibilang lebay atau nggak percaya sama dia.
-pembahasan,"Iya… aku ngerasa gemuk, jadi aku pengen kurusan. Tapi kata orang-orang, aku sebenarnya nggak gemuk."
-pembahasan,"Ya… aku pengen ngerasa lebih percaya diri. Aku udah mulai diet, dan itu lumayan membantu aku ngerasa lebih baik."
-pembahasan,"Iya, Kak. Aku juga nggak mau terlalu ekstrim sih… cuma kadang masih kepikiran aja."
-pembahasan,Ya… aku sering nunda-nunda. Ujung-ujungnya aku harus begadang buat ngerjain tugas mendekati deadline.
-pembahasan,"Aku sudah mencoba beberapa kali… sejak SMP. Aku nggak tahu kenapa, tapi rasanya aku nggak berguna dan lebih baik nggak ada saja."
-pembahasan,"Sepertinya karena aku merasa tidak dihargai. Dari dulu aku selalu merasa nggak cukup baik. Aku selalu dibandingkan, selalu dimarahi, dan aku merasa nggak pernah dianggap…."
-pembahasan,Tapi suara-suara itu… mereka nggak berhenti. Aku dengar suara bapak-bapak atau kadang ibu-ibu yang menyuruh aku untuk mati.
-pembahasan,"Iya, aku mau coba"
-pembahasan,"Aku masih ingat semuanya… kejadian waktu aku TK, SD, bahkan SMP. Aku takut. Aku merasa kotor. Aku merasa seharusnya aku bilang ke orang lain, tapi aku takut dimarahi"
-pembahasan,"Tapi aku masih merasa takut… aku masih ingat gang itu, aku masih ingat wajahnya. Aku merasa kalau aku lewat tempat itu, aku seperti kembali ke masa itu."
-pembahasan,"Aku merasa apapun yang aku lakukan nggak pernah cukup. Aku juara kelas, tapi dibandingin sama anak orang lain. Aku mau masuk arsitektur, tapi dilarang. Aku ngerasa nggak punya kendali atas hidupku sendiri."
-pembahasan,"Iya… Aku nggak bisa bilang apa-apa ke mereka, karena mereka pasti bilang aku ‘kurang bersyukur’ atau aku ‘melawan’ kalau aku ngomong."
-pembahasan,"Iya, aku merasa seperti nggak bisa mengikuti pelajaran dengan baik. Aku sering nggak ngerti penjelasan dosen, terus akhirnya aku jadi malas untuk mendengarkan lebih lanjut. Kadang, aku merasa dosen suka menilai aku sebagai yang paling ‘nggak bisa’ di kelas, padahal ada yang lain juga sama seperti aku…"
-pembahasan,"Banget. Aku jadi ngerasa nggak pede buat jawab atau berpartisipasi, karena takut salah atau semakin dianggap bodoh"
-pembahasan,"Aku sebenarnya punya teman, tapi lebih dekat dengan yang beda jurusan. Aku nggak tahu kenapa, rasanya lebih nyaman ngobrol sama mereka daripada sama teman-teman di kelas sendiri."
-pembahasan,"Iya… biasanya kalau aku merasa tertekan atau capek banget, aku mulai kepikiran buat nyakitin diri sendiri. Tapi aku nggak pernah benar-benar melakukannya, karena aku tahu itu salah"
-pembahasan,"Iya… jadi misalnya aku lagi di tempat umum, tiba-tiba ada orang yang lihat aku, entah itu sengaja atau nggak… aku langsung kepikiran, 'Apa mereka tahu tentang aku? Apa mereka ngeh sama foto itu?'. Terus aku mulai dengar suara di kepala aku bilang kalau aku nggak pantas hidup, kalau semua orang pasti bakal ngejek aku…"
-pembahasan,"Kadang aku coba buat nggak dengerin, tapi rasanya susah. Aku jadi panik, jantungku berdetak cepat, tanganku dingin, dan aku cuma mau cepat-cepat pergi. Kadang aku juga cuma bisa diam, nggak bisa bergerak, tapi di dalam kepalaku rasanya berantakan banget"
-pembahasan,"Iya… aku takut kalau videonya viral terus ada yang ngeh sama aku. Aku takut ada yang ngomongin aku lagi, bilang kalau aku mirip sama foto itu… aku nggak mau orang-orang tahu masa laluku"
-pembahasan,Sudah… tapi aku belum berani upload. Aku takut.
-pembahasan,"Aku juga nggak tahu. Mungkin karena cowok lebih nggak ribet? Mereka nggak banyak basa-basi. Tapi… aku juga kadang merasa aneh sendiri karena dulu aku trauma, tapi sekarang malah lebih nyaman dengan mereka."
-pembahasan,"Aku tuh akhir-akhir ini merasa lelah banget, Kak. Aku ikut banyak kegiatan di UKM, dan itu membuat aku susah fokus di kuliah. Aku juga mulai mengalami panic attack, dan kayak… aku nggak bisa ngontrol semuanya."
-pembahasan,"Aku ikut UKM karena syarat beasiswa, Kak. Tapi sebenarnya aku juga suka kegiatan-kegiatan itu. Masalahnya, aku terlalu banyak mengambil tanggung jawab. Aku jadi wakil ketua di satu kepanitiaan, terus juga ketua di paduan suara UKM… semuanya jadi numpuk, dan aku nggak bisa fokus di kuliah."
-pembahasan,"Jujur aja, nilainya turun. Aku nggak bisa fokus pas kuis karena tiba-tiba dikasih tugas mendadak dari UKM. Jadi otakku tuh kayak kebagi-bagi terus."
-pembahasan,"Rasanya panik, Kak. Aku jadi nggak bisa konsentrasi, dan malah makin stres. Aku kayak nggak bisa nolak juga, karena ada ekspektasi dari senior kalau aku harus bisa handle semuanya."
-pembahasan,"Pertama kali pas aku dengar ibu bertengkar sama abangku di kos. Aku langsung ke-trigger karena dulu waktu kecil, rumah sering berantakan gara-gara pertengkaran di keluarga. Aku jadi ngerasa kayak kembali ke masa lalu… tiba-tiba napas aku jadi berat, terus aku nggak bisa mikir jernih, semuanya ngeblank. Aku pingsan."
-pembahasan,Aku mau cerita soal mantanku dulu… Aku ngerasa kayak… aku nggak bisa lepas dari dia.
-pembahasan,"Dulu, aku sama dia tuh cocok banget, Kak. Aku pikir dia orang yang bisa jadi pasangan serius buat aku. Tapi ya… setelah aku tahu dia selingkuh, aku jadi bingung. Aku marah, aku kecewa, tapi aku masih sayang. Aku nggak tahu harus gimana…"
-pembahasan,"Aku kayak nggak percaya, Kak. Aku pikir, aku cukup buat dia. Aku pikir kita serius. Tapi nyatanya dia bisa dekat sama cewek lain dengan gampang."
-pembahasan,"Iya… Aku masih sering kepo media sosialnya, kadang aku juga ketemu dia. Kami masih teman, sih… Tapi ya… aku nggak tahu ini sehat atau nggak buat aku."
-pembahasan,Aku mau cerita soal pacarku dulu… Aku ngerasa kayak… aku itu nggak diprioritaskan sama dia.
-pembahasan,"Dulu, awal-awal pacaran aku ngerasa diperhatikan banget. Tapi sekarang, dia jarang ngehubungin aku duluan. Kalau aku nggak chat, ya udah, dia juga nggak bakal ngehubungin. Terus kalau aku minta dijemput, dia mau sih, tapi kayak… ada syaratnya gitu. Kalau aku beliin dia bensin atau makanan, baru dia jemput. Kalau aku bilang aku nggak punya uang, dia tiba-tiba punya alasan buat nggak bisa ketemu."
-pembahasan,"Aku kesel, sih. Aku ngerasa kayak aku nggak sepenting itu buat dia. Tapi aku juga bingung… Aku sayang sama dia, Kak, tapi aku juga capek."
-pembahasan,"Iya, kayak aku yang lebih effort dibanding dia. Aku pikir pacaran tuh harusnya bikin bahagia, tapi kenapa aku malah ngerasa kayak gini?"
-pembahasan,"Iya… Aku ngerasa mama lebih perhatian ke adikku dibanding ke aku. Waktu aku sakit beberapa bulan lalu, dokter nyaranin aku buat dirawat, tapi mama lebih pilih buat adikku aja yang dirawat di rumah sakit. Aku cuma disuruh istirahat di rumah."
-pembahasan,"Sedih banget, Kak. Kayak… aku tuh nggak sepenting itu buat mereka. Aku juga sakit, aku juga butuh dirawat, tapi mereka lebih pilih adikku."
-pembahasan,Pernah… Aku bilang ke mama kalau aku juga butuh perhatian. Tapi dia bilang aku jangan banyak permintaan.
-pembahasan,"Iya, Kak… Makanya aku sering diem aja, aku lebih milih nggak cerita lagi ke mama soal perasaanku."
-pembahasan,Aku nggak suka ada di tempat ramai. Rasanya nggak nyaman. Aku lebih suka sendiri…
-pembahasan,"Dari kecil, kayaknya dari SD… Aku nggak suka main keluar, lebih nyaman di rumah aja."
-pembahasan,Iya… Di media sosial lebih gampang. Aku bisa ngobrol sama teman-temanku tanpa harus bertemu langsung.
-pembahasan,Mereka nggak melihat aku secara langsung… Jadi aku nggak perlu khawatir kelihatan aneh atau gimana.
-pembahasan,"Aku ngerasa kayak nggak ada yang benar-benar suka sama aku. Mereka pikir aku aneh karena aku pendiam, jadi aku lebih milih diem aja."
-pembahasan,"Iya, mereka pasti mikir aku sombong. Tapi sebenernya aku cuma nggak tahu harus ngomong apa."
-pembahasan,"Iya… Aku memang ingin berbicara soal rasa takut yang sering muncul. Aku tidak tahu kenapa, tapi akhir-akhir ini aku gampang kaget dan cemas setiap saat, bahkan ketika sedang belajar di kamar."
-pembahasan,"Misalnya saat aku sedang belajar di kamar, tiba-tiba mendengar suara pintu dapur terbuka, aku langsung kaget dan merasa khawatir. Aku jadi selalu waspada seolah ada sesuatu yang buruk akan terjadi."
-pembahasan,"Kayak… aku takut ketahuan sesuatu. Padahal aku nggak melakukan hal yang salah. Tapi ada rasa seperti dihantui sesuatu, kayak perasaan bersalah yang tidak hilang."
-pembahasan,"Mungkin sejak kejadian waktu SMA. Waktu itu, keluargaku melakukan ritual komunikasi dengan eyang yang katanya merasuki tubuh tanteku. Tiba-tiba, eyang bilang kalau kakakku sudah melakukan hal yang tidak senonoh dengan pacarnya. Aku benar-benar kaget… dan tambah takut karena ibu mendukung pernyataan itu."
-pembahasan,"kut… Aku takut kalau tiba-tiba aku juga ‘ketahuan’. Aku tahu aku tidak melakukan hal sejauh kakakku, tapi pacarku dulu memang agak agresif mendekatiku. Aku berusaha menjaga batas, tapi tetap saja, aku takut tiba-tiba disebut melakukan sesuatu yang tidak benar. Aku nggak mau dipermalukan seperti kakakku."
-pembahasan,"Iya, aku takut banget… Setiap hari rasanya seperti ada yang mengawasi dan menilai aku, padahal aku nggak ngapa-ngapain."
-pembahasan,"Aku merasa ibu tidak pernah memahami aku. Misalnya, waktu aku minta dijemput karena capek kuliah, ibu tetap nyuruh aku pulang naik ojek sendiri. Aku tahu ini mungkin sepele, tapi rasanya kayak aku harus selalu mandiri dan nggak boleh mengeluh. Selain itu, pernah juga saat ada diskusi keluarga tentang liburan, aku ingin ke Taman Safari karena belum pernah lihat binatang secara langsung. Tapi ibu bersikeras memilih Dufan dengan alasan ‘aku dulu pernah bilang ingin ke Dufan’. Aku mencoba menjelaskan, tapi malah ibu diam dan mendiamkan aku selama empat hari."
-pembahasan,"Kesel, sedih, merasa nggak dihargai… Aku sering merasa seperti disalahkan hanya karena aku anak tengah. Aku merasa suara dan keinginanku tidak dianggap penting."
-pembahasan,"Aku merasa sulit berteman, sulit dihargai, dan juga merasa kesulitan dalam belajar sejak awal kuliah. Aku sudah coba beberapa cara untuk mengatasinya, tapi masih ada yang terasa kurang. Aku ingin tahu apakah yang aku lakukan sudah cukup atau masih perlu diperbaiki."
-pembahasan,"Iya, awalnya aku merasa kaget dengan sistem belajar di kuliah. Dulu waktu sekolah, ujian hanya ada UTS dan UAS. Tapi di kuliah, setiap selesai satu blok materi, langsung ada ujian. Aku jadi kewalahan di awal semester karena harus cepat beradaptasi."
-pembahasan,"Aku mulai bikin to-do list dan mengatur waktu belajar. Setelah masuk semester kedua, aku sudah mulai terbiasa dan bisa mengikuti materi lebih baik."
-pembahasan,"Sejauh ini cukup membantu, tapi aku masih ingin tahu apakah ada cara lain yang bisa lebih efektif."
-pembahasan,"Aku merasa sulit menemukan teman yang satu frekuensi denganku. Aku lebih suka berteman dengan orang yang ada manfaatnya buatku. Kalau mereka pintar di bidang yang aku kurang, aku bisa belajar dari mereka. Tapi kalau menurutku mereka hanya menjadi beban, aku tidak terlalu tertarik untuk berteman dengan mereka."
-pembahasan,"Kayaknya aku dianggap kurang asik, kurang bisa diajak ngobrol hal-hal santai seperti soal perasaan atau kehidupan pribadi. Aku juga sulit berempati kalau mereka cerita soal pacar atau masalah pribadi."
-pembahasan,"Sejak SMP. Dulu teman-temanku bilang aku nggak asik karena nggak bisa diajak ngobrol soal pacaran atau hal-hal emosional. Dari situ, aku mulai menjauhi mereka dan hanya berteman dengan yang menurutku ‘berguna’ buatku."
-pembahasan,"Sejak kecil, aku merasa tidak ada yang spesial dalam diriku. Orang tuaku sering bilang aku tidak cantik. Rambutku mengembang dan keriting, ibuku tidak suka, jadi sejak kecil aku selalu disuruh rebonding. Sampai sekarang, aku merasa tidak nyaman dengan rambutku sendiri."
-pembahasan,Iya… Aku merasa tidak berharga karena dari kecil aku dianggap ‘kurang’ oleh keluargaku sendiri.
-pembahasan,"Ya, aku memang agak terganggu. Saat orientasi kemarin, ada beberapa momen di mana aku merasa ditegur dengan nada yang keras, dan itu bikin aku langsung tegang. Aku jadi emosional, merasa nggak nyaman, dan seperti tertekan"
-pembahasan,"Seperti ada sesuatu yang langsung menghantam dadaku… Aku merasa seperti kembali ke masa-masa dulu, ketika ayah sering menegurku dengan keras. Dulu, kalau aku melakukan sesuatu yang tidak sesuai dengan harapan orang tua, terutama ayah, aku bisa ditegur habis-habisan. Aku tahu maksudnya baik, tapi tetap saja aku merasa sulit."
-pembahasan,"Iya… Dulu aku merasa gagal terus di mata ayah. Ada masa di mana aku melakukan banyak hal yang dia tidak setujui, dan itu membuat hubungan kami memburuk. Aku tahu sebagai anak pertama aku harus jadi contoh, harus bisa memenuhi ekspektasi keluarga. Apalagi ayah praktisi hukum, jadi dia ingin aku serius di bidang ini."
-pembahasan,"Awalnya… aku rasa karena ayah. Aku ingin membuktikan bahwa aku bisa berhasil dan bisa membuatnya bangga. Tapi lama-lama, aku mulai merasa tertarik juga. Aku suka beberapa mata kuliahnya dan mulai merasa nyaman. Aku sering diskusi dengan ayah soal hukum sekarang, dan itu membuat hubungan kami membaik. Aku ingin sukses di bidang ini, bukan hanya untuk ayah, tapi juga untuk diriku sendiri."
-pembahasan,"Iya… Kadang aku takut kalau aku gagal, ayah bakal kecewa lagi. Aku nggak mau mengecewakan dia lagi seperti dulu"
-pembahasan,Mungkin lebih ke perasaan dalam diriku sendiri… Aku hanya ingin memastikan kalau aku bisa melakukan yang terbaik.
-pembahasan,"Segalanya terasa berat. Aku tidak bisa menyelesaikan tugas-tugasku dengan baik, aku selalu menunda pekerjaan, dan semakin lama semakin banyak yang tertumpuk. Aku juga sadar kalau teman-temanku sudah mulai kesal karena aku kurang bisa berkontribusi dalam tugas kelompok."
-pembahasan,"Aku mulai mengerjakan tugas, lalu entah bagaimana aku malah terdistraksi. Kadang aku malah bermain handphone, membaca novel, atau tiba-tiba aku merasa mengantuk dan memilih tidur. Saat sadar sudah larut malam, aku panik dan buru-buru mengerjakan, tapi tetap tidak selesai."
-pembahasan,"Aku merasa sangat bersalah… Aku tahu ini salahku, tapi aku tidak bisa mengendalikan diri. Aku hanya ingin berhenti merasa seperti ini."
-pembahasan,"Mereka mulai mengeluh kalau aku kurang berkontribusi. Beberapa dari mereka mencoba mengingatkanku soal tugas, tapi aku tetap tidak bisa mengerjakan dengan baik. Aku minta maaf, tapi aku tetap mengulangi kesalahan yang sama."
-pembahasan,"Aku merasa semakin buruk. Aku juga sering berbohong untuk menghindari masalah… Aku sudah melakukannya sejak SD. Aku bilang ke guru kalau aku sudah mengumpulkan tugas tapi gurunya yang lupa, atau aku meyakinkan ibu bahwa tugas sudah selesai padahal tidak."
-pembahasan,"Aku takut dimarahi. Aku benci kalau orang marah padaku… Aku pernah ketahuan berbohong dan akibatnya malah lebih parah, tapi tetap saja aku terus melakukannya. Aku seperti refleks berbohong setiap kali merasa terancam."
-pembahasan,"Ibu sering marah… Kalau dia tahu aku tidak mengumpulkan tugas, dia akan berteriak, menjambak, atau memukulku dengan sapu. Aku sangat takut setiap kali dia marah."
-pembahasan,"Tidak… Aku tidak berani. Aku pernah menangis saat dimarahi dan tiba-tiba aku mulai melantur… Aku bahkan tidak sadar apa yang aku katakan, tapi aku merasa sangat sakit dan kesepian saat itu."
-pembahasan,"Ia kaget… Dia menangis dan meminta maaf, bahkan akhirnya setuju untuk membiarkan aku mencari bantuan psikolog. Tapi aku tetap takut kalau semuanya akan kembali seperti dulu."
-pembahasan,"Aku merasa semakin sulit bergaul dengan teman-temanku. Aku sudah mencoba untuk lebih terbuka, tetapi aku tetap merasa mereka tidak menghargai usaha yang aku lakukan. Aku juga merasa tertekan karena nilai IPK-ku tidak mencapai 4.00. Semua orang hanya mengenalku sebagai ‘anak pintar’, dan aku takut kalau mereka akan berubah pandangan jika aku tidak mempertahankan itu."
-pembahasan,"Aku merasa mereka tidak memiliki common sense. Setiap kali aku pergi keluar dengan mereka, aku yang harus mengurus semuanya. Aku harus menyetir, memesan makanan, bahkan membayar untuk mereka. Aku tidak mengerti kenapa mereka tidak bisa lebih mandiri dan bertanggung jawab."
-pembahasan,Tidak. Aku tidak ingin terlihat lemah atau terlalu banyak menuntut. Aku pikir mereka seharusnya bisa mengerti sendiri tanpa aku harus mengatakan apa-apa.
-pembahasan,"Ya, karena itu sudah sewajarnya. Tapi ternyata, tidak ada yang paham."
-pembahasan,"Mungkin, tapi aku tetap merasa standar yang aku tetapkan itu benar. Aku tidak ingin menurunkan standar hanya demi bisa berteman dengan mereka."
-pembahasan,"Aku takut orang-orang akan menganggap aku tidak sepintar yang mereka pikirkan. Semua orang hanya mengenalku sebagai ‘anak pintar’. Jika aku gagal mempertahankan itu, aku merasa mereka akan mulai meremehkan aku."
-pembahasan,"Aku tidak tahu... Aku takut kehilangan validasi dari mereka. Jika aku tidak pintar, lalu apa yang tersisa dari aku?"
-intervensi,"Iya, saya ingin belajar. Tapi saya merasa sulit untuk mengontrol perasaan saya."
-intervensi,"Saya belum tahu, Kak. Kadang saya ingin tetap bersama, tapi kadang saya berpikir mungkin lebih baik sendiri."
-intervensi,"Saya coba, tapi masih agak sulit fokus."
-intervensi,"Saya mencoba menenangkan diri dengan mengatakan ‘It’s okay, ini cuma sebentar, pasti bisa kok’. Tapi tetap saja saya masih merasa cemas."
-intervensi,"Tidak, mereka justru berusaha memahami saya dan sering memberi motivasi supaya saya lebih tenang."
-intervensi,"Tidak, Kak. Saya masih bisa mengendalikannya dan saya juga bisa mengabaikannya jika saya tidak ingin berbicara dengannya."
-intervensi,"Saya sering merasa bahwa pencapaian saya tidak sebesar teman-teman saya. Saya melihat mereka bisa mengatur waktu dengan baik, selalu aktif di kelas, dan sepertinya tidak terlalu kesulitan menghadapi kuliah. Saya takut tidak bisa berperan dengan baik dalam kehidupan saya sendiri."
-intervensi,Mungkin saya memang terlalu fokus pada kelemahan saya sendiri…
-intervensi,"Iya, mereka selalu ingin saya menjadi kuat. Saya tidak ingin mengecewakan mereka, jadi saya hanya memendam semuanya."
-intervensi,Saya tidak pernah melihatnya dari sudut pandang itu sebelumnya. Saya biasanya hanya menyalahkan diri sendiri.
-intervensi,"Saya tidak ingin membicarakan terlalu banyak tentang itu, Kak. Saya hanya merasa malu. Itu adalah masa yang sangat buruk bagi saya."
-intervensi,"Terima kasih, Kak. Saya tahu saya harus bisa menerima masa lalu, tapi rasanya sulit. Kadang saya merasa ingin melupakan semuanya, tapi di sisi lain saya takut orang lain akan terus mengingatnya."
-intervensi,"Saya diminta membuat video perkenalan di TikTok. Saya sudah membuatnya, tapi saya takut untuk mengunggahnya. Saya khawatir kalau ada yang melihatnya dan mengenali saya dari foto yang dulu tersebar."
-intervensi,Saya tidak tahu... mungkin saya akan merasa lebih lega. Tapi saya juga takut kalau ada yang mengomentari sesuatu yang menyakitkan
-intervensi,"Sejujurnya, saya tidak merasa bersalah. Saya lebih takut kalau teman-teman saya akan menilai saya buruk setelah kejadian itu."
-intervensi,"Mungkin ada, tapi saya belum tahu caranya. Saya sering merasa kalau saya tidak bisa mengendalikan reaksi saya ketika marah."
-intervensi,"Saya berasal dari SMK, dan di sana saya lebih banyak praktek daripada teori. Begitu masuk kuliah, saya kesulitan mengikuti mata kuliah yang penuh dengan hitungan seperti rangkaian listrik. Di semester 1 saya hanya mendapat nilai 16 untuk mata kuliah itu, tapi di semester 2 saya sudah berusaha lebih keras dan nilainya naik jadi 50."
-intervensi,"Saya banyak bertanya kepada teman-teman yang lebih paham. Saya juga mencoba mengulang materi sendiri, tapi tetap terasa sulit bagi saya."
-intervensi,"Saya sebenarnya ingin mengikuti kelas tambahan atau bimbingan belajar, tapi saya ragu apakah saya masih bisa melanjutkan kuliah."
-intervensi,"Saya ingin mencari pekerjaan yang masih berhubungan dengan bidang teknik atau pekerjaan yang bisa membantu saya menabung. Kalau bisa, saya ingin bekerja di Maranatha, mungkin sebagai asisten laboratorium atau posisi lain yang memungkinkan."
-intervensi,"Ayah saya pernah bilang bahwa saya ini aneh, bahwa saya merasakan hal yang tidak wajar."
-intervensi,"Biasanya muncul saat saya merasa sendirian. Ketika saya melihat teman-teman yang bisa bermain bersama, tapi saya tidak pernah diajak. Rasanya saya tidak dibutuhkan dan tidak ada yang peduli jika saya ada atau tidak."
-intervensi,"Hanya ayah saya. Tapi seperti yang saya bilang, dia malah memarahi saya"
-intervensi,"Saya ingin punya teman, tapi saya tidak tahu bagaimana memulainya."
-intervensi,Tapi saya takut mereka tidak akan peduli dengan saya.
-intervensi,"Saya sebenarnya suka bahasa Mandarin dan budaya Cina, makanya saya mengambil program ini."
-intervensi,Itu bisa dicoba. Saya ingin punya teman yang bisa mengerti saya.
-intervensi,"Saya tidak tahu. Saya takut kalau saya mencoba lagi, saya akan dikhianati lagi."
-intervensi,"Mungkin saya bisa mulai berbicara dengan teman di kampus yang sudah lama saya kenal. Saya tahu dia tidak pernah menjelek-jelekkan saya, tapi saya juga tidak pernah terlalu terbuka dengannya."
-intervensi,Saya mengerti. Saya akan coba perlahan.
-intervensi,Tapi bagaimana caranya? Saya masih merasa marah dan kecewa.
-intervensi,Tapi saya tidak tahu bagaimana cara mengekspresikannya dengan benar.
-intervensi,"Pernah, tapi saya tidak begitu paham bagaimana cara melakukannya."
-intervensi,"Tapi saya takut kalau saya mengatakan itu, justru akan memperburuk hubungan saya dengan B dan teman-teman lainnya."
-intervensi,"Baik, saya akan mencoba. Tapi mungkin saya butuh latihan dulu."
-intervensi,"Iya. Saya takut kalau saya memaksa, saya akan dianggap membangkang atau tidak menghormati dosen."
-intervensi,"Tidak, saya tidak pernah mencatatnya."
-intervensi,"Oke, saya bisa coba"
-intervensi,Orang tua saya tidak akan senang kalau saya pergi ke psikiater. Nenek saya dulu ke psikiater dan selalu diberi obat dalam jumlah banyak. Akhirnya dia malah terkena diabetes. Orang tua saya tidak ingin hal itu terjadi pada saya.
-intervensi,Mungkin... Tapi saya juga tidak yakin. Saya tidak mau ada orang lain yang tahu soal ini.
-intervensi,"Mencatat? Untuk apa, Kak?"
-intervensi,"Oke, saya akan coba."
-intervensi,"Itu susah, Kak. Saya bahkan tidak tahu harus mulai dari mana."
-intervensi,"Iya, saya ingin tinggal hanya dengan ibu. Saya merasa lebih bisa bercerita kepadanya, meskipun kami juga sering bertengkar."
-intervensi,"Tidak, saya tidak mau ke psikiater. Saya tidak mau minum obat seperti nenek saya dulu."
-intervensi,Tapi orang tua saya tidak akan setuju
-intervensi,"Aku sebenarnya lebih bisa memahami materi jika belajar bersama. Tapi karena aku belum punya teman dekat di kampus, aku lebih banyak belajar sendiri."
-intervensi,Rasanya nyaman. Aku bisa cerita banyak hal tanpa merasa takut dihakimi.
-intervensi,"Biasanya kalau aku ketahuan melanggar aturan yang ibuku buat. Kalau aku ketahuan pacaran, ikut organisasi, atau melakukan hal di luar akademik, pasti langsung dimarahi."
-intervensi,"Maksudnya bagaimana, Kak?"
-intervensi,"Maaf, Kak, ibuku marah besar. Aku harus pulang sekarang."
-intervensi,"Mungkin aku harus coba, ya?"
-intervensi,Aku mau… tapi aku nggak tahu gimana caranya.
-intervensi,Aku mau… tapi aku takut.
-intervensi,"Mungkin karena aku merasa mereka lebih kompetitif? Aku ngerasa nggak punya tempat di sana. Aku takut kalau aku berusaha lebih keras, aku malah dinilai sok atau jadi saingan mereka."
-intervensi,"Aku belum pernah coba, tapi aku mau coba kalau itu bisa membantu."
-intervensi,"Iya, Kak… Aku jadi takut kalau kejadian itu bakal terulang lagi."
-intervensi,"Kayaknya lebih banyak negatifnya, Kak. Aku jadi overthinking terus. Kayak… dia masih peduli nggak, ya? Atau aku cuma jadi cadangan buat dia?"
-intervensi,"Maksudnya gimana, Kak?"
-intervensi,"Sebagian besar sih karena mantanku, tapi ada juga karena kuliah. Aku jadi nggak fokus, Kak. Aku gampang terdistraksi, sering kepikiran mantanku pas lagi belajar atau pas di kampus."
-intervensi,"Kayaknya… nggak, Kak. Tapi aku juga nggak tahu harus gimana."
-intervensi,"Aku suka nulis… Tapi kadang kalau aku udah terlalu sedih, aku malah nyakitin diri sendiri."
-intervensi,Nggak… Aku takut kalau mereka nggak mau ngobrol balik atau malah cuek.
-intervensi,Mungkin bisa dicoba… Tapi gimana kalau mereka nggak balas?
-intervensi,"Iya… Kadang aku berpikir, apakah aku ini salah terus di mata mereka?"
-intervensi,Iya… Aku akan coba
-intervensi,"Kadang nyaman, kadang nggak. Aku suka kalau punya teman yang bisa diajak diskusi soal akademik, tapi aku juga merasa ada sesuatu yang kurang. Kayak, kok rasanya aku tetap merasa nggak sepenuhnya diterima?"
-intervensi,"Nggak pernah. Aku merasa ibuku adalah sosok yang sulit aku dekati. Aku ingin dekat, tapi nggak tahu bagaimana caranya."
-intervensi,"Itu masuk akal… Aku ingin sukses bukan hanya karena ayah, tapi juga karena aku suka bidang ini."
-intervensi,"Aku biasanya menyendiri, mendengarkan musik, atau menulis jurnal. Tapi kadang aku hanya menahan semuanya sendiri dan itu rasanya nggak enak."
-intervensi,Itu terdengar lebih terarah… Aku bisa coba itu!
-intervensi,"Ya, mungkin seperti itu."
-intervensi,Aku tidak tahu. Aku tidak terbiasa memikirkan hal-hal seperti itu.
-relaksasi,Itu masuk akal. Saya memang sering merasa seperti membeku saat dimarahi.
-relaksasi,"Iya, saya pikir itu satu-satunya cara agar saya bisa membantu keluarga dan tidak terlalu membebani mereka."
-relaksasi,"Itu masuk akal, Kak. Saya memang selalu berpikir bahwa saya akan dipermalukan, padahal kenyataannya teman-teman saya baik-baik saja."
-relaksasi,"Oke, Kak."
-relaksasi,Saya ingin fokus kuliah dan memperbaiki diri. Saya ingin keluarga saya bisa melihat saya sebagai pribadi yang normal.
-relaksasi,"Iya… aku tahu ini nggak baik, tapi selalu aja kejadian kayak gini."
-relaksasi,Biasanya saat aku sendirian… atau saat aku merasa sangat stres. Terutama kalau aku sedang diperlakukan tidak adil oleh orang tua atau saat aku diingatkan tentang masa lalu.
-relaksasi,"Ada, aku nggak suka pelajaran yang terlalu banyak hitung-hitungan atau yang harus ngapalin rumus-rumus. Kalau mata kuliah itu, aku langsung kehilangan semangat buat belajar."
-relaksasi,"Aku mau coba, tapi gimana caranya?"
-relaksasi,Kayaknya bisa dicoba… tapi aku takut kalau mereka nggak nerima aku.
-relaksasi,Nggak… biasanya aku cuma menyendiri aja sampai perasaannya hilang sendiri.
-relaksasi,Itu masuk akal sih… aku nggak pernah coba cara-cara itu sebelumnya.
-relaksasi,"Wah… ternyata ini lumayan membantu, ya."
-relaksasi,"Wah, aku jadi lebih tenang… Aku bakal coba latihan ini kalau panik lagi."
-relaksasi,"Belum sih… Aku biasanya malah tenggelam di media sosial, stalking dia atau nge-scroll tanpa tujuan."
-relaksasi,"Wow… aku jadi lebih tenang, Kak."
-relaksasi,Oke… Aku coba deh.
-relaksasi,Belum… Tapi aku biasanya mendengarkan musik atau menyendiri.
-relaksasi,Rasanya lebih enak… Kayaknya aku bisa coba ini kalau sedang cemas.
-relaksasi,"Iya, mereka baik. Aku merasa nyaman, tapi kadang aku masih ragu untuk cerita lebih banyak"
-relaksasi,Ya… Aku mau mencoba.
-relaksasi,"Oke, aku bisa coba itu."
-relaksasi,Itu terdengar masuk akal… Aku sering merasa kewalahan kalau harus mengerjakan semuanya sekaligus.
-relaksasi,"Aku tidak tahu apakah itu akan membantu, tapi aku bisa mencobanya."
-relaksasi,"Aku tidak yakin bisa melakukannya. Aku merasa kalau aku menurunkan standar, aku akan ikut menjadi seperti mereka."
-relaksasi,Aku akan coba memikirkannya... Tapi aku masih merasa sulit untuk benar-benar mengubah cara pandangku.
-solusi,"Saya mencoba, tapi saya masih kesulitan fokus."
-solusi,Saya merasa lebih nyaman. Saya paling suka gerakan menyentuh dada dengan lembut dan memeluk diri sendiri.
-solusi,Saya merasa lebih tenang setelah melakukan ini.
-solusi,"Saya merasa lebih tenang setelah mencoba ini, Kak."
-solusi,"Iya, itu benar. Saya memang menikmati perkuliahan, walaupun saya masih beradaptasi."
-solusi,Saya merasa lebih tenang setelah mencoba ini.
-solusi,"Saya suka latihan ini, Kak. Saya merasa lebih baik setelah mengatakannya."
-solusi,Itu terdengar mudah. Saya akan mencobanya jika merasa marah lagi.
-solusi,"Itu terdengar seperti ide yang baik. Saya tidak ingin terus menyimpan dendam, tapi saya juga tidak mau berhubungan lagi dengannya."
-solusi,"Itu terdengar lebih sopan, tapi tetap menyampaikan apa yang saya inginkan ya?"
-solusi,"Itu bisa dicoba, Kak. Tapi aku takut orang-orang sudah punya kelompoknya masing-masing."
-solusi,"Aku akan coba lebih aktif berbicara, Kak."
-solusi,"Baik, Kak. Mungkin aku bisa mulai melukis atau jalan-jalan sebentar untuk mengurangi stres."
-solusi,Hmm... aku tidak tahu apakah itu bisa berhasil. Tapi mungkin aku bisa mencoba.
-solusi,"Tidak usah, Kak. Aku takut nanti malah tambah parah. Aku akan coba bicara sendiri nanti."
-,"Journaling? Aku tidak terbiasa menulis tentang diriku sendiri, Kak."
-solusi,"Maksudnya gimana, Kak?"
-penutupan,Oke... Saya akan pikirkan lagi.
-penutupan,Mungkin... Saya tidak tahu. Saya harus berpikir dulu.
-penutupan,"Baik, aku akan mencobanya."
-penutupan,"Baik, Kak. Terima kasih banyak."
-penutupan,"Iya, Kak. Aku bakal coba. Terima kasih sudah mendengarkan."
-penutupan,"Iya, Kak. Itu kayaknya bisa membantu banget."
-penutupan,"Terima kasih, Kak. Aku nggak nyangka aku bisa cerita sejauh ini…"
-penutupan,"Terima kasih, Kak. Aku akan coba semuanya, semoga bisa lebih baik."
-penutupan,"Iya, Kak. Aku bakal coba… Aku juga mau lanjut konseling sih, mungkin ini bisa membantu aku pelan-pelan."
-penutupan,"Iya, Kak. Aku akan coba semuanya. Aku jadi merasa lebih punya kendali atas situasi ini."
-penutupan,"Iya… Aku akan coba, Kak. Terima kasih sudah mendengarkan aku."
-penutupan,"Iya… Aku akan coba, Kak. Terima kasih sudah mendengarkan aku."
-penutupan,"Iya, aku akan coba… Terima kasih, Kak."
-penutupan,"Iya, aku merasa lebih lega setelah bicara ini. Terima kasih, Kak"
-penutupan,"Iya, aku akan coba. Aku merasa lebih lega setelah membicarakannya."
-penutupan,"Terima kasih juga, Kak. Aku merasa lebih lega setelah membicarakannya. Aku akan coba mulai menulis jurnal dan lebih terbuka dengan teman-temanku."
-penutupan,Itu sulit… Tapi aku bisa coba.
-penutupan,"Terima kasih, Kak. Aku merasa sedikit lebih lega… Walaupun aku tahu ini tidak akan mudah."
-penutupan,"Aku rasa cukup untuk hari ini. Aku merasa lebih baik setelah berbicara, meskipun aku masih belum yakin dengan semuanya."
-penutupan,"Baik, aku akan mencoba. Terima kasih, Kak."
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
+,context/intent,question
+0,pembukaan,"Jujur, saya merasa cukup cemas sebelum datang ke sesi ini. Saya takut tidak bisa menjelaskan dengan baik tentang apa yang saya rasakan."
+1,pembukaan,"Saya merasa agak gugup, Kak. Saya tidak tahu bagaimana harus mulai menceritakan semuanya."
+2,pembukaan,"Saya merasa baik-baik saja, Kak. Awalnya saya agak terkejut ketika dipanggil, tapi saya ingin mencoba berbicara dan mendengar apa yang bisa saya lakukan untuk merasa lebih baik."
+3,pembukaan,"Saya merasa agak cemas, Kak. Tapi saya ingin mencoba berbicara tentang apa yang saya rasakan."
+4,pembukaan,"Saya merasa... biasa saja, tapi kadang saya merasa sedih. Saya masih sulit mendapatkan teman, dan saya merasa tidak terlalu berharga."
+5,pembukaan,"Halo Kak. Ya... saya merasa sedikit lebih baik, tapi tetap ada rasa kecewa yang sulit hilang. Saya merasa dikhianati oleh orang yang saya percayai di gereja."
+6,pembukaan,"Halo Kak. Sejujurnya, saya masih merasa bingung dengan pertemanan saya di kampus. Saya ingin memiliki hubungan pertemanan yang baik, tetapi saya tidak tahu bagaimana cara menghadapinya, terutama setelah apa yang terjadi dengan teman saya, B."
+7,pembukaan,"Halo Kak. Saya merasa cukup baik hari ini. Saya baru saja menyelesaikan ujian, dan rasanya berjalan cukup lancar. Tidak ada gangguan atau sosok mengerikan yang muncul semalam."
+8,pembukaan,"Halo Kak. Hari ini rasanya sedikit lebih baik, tetapi saya masih sering merasa lelah dan mudah kesal."
+9,pembukaan,"Halo Kak, hari ini aku merasa sedikit lebih baik, tapi tetap masih ada rasa cemas dengan kuliah"
+10,pembukaan,"Halo Kak, sebenarnya hari ini perasaanku lebih baik dibanding pertemuan sebelumnya. Aku mencoba beberapa hal yang kita diskusikan, seperti lebih aktif bergerak dan berlibur sebentar. Itu cukup membantu."
+11,pembukaan,"Baik, KakÂ… ya walaupun agak capek. Maaf aku telat tadi"
+12,pembukaan,"Baik, KakÂ… tapi ya, seperti yang aku bilang di kuesioner, aku masih merasa nggak nyaman dengan beberapa hal"
+13,pembukaan,BaikÂ… atau mungkin tidak baik. Aku nggak tahu pasti.
+14,pembukaan,BaikÂ… atau mungkin tidak terlalu baik. Aku juga nggak yakin.
+15,pembukaan,BaikÂ… atau mungkin nggak baik juga. Aku nggak tahu.
+16,pembukaan,"Baik, KakÂ… tapi jujur agak capek dan masih kepikiran banyak hal"
+17,pembukaan,"Baik, KakÂ… ya walaupun masih kepikiran beberapa hal sih"
+18,pembukaan,"Gatau, biasa ajaÂ…"
+19,pembukaan,"BaikÂ… tapi sebenarnya masih sering merasa cemas sih, Kak."
+20,pembukaan,"Baik, Kak. Aku memang penasaran sih, apakah yang aku lakukan untuk menghadapi masalahku selama ini sudah benar atau belum."
+21,pembukaan,"Baik, KakÂ… walaupun masih agak canggung sih karena belum pernah konseling sebelumnya"
+22,pembukaan,Aku tidak tahuÂ… Aku merasa sangat lelah dan bingung dengan semuanya.
+23,pembukaan,"Halo Kak. Aku tidak tahu... Sejujurnya, aku merasa lebih buruk dibandingkan sesi sebelumnya."
+24,pembahasan,"Saya masih sering merasa tidak percaya diri dan masih mengalami konflik antara pikiran dan perasaan saya. Tapi, saya mencoba untuk lebih menyadari ketika pikiran buruk muncul."
+25,pembahasan,"Iya, saya masih merasa tertekan saat di rumah. Saya takut melakukan kesalahan karena ayah saya bisa marah dan memukul saya. Saya juga masih merasa canggung saat berbicara dengan teman-teman saya."
+26,pembahasan,"Terima kasih, Kak. Saya merasa ada banyak hal yang mengganggu pikiran saya. Saya bingung dengan hubungan saya dan juga merasa terbebani dengan kondisi keuangan keluarga saya."
+27,pembahasan,"Saya ingin membahas tentang hubungan saya dengan pacar dulu. Saya merasa bingung, karena kami sudah hampir tiga tahun bersama, tapi akhir-akhir ini rasanya berbeda."
+28,pembahasan,"Saya sering kali merasa tidak nyaman dengan hubungan ini. Setelah masuk kuliah, kami jarang bertemu karena kampus kami berbeda. Awalnya saya merasa kesal, tapi lama-lama saya juga mulai terbiasa sendiri. Saya sering menghindari komunikasi dengan dia, misalnya tidak membalas chat dan menjauh tanpa alasan yang jelas."
+29,pembahasan,"Dia sering bertanya kenapa saya menjauh, dan saya selalu meminta maaf. Dia biasanya bisa mengerti, tapi karena ini terjadi berkali-kali, akhirnya kami sering bertengkar. Sampai akhirnya bulan lalu dia bilang ingin break untuk introspeksi diri."
+30,pembahasan,"Iya, saya merasa lebih nyaman sendiri karena tidak ada tuntutan untuk selalu merespons seseorang. Tapi di sisi lain, saya merasa kehilangan. Saya juga merasa bersalah karena mungkin sikap saya yang membuat dia ingin break."
+31,pembahasan,"Sejak setahun terakhir, orang tua saya sering membicarakan masalah keuangan di depan saya. Saya jadi merasa terbebani dan berpikir bahwa saya hanya menambah masalah bagi keluarga."
+32,pembahasan,Saya sering merasa stres dan kurang fokus di kampus. Bahkan ada saat-saat di mana saya merasa ingin menyerah dan berpikir bahwa lebih baik saya tidak ada di dunia ini.
+33,pembahasan,"Terima kasih, Kak. Saya ingin membicarakan tentang kecemasan saya ketika harus berbicara di depan umum. Saya selalu merasa takut, tangan saya gemetar, dan sulit berkata-kata."
+34,pembahasan,"Saya sudah merasa seperti ini sejak lama, mungkin sejak SD. Saya pernah mengalami kejadian yang membuat saya malu saat kelas 3 SD, ketika saya berbicara dalam bahasa Jawa di depan guru dan teman-teman saya. Guru saya mengoreksi saya dan mengatakan bahwa kata yang saya gunakan memiliki arti yang berbeda dalam bahasa Indonesia."
+35,pembahasan,"Saya merasa malu dan salah. Saya tahu guru saya tidak bermaksud jahat, tapi setelah itu, saya selalu takut berbicara di depan orang lain karena khawatir salah bicara lagi."
+36,pembahasan,"Saya merasa sangat gugup. Bahkan sebelum berbicara, saya sudah berpikir bahwa saya akan salah bicara dan orang-orang akan menertawakan saya. Ketika akhirnya saya berbicara, tangan saya gemetar dan saya tidak bisa berpikir jernih."
+37,pembahasan,"Tentu, Kak."
+38,pembahasan,"Ya, saya sebenarnya paham, tapi saya takut salah bicara."
+39,pembahasan,Sebenarnya mereka biasa saja. Tidak ada yang mengejek atau mempermalukan saya.
+40,pembahasan,"Baik, Kak. Saya mengalami banyak hal sejak kecil, dan itu masih berdampak pada saya sampai sekarang."
+41,pembahasan,"Saya mengalami perundungan sejak SD, SMP, hingga SMA. Saya sering dikucilkan, dihina secara verbal, bahkan mengalami kekerasan fisik. Waktu SD, saya pernah dipukul dengan batako dan mata saya dimasukkan pasir oleh teman-teman saya."
+42,pembahasan,"Saya melapor ke orang tua saya, tapi mereka justru memarahi saya. Ayah saya memukul saya dengan selang dan berkata bahwa saya harus melawan, jangan jadi anak yang lemah."
+43,pembahasan,"Saya merasa kecewa dan putus asa. Saya berpikir bahwa saya harus menghadapi semuanya sendirian. Sejak itu, saya tidak pernah lagi bercerita kepada orang tua saya."
+44,pembahasan,"Saya mulai berbicara dengan diri sendiri dan boneka kesayangan saya. Saya menganggap boneka itu sebagai teman saya. Lalu di SMP, saya mulai melihat sosok yang hanya saya yang bisa lihat dan ajak bicara."
+45,pembahasan,"Iya, sosok ini datang saat saya merasa sangat sendirian. Saya juga beberapa kali mencoba mengakhiri hidup, tapi saya masih bertahan sampai sekarang."
+46,pembahasan,"Tidak sesering dulu, Kak. Tapi kadang-kadang saat saya sendirian atau di tempat ramai, sosok itu tiba-tiba muncul dan berbicara kepada saya."
+47,pembahasan,Tidak ada yang menakutkan. Kadang dia hanya mengajak saya berbicara atau menanyakan perasaan saya.
+48,pembahasan,"Iya, saya memang sering mengalami masalah pencernaan sejak SMP. Saya pernah terkena TB usus, dan saya juga sering kambuh maag serta asam lambung. Terakhir kali kambuh saat ospek kemarin, mungkin karena kelelahan dan pola makan yang tidak teratur."
+49,pembahasan,"Sudah, Kak. Saya tahu saya harus menjaga pola makan dan sudah beberapa kali berkonsultasi dengan dokter."
+50,pembahasan,"Sebenarnya tidak terlalu mengganggu, tapi ada saat-saat di mana saya merasa sangat lelah dan sulit berkonsentrasi. Kadang saya khawatir apakah saya bisa bertahan dengan jadwal kuliah yang padat."
+51,pembahasan,Iya. Saya takut kalau nanti saya tidak bisa mengatur waktu dengan baik dan akhirnya ketinggalan tugas. Saya sering merasa cemas membandingkan diri saya dengan teman-teman yang terlihat lebih bisa mengatur semuanya dengan baik.
+52,pembahasan,"Di rumah ada banyak konflik antara ayah dan ibu, terutama tentang peran mereka dalam keluarga. Ayah saya memiliki pola pikir yang sangat patriarkal, sementara ibu saya ingin lebih mandiri. Mereka sering bertengkar tentang hal itu."
+53,pembahasan,"Saya biasanya berusaha untuk tidak memperdulikan ayah dan lebih dekat dengan ibu. Saya sering keluar berdua dengan ibu, dan itu membuat saya merasa lebih tenang."
+54,pembahasan,"Iya, saya merasa lebih bisa bercerita dengan ibu. Tapi saya juga merasa ada jarak dengan ayah, dan saya tidak tahu apakah itu baik atau buruk."
+55,pembahasan,"Baik, Kak. Saya sering merasa kehilangan kesadaran atau hampir pingsan ketika mendengar bentakan atau suara keras. Saya juga merasa sering menyalahkan diri sendiri dan sulit mengekspresikan emosi saya."
+56,pembahasan,"Sejak kelas 12 SMA. Saat itu saya ikut pelatihan paskibra dan pelatihnya sering berteriak dengan nada tinggi. Saya mulai merasa pusing, jantung berdebar, hingga kehilangan keseimbangan."
+57,pembahasan,"Mungkin karena sejak kecil saya sering mendapat tekanan dari orang tua saya. Mereka menuntut saya untuk selalu mengalah dan menjaga adik saya. Ibu saya perfeksionis, dan saya merasa harus selalu memenuhi harapan mereka."
+58,pembahasan,"Ibu saya selalu menuntut saya untuk menjadi yang terbaik, baik dalam hal akademik maupun sikap. Saya selalu diminta untuk menjaga adik saya, meskipun saya merasa adik saya sulit diatur. Kami sering bertengkar, tapi ibu selalu berpihak pada adik saya."
+59,pembahasan,Saya biasanya hanya diam dan memendam perasaan saya. Saya tidak ingin marah karena takut dianggap anak yang durhaka.
+60,pembahasan,"Saya masih merasa ada jarak, terutama dengan ibu saya. Saya ingin bisa berkomunikasi lebih baik, tapi saya juga takut jika saya menyampaikan perasaan saya, mereka akan marah."
+61,pembahasan,Saya pernah mengalami bullying saat SMA. Salah satu teman saya mengajak teman-teman lain untuk menjauhi saya karena saya dianggap 'cupu'. Saya tidak melawan atau melaporkan kejadian itu karena saya tidak ingin menambah masalah.
+62,pembahasan,"Saya merasa sangat sendirian. Saya ingin berbicara dengan orang tua saya, tapi saya tahu mereka akan marah dan menganggap saya lemah."
+63,pembahasan,"Saya baik-baik saja, Kak. Tapi saya juga merasa cemas, terutama tentang tugas ospek yang harus diposting di media sosial."
+64,pembahasan,"Suara-suara itu mulai muncul lagi, terutama saat saya merasa diperhatikan. Saya juga masih merasa takut kalau suatu hari ada yang menghubungkan saya dengan foto yang pernah tersebar."
+65,pembahasan,"Beberapa hari lalu, ketika ada orang yang melihat saya dari kepala sampai kaki. Saya langsung merasa panik dan mendengar suara yang mengatakan 'kamu tidak layak dicintai'"
+66,pembahasan,"Saya biasanya mengabaikannya, tapi ada saat di mana saya merasa perlu diperhatikan oleh orang lain, agar saya merasa lebih baik."
+67,pembahasan,"Ya, saya merasa tidak aman. Rasanya seperti semua orang akan menilai saya berdasarkan masa lalu saya."
+68,pembahasan,Itu mungkin bisa membantu. Saya akan mencobanya.
+69,pembahasan,Teman saya mengatakan sesuatu yang menyebalkan tentang kejadian lama itu. Saya langsung marah dan mendorongnya.
+70,pembahasan,"Saya merasa cukup cemas, Kak. Saya bingung dengan apa yang harus saya lakukan mengenai beasiswa saya yang sudah pasti akan dicabut."
+71,pembahasan,"Saya sebenarnya bukan hanya bingung tentang beasiswa ini, Kak, tapi juga merasa bersalah. Saya belum memberi tahu ibu saya soal beasiswa yang akan dihentikan, dan saya takut mengecewakan beliau."
+72,pembahasan,"Ibu saya sangat bangga saya bisa kuliah di Maranatha, apalagi karena saya satu-satunya anak di keluarga yang bisa kuliah. Beliau sering membanggakan saya ke tetangga. Saya takut kalau saya memberitahu ibu, beliau akan kecewa atau sedih."
+73,pembahasan,"YaÂ… kalau saya terus menyembunyikannya, akhirnya ibu tetap akan tahu. Saya hanya tidak tahu bagaimana cara mengatakannya dengan baik."
+74,pembahasan,"Itu bisa jadi ide yang bagus, Kak. Kakak kedua saya yang membiayai kehidupan saya dan ibu, jadi mungkin saya bisa bicara dengannya dulu untuk mencari cara terbaik sebelum berbicara dengan ibu."
+75,pembahasan,"Saya tidak tahu apakah itu mungkin, tapi saya ingin mencobanya. Saya ingin merasa bahwa saya sudah melakukan segalanya sebelum benar-benar berhenti kuliah."
+76,pembahasan,Saya berpikir untuk mencari pekerjaan dulu. Mungkin saya bisa bekerja dan menabung untuk kembali kuliah di kemudian hari.
+77,pembahasan,"Sejak kecil saya merasa sulit berteman. Saya merasa teman-teman saya tidak pernah mengajak saya bermain. Bahkan saat kuliah, saya pernah memiliki teman saat orientasi mahasiswa baru, tapi mereka sepertinya tidak benar-benar menganggap saya bagian dari kelompok mereka. Mereka sering bermain bersama tanpa mengajak saya."
+78,pembahasan,"Sejak SD. Saya tidak punya teman. Lalu di SMP, saya menyukai seorang laki-laki, tapi dia malah mengatakan saya jelek dan gemuk. Di SMA, saya dijauhi oleh teman-teman tanpa alasan yang jelas. Saya pernah mencoba mendapatkan beasiswa ke Taiwan, tapi saat saya gagal, mereka justru tertawa dan mengatakan ingin 'meledakkan Taiwan'."
+79,pembahasan,"Mungkin yang di SMA... saya merasa benar-benar tidak diinginkan. Saya merasa tidak dihargai, dan itu membuat saya bertanya-tanya, 'Untuk apa saya hidup?'"
+80,pembahasan,"Terima kasih, Kak"
+81,pembahasan,Mungkin... saya bisa mencoba.
+82,pembahasan,"Jadi, saya punya seorang kakak laki-laki di gereja yang sudah saya anggap sebagai kakak sendiri. Kami sering bersama karena kami ada di kepanitiaan retreat yang sama. Saya selalu berusaha membantu dia, bahkan saat saya lelah atau waktu sudah malam. Tapi semua berubah sejak dia mengira saya ingin merebut pacarnya."
+83,pembahasan,"Saya hanya berbicara dengan pacarnya tentang perasaan saya yang merasa dimanfaatkan. Saya bilang kalau saya merasa seperti 'alat' yang membantu seseorang, tapi dia malah mengira saya mencoba mendekati pacarnya. Sejak itu, dia mulai menjauhi saya, mendiamkan saya di pertemuan, bahkan tidak menganggap saya ada di sana. Itu sangat menyakitkan karena saya tidak merasa melakukan kesalahan."
+84,pembahasan,"Saya awalnya bingung. Saya tidak tahu harus bagaimana. Tapi puncaknya adalah saat dia menelepon saya dan memarahi saya habis-habisan, menuduh saya selingkuh dengan pacarnya. Kata-katanya kasar, dan dia sama sekali tidak mau mendengar penjelasan saya."
+85,pembahasan,"Saya hanya diam. Saya takut kalau saya membela diri, dia akan semakin marah. Tapi setelah itu, saya merasa sangat kecewa dan sakit hati. Saya mulai menarik diri, bahkan saya tidak ingin berada di lantai yang sama dengannya saat ibadah."
+86,pembahasan,Iya. Saya mulai sulit percaya pada orang lain. Saya tidak bisa bercerita kepada teman-teman di gereja karena saya takut mereka akan membicarakan saya di belakang. Saya juga jadi lebih mudah marah kalau ada orang yang bertanya-tanya soal keadaan saya.
+87,pembahasan,"Ya. Saya merasa sulit untuk dekat dengan teman-teman di kampus. Saya takut jika saya terlalu terbuka, saya akan dikhianati lagi. Saya tidak ingin terlalu dekat dengan siapa pun sekarang."
+88,pembahasan,"Tapi sulit untuk percaya lagi, Kak. Rasanya seperti lebih baik menjauh dari semua orang daripada harus dikhianati lagi."
+89,pembahasan,"Saya baru tahu bahwa teman saya, B, menyebarkan isi chat saya di grup HIMA. Di chat itu, saya pernah bilang kalau saya tidak ingin berteman dengan orang lain selain yang sudah dekat dengan saya. Saya tidak mengerti kenapa B melakukan itu. Saya merasa sedih, tapi saya tidak tahu bagaimana mengungkapkan perasaan saya."
+90,pembahasan,"Saya tidak mengatakan apa-apa. Saya hanya diam dan berpura-pura tidak tahu. Saya pikir, lebih baik saya tidak membahasnya daripada memperkeruh keadaan."
+91,pembahasan,"Sejujurnya, saya merasa sedih dan sedikit marah. Tapi saya selalu berpikir bahwa menunjukkan emosi negatif itu tidak baik. Saya tidak ingin terlihat lemah di hadapan B."
+92,pembahasan,"Iya, saya merasa kalau saya menunjukkan bahwa saya marah atau sedih, maka saya akan terlihat kalah di mata B."
+93,pembahasan,"Saya cukup senang karena nilai saya meningkat. IPK saya sekarang 3.06, dan beasiswa Teknik Nusantara saya masih berlanjut."
+94,pembahasan,"Sebenarnya ada. Saya kesulitan mengkomunikasikan keinginan saya kepada dosen wali saya. Saya ingin mengkontrak 22 SKS, tapi karena dosen wali saya bilang 'tidak perlu ambil banyak-banyak,' saya langsung diam dan hanya mengikuti saran beliau."
+95,pembahasan,"Saya merasa sedikit lega, tapi tetap ada perasaan aneh. Saya merasa baik-baik saja sekarang, tapi tidak tahu apakah ini hanya sementara atau akan kembali lagi nanti."
+96,pembahasan,Saya masih sering marah kalau ada orang yang menegur saya atau mengabaikan saya. Rasanya ingin membalas atau bahkan melukai mereka. Tapi saya sadar kalau itu berlebihan dan saya tidak ingin kelepasan.
+97,pembahasan,"Tergantung. Biasanya kalau saya merasa tidak dihargai atau diabaikan, saya langsung kesal. Tapi akhir-akhir ini saya juga merasa lebih cepat marah kalau ada orang yang terlalu banyak bertanya atau ingin terlalu dekat dengan saya."
+98,pembahasan,"Ada seorang teman saya, G. Dia sebenarnya baik, tapi akhir-akhir ini dia sering bertanya banyak hal dan ingin selalu bersama saya. Saya tidak suka dan merasa dia terlalu menempel."
+99,pembahasan,"Iya, saya tidak suka rasanya. Tapi saya juga tidak ingin menyakiti perasaannya, jadi saya bingung harus bagaimana."
+100,pembahasan,"Iya, tapi tidak sesering sebelumnya. Kadang saya masih merasa dia mengawasi saya, terutama kalau saya akan ujian atau merasa stres. Saya juga kadang masih mencium bau melati atau darah, dan itu sangat mengganggu."
+101,pembahasan,"Tidak selalu. Kadang dia muncul tanpa alasan, dan itu yang membuat saya takut."
+102,pembahasan,Tidak! Saya tidak mau ke psikiater
+103,pembahasan,"Tetap saja, saya tidak ingin orang tua saya tahu."
+104,pembahasan,"Baik, Kak."
+105,pembahasan,"Iya, masih. Kadang muncul sebelum tidur atau saat saya merasa stres. Saya juga kadang masih mencium bau melati atau darah, tapi saya sudah mulai bisa mengabaikannya."
+106,pembahasan,"Baiklah, saya akan coba menuliskannya"
+107,pembahasan,"Tidak banyak berubah, saya masih sering merasa tidak nyaman di rumah. Tapi saya lebih baik saat bersama ibu. Saya merasa lebih aman bersamanya dibandingkan dengan yang lain."
+108,pembahasan,"Aku mencoba lebih membuka diri, mulai dari menyapa teman-teman lebih dulu. Rasanya agak canggung, tapi aku mencoba pelan-pelan."
+109,pembahasan,"Sejujurnya, belum ada perubahan besar. Aku masih belum punya teman yang benar-benar dekat di kampus, tapi setidaknya aku tidak lagi merasa terlalu sendirian."
+110,pembahasan,"Masih sulit, Kak. Aku tetap merasa bahwa materi kedokteran tidak mudah untukku. Tapi aku mencoba untuk lebih rajin membaca dan mengerjakan tugas tepat waktu"
+111,pembahasan,"Baik, aku akan coba."
+112,pembahasan,Aku masih sering berkomunikasi dengannya. Kami bertemu setiap liburan semester. Dia satu-satunya teman yang benar-benar mengerti aku.
+113,pembahasan,"Sebenarnya, ada masalah baru, Kak. Ibuku baru saja tahu bahwa aku pernah berpacaran. Aku benar-benar takut dan cemas setelah beliau mengetahuinya."
+114,pembahasan,"Beberapa waktu lalu, aku sempat pacaran diam-diam, karena ibuku memang melarangku pacaran sejak SMA. Saat beliau tahu, handphone dan tabletnya langsung disita. Bahkan semua chat dan percakapanku dengan mantan dibaca habis oleh ibuku. Aku merasa benar-benar tidak punya ruang pribadi."
+115,pembahasan,"Aku marah, Kak. Tapi aku juga takut. Aku tahu ibuku ingin aku fokus kuliah, tapi aku juga merasa seperti tidak bisa jadi diri sendiri. Aku merasa terlalu dikekang."
+116,pembahasan,"Tidak, Kak. Aku takut kalau aku mencoba bicara, malah tambah dimarahi atau dilarang lebih banyak hal lagi"
+117,pembahasan,Aku juga ingin bisa menghindari konflik. Tapi aku merasa seperti selalu salah di mata ibuku.
+118,pembahasan,"Itu masuk akal. Aku tidak mau terus-menerus merasa putus asa, jadi aku akan coba. Kak, ibuku menelepon. Aku harus angkat duluÂ…"
+119,pembahasan,"Iya, Bu... Aku pulang sekarang.."
+120,pembahasan,"Aku pusing banget, Kak. Aku merasa kayak nggak punya waktu buat diri sendiri. Aku kuliah, magang, terus masih harus ngurus organisasi juga. Aku nggak tahu lagi harus gimanaÂ… Aku kepikiran buat keluar dari organisasi, tapi aku nggak yakin keputusan itu benar."
+121,pembahasan,IyaÂ… Awalnya aku nggak niat jadi ketua. Nama aku cuma dicantumin biar ada pilihan lebih dari satu. Tapi tiba-tiba aku malah yang kepilih
+122,pembahasan,"Awalnya biasa aja. Aku pikir bisa dijalanin. Tapi makin lama aku sadar kalau aku nggak punya cukup pengalaman, terus aku denger juga ada yang ngomongin aku di belakang. Katanya aku ketua yang nggak kerja."
+123,pembahasan,"IyaÂ… padahal aku udah berusaha sebisa mungkin. Tapi tetap aja kayaknya aku kurang. Aku juga merasa alumni lebih mendukung kandidat lain waktu pemilihan dulu, jadi kayaknya mereka nggak suka aku dari awal"
+124,pembahasan,"Awalnya aku pikir cuma perasaan, tapi lama-lama ada yang bilang kalau mereka memang lebih suka kandidat yang lain"
+125,pembahasan,"Iya, KakÂ… Aku jadi kepikiran terus, padahal aku juga udah capek sama kuliah dan kerja magang"
+126,pembahasan,"Magang itu sebenarnya lumayan membantu aku untuk biaya jajan, jadi aku nggak mau berhenti. Tapi jadinya aku harus pintar bagi waktu. Masalahnya, aku nggak bisa. Aku sering begadang, kurang tidur, bahkan pernah nggak tidur tiga hari."
+127,pembahasan,"Ya, tugas banyak banget. Ada tugas kuliah, terus harus nyiapin laporan buat magang, dan ada rapat organisasi. Aku ngerasa nggak bisa ninggalin salah satu, jadi akhirnya ya udah, begadang terus."
+128,pembahasan,"SeringÂ… Aku kepikiran keluar dari organisasi, tapi aku takut. Takut dibilang gagal, takut kalau aku malah bikin repot orang lain kalau pergi sekarang, takut juga kalau aku benar-benar berhenti, malah makin nggak ada yang mendukung aku."
+129,pembahasan,Ayah akuÂ… dia masuk penjara bulan ini karena kasus di kantornya. Itu juga bikin aku makin kepikiran.
+130,pembahasan,"Iya, aku jadi ngerasa harus lebih mandiri, nggak bisa terus bergantung sama keluarga. Aku harus cari cara buat bertahan sendiri."
+131,pembahasan,"Ada sih beberapa teman, tapi aku nggak mau kelihatan lemah."
+132,pembahasan,"Aku selalu kepikiran tentang apa yang orang lain pikirkan tentang aku. Kalau ada yang lihat aku sebentar aja, aku langsung mikirÂ… Â‘apa mereka mikir aku aneh? Apa mereka nggak suka aku?Â’ Pokoknya overthinking terus."
+133,pembahasan,"Mungkin saat aku sedang bersama teman-teman atau di tempat umum. Aku sering merasa kalau mereka sedang menilai aku, terutama soal penampilan aku"
+134,pembahasan,"IyaÂ… aku tahu mungkin nggak semua orang benar-benar memperhatikan aku, tapi aku tetap nggak bisa menghilangkan pikiran itu."
+135,pembahasan,"Iya, soalnya temanku sering cerita tentang masalah orang lain ke aku. Jadi aku kepikiran, gimana kalau dia juga cerita tentang aku ke orang lain?"
+136,pembahasan,"BelumÂ… aku takut kalau aku ngomong, dia malah tersinggung dan jadi nggak mau temenan sama aku lagi."
+137,pembahasan,IyaÂ… aku takut dibilang lebay atau nggak percaya sama dia.
+138,pembahasan,"IyaÂ… aku ngerasa gemuk, jadi aku pengen kurusan. Tapi kata orang-orang, aku sebenarnya nggak gemuk."
+139,pembahasan,"YaÂ… aku pengen ngerasa lebih percaya diri. Aku udah mulai diet, dan itu lumayan membantu aku ngerasa lebih baik."
+140,pembahasan,"Iya, Kak. Aku juga nggak mau terlalu ekstrim sihÂ… cuma kadang masih kepikiran aja."
+141,pembahasan,YaÂ… aku sering nunda-nunda. Ujung-ujungnya aku harus begadang buat ngerjain tugas mendekati deadline.
+142,pembahasan,"Aku sudah mencoba beberapa kaliÂ… sejak SMP. Aku nggak tahu kenapa, tapi rasanya aku nggak berguna dan lebih baik nggak ada saja."
+143,pembahasan,"Sepertinya karena aku merasa tidak dihargai. Dari dulu aku selalu merasa nggak cukup baik. Aku selalu dibandingkan, selalu dimarahi, dan aku merasa nggak pernah dianggapÂ…."
+144,pembahasan,Tapi suara-suara ituÂ… mereka nggak berhenti. Aku dengar suara bapak-bapak atau kadang ibu-ibu yang menyuruh aku untuk mati.
+145,pembahasan,"Iya, aku mau coba"
+146,pembahasan,"Aku masih ingat semuanyaÂ… kejadian waktu aku TK, SD, bahkan SMP. Aku takut. Aku merasa kotor. Aku merasa seharusnya aku bilang ke orang lain, tapi aku takut dimarahi"
+147,pembahasan,"Tapi aku masih merasa takutÂ… aku masih ingat gang itu, aku masih ingat wajahnya. Aku merasa kalau aku lewat tempat itu, aku seperti kembali ke masa itu."
+148,pembahasan,"Aku merasa apapun yang aku lakukan nggak pernah cukup. Aku juara kelas, tapi dibandingin sama anak orang lain. Aku mau masuk arsitektur, tapi dilarang. Aku ngerasa nggak punya kendali atas hidupku sendiri."
+149,pembahasan,"IyaÂ… Aku nggak bisa bilang apa-apa ke mereka, karena mereka pasti bilang aku Â‘kurang bersyukurÂ’ atau aku Â‘melawanÂ’ kalau aku ngomong."
+150,pembahasan,"Iya, aku merasa seperti nggak bisa mengikuti pelajaran dengan baik. Aku sering nggak ngerti penjelasan dosen, terus akhirnya aku jadi malas untuk mendengarkan lebih lanjut. Kadang, aku merasa dosen suka menilai aku sebagai yang paling Â‘nggak bisaÂ’ di kelas, padahal ada yang lain juga sama seperti akuÂ…"
+151,pembahasan,"Banget. Aku jadi ngerasa nggak pede buat jawab atau berpartisipasi, karena takut salah atau semakin dianggap bodoh"
+152,pembahasan,"Aku sebenarnya punya teman, tapi lebih dekat dengan yang beda jurusan. Aku nggak tahu kenapa, rasanya lebih nyaman ngobrol sama mereka daripada sama teman-teman di kelas sendiri."
+153,pembahasan,"IyaÂ… biasanya kalau aku merasa tertekan atau capek banget, aku mulai kepikiran buat nyakitin diri sendiri. Tapi aku nggak pernah benar-benar melakukannya, karena aku tahu itu salah"
+154,pembahasan,"IyaÂ… jadi misalnya aku lagi di tempat umum, tiba-tiba ada orang yang lihat aku, entah itu sengaja atau nggakÂ… aku langsung kepikiran, 'Apa mereka tahu tentang aku? Apa mereka ngeh sama foto itu?'. Terus aku mulai dengar suara di kepala aku bilang kalau aku nggak pantas hidup, kalau semua orang pasti bakal ngejek akuÂ…"
+155,pembahasan,"Kadang aku coba buat nggak dengerin, tapi rasanya susah. Aku jadi panik, jantungku berdetak cepat, tanganku dingin, dan aku cuma mau cepat-cepat pergi. Kadang aku juga cuma bisa diam, nggak bisa bergerak, tapi di dalam kepalaku rasanya berantakan banget"
+156,pembahasan,"IyaÂ… aku takut kalau videonya viral terus ada yang ngeh sama aku. Aku takut ada yang ngomongin aku lagi, bilang kalau aku mirip sama foto ituÂ… aku nggak mau orang-orang tahu masa laluku"
+157,pembahasan,SudahÂ… tapi aku belum berani upload. Aku takut.
+158,pembahasan,"Aku juga nggak tahu. Mungkin karena cowok lebih nggak ribet? Mereka nggak banyak basa-basi. TapiÂ… aku juga kadang merasa aneh sendiri karena dulu aku trauma, tapi sekarang malah lebih nyaman dengan mereka."
+159,pembahasan,"Aku tuh akhir-akhir ini merasa lelah banget, Kak. Aku ikut banyak kegiatan di UKM, dan itu membuat aku susah fokus di kuliah. Aku juga mulai mengalami panic attack, dan kayakÂ… aku nggak bisa ngontrol semuanya."
+160,pembahasan,"Aku ikut UKM karena syarat beasiswa, Kak. Tapi sebenarnya aku juga suka kegiatan-kegiatan itu. Masalahnya, aku terlalu banyak mengambil tanggung jawab. Aku jadi wakil ketua di satu kepanitiaan, terus juga ketua di paduan suara UKMÂ… semuanya jadi numpuk, dan aku nggak bisa fokus di kuliah."
+161,pembahasan,"Jujur aja, nilainya turun. Aku nggak bisa fokus pas kuis karena tiba-tiba dikasih tugas mendadak dari UKM. Jadi otakku tuh kayak kebagi-bagi terus."
+162,pembahasan,"Rasanya panik, Kak. Aku jadi nggak bisa konsentrasi, dan malah makin stres. Aku kayak nggak bisa nolak juga, karena ada ekspektasi dari senior kalau aku harus bisa handle semuanya."
+163,pembahasan,"Pertama kali pas aku dengar ibu bertengkar sama abangku di kos. Aku langsung ke-trigger karena dulu waktu kecil, rumah sering berantakan gara-gara pertengkaran di keluarga. Aku jadi ngerasa kayak kembali ke masa laluÂ… tiba-tiba napas aku jadi berat, terus aku nggak bisa mikir jernih, semuanya ngeblank. Aku pingsan."
+164,pembahasan,Aku mau cerita soal mantanku duluÂ… Aku ngerasa kayakÂ… aku nggak bisa lepas dari dia.
+165,pembahasan,"Dulu, aku sama dia tuh cocok banget, Kak. Aku pikir dia orang yang bisa jadi pasangan serius buat aku. Tapi yaÂ… setelah aku tahu dia selingkuh, aku jadi bingung. Aku marah, aku kecewa, tapi aku masih sayang. Aku nggak tahu harus gimanaÂ…"
+166,pembahasan,"Aku kayak nggak percaya, Kak. Aku pikir, aku cukup buat dia. Aku pikir kita serius. Tapi nyatanya dia bisa dekat sama cewek lain dengan gampang."
+167,pembahasan,"IyaÂ… Aku masih sering kepo media sosialnya, kadang aku juga ketemu dia. Kami masih teman, sihÂ… Tapi yaÂ… aku nggak tahu ini sehat atau nggak buat aku."
+168,pembahasan,Aku mau cerita soal pacarku duluÂ… Aku ngerasa kayakÂ… aku itu nggak diprioritaskan sama dia.
+169,pembahasan,"Dulu, awal-awal pacaran aku ngerasa diperhatikan banget. Tapi sekarang, dia jarang ngehubungin aku duluan. Kalau aku nggak chat, ya udah, dia juga nggak bakal ngehubungin. Terus kalau aku minta dijemput, dia mau sih, tapi kayakÂ… ada syaratnya gitu. Kalau aku beliin dia bensin atau makanan, baru dia jemput. Kalau aku bilang aku nggak punya uang, dia tiba-tiba punya alasan buat nggak bisa ketemu."
+170,pembahasan,"Aku kesel, sih. Aku ngerasa kayak aku nggak sepenting itu buat dia. Tapi aku juga bingungÂ… Aku sayang sama dia, Kak, tapi aku juga capek."
+171,pembahasan,"Iya, kayak aku yang lebih effort dibanding dia. Aku pikir pacaran tuh harusnya bikin bahagia, tapi kenapa aku malah ngerasa kayak gini?"
+172,pembahasan,"IyaÂ… Aku ngerasa mama lebih perhatian ke adikku dibanding ke aku. Waktu aku sakit beberapa bulan lalu, dokter nyaranin aku buat dirawat, tapi mama lebih pilih buat adikku aja yang dirawat di rumah sakit. Aku cuma disuruh istirahat di rumah."
+173,pembahasan,"Sedih banget, Kak. KayakÂ… aku tuh nggak sepenting itu buat mereka. Aku juga sakit, aku juga butuh dirawat, tapi mereka lebih pilih adikku."
+174,pembahasan,PernahÂ… Aku bilang ke mama kalau aku juga butuh perhatian. Tapi dia bilang aku jangan banyak permintaan.
+175,pembahasan,"Iya, KakÂ… Makanya aku sering diem aja, aku lebih milih nggak cerita lagi ke mama soal perasaanku."
+176,pembahasan,Aku nggak suka ada di tempat ramai. Rasanya nggak nyaman. Aku lebih suka sendiriÂ…
+177,pembahasan,"Dari kecil, kayaknya dari SDÂ… Aku nggak suka main keluar, lebih nyaman di rumah aja."
+178,pembahasan,IyaÂ… Di media sosial lebih gampang. Aku bisa ngobrol sama teman-temanku tanpa harus bertemu langsung.
+179,pembahasan,Mereka nggak melihat aku secara langsungÂ… Jadi aku nggak perlu khawatir kelihatan aneh atau gimana.
+180,pembahasan,"Aku ngerasa kayak nggak ada yang benar-benar suka sama aku. Mereka pikir aku aneh karena aku pendiam, jadi aku lebih milih diem aja."
+181,pembahasan,"Iya, mereka pasti mikir aku sombong. Tapi sebenernya aku cuma nggak tahu harus ngomong apa."
+182,pembahasan,"IyaÂ… Aku memang ingin berbicara soal rasa takut yang sering muncul. Aku tidak tahu kenapa, tapi akhir-akhir ini aku gampang kaget dan cemas setiap saat, bahkan ketika sedang belajar di kamar."
+183,pembahasan,"Misalnya saat aku sedang belajar di kamar, tiba-tiba mendengar suara pintu dapur terbuka, aku langsung kaget dan merasa khawatir. Aku jadi selalu waspada seolah ada sesuatu yang buruk akan terjadi."
+184,pembahasan,"KayakÂ… aku takut ketahuan sesuatu. Padahal aku nggak melakukan hal yang salah. Tapi ada rasa seperti dihantui sesuatu, kayak perasaan bersalah yang tidak hilang."
+185,pembahasan,"Mungkin sejak kejadian waktu SMA. Waktu itu, keluargaku melakukan ritual komunikasi dengan eyang yang katanya merasuki tubuh tanteku. Tiba-tiba, eyang bilang kalau kakakku sudah melakukan hal yang tidak senonoh dengan pacarnya. Aku benar-benar kagetÂ… dan tambah takut karena ibu mendukung pernyataan itu."
+186,pembahasan,"kutÂ… Aku takut kalau tiba-tiba aku juga Â‘ketahuanÂ’. Aku tahu aku tidak melakukan hal sejauh kakakku, tapi pacarku dulu memang agak agresif mendekatiku. Aku berusaha menjaga batas, tapi tetap saja, aku takut tiba-tiba disebut melakukan sesuatu yang tidak benar. Aku nggak mau dipermalukan seperti kakakku."
+187,pembahasan,"Iya, aku takut bangetÂ… Setiap hari rasanya seperti ada yang mengawasi dan menilai aku, padahal aku nggak ngapa-ngapain."
+188,pembahasan,"Aku merasa ibu tidak pernah memahami aku. Misalnya, waktu aku minta dijemput karena capek kuliah, ibu tetap nyuruh aku pulang naik ojek sendiri. Aku tahu ini mungkin sepele, tapi rasanya kayak aku harus selalu mandiri dan nggak boleh mengeluh. Selain itu, pernah juga saat ada diskusi keluarga tentang liburan, aku ingin ke Taman Safari karena belum pernah lihat binatang secara langsung. Tapi ibu bersikeras memilih Dufan dengan alasan Â‘aku dulu pernah bilang ingin ke DufanÂ’. Aku mencoba menjelaskan, tapi malah ibu diam dan mendiamkan aku selama empat hari."
+189,pembahasan,"Kesel, sedih, merasa nggak dihargaiÂ… Aku sering merasa seperti disalahkan hanya karena aku anak tengah. Aku merasa suara dan keinginanku tidak dianggap penting."
+190,pembahasan,"Aku merasa sulit berteman, sulit dihargai, dan juga merasa kesulitan dalam belajar sejak awal kuliah. Aku sudah coba beberapa cara untuk mengatasinya, tapi masih ada yang terasa kurang. Aku ingin tahu apakah yang aku lakukan sudah cukup atau masih perlu diperbaiki."
+191,pembahasan,"Iya, awalnya aku merasa kaget dengan sistem belajar di kuliah. Dulu waktu sekolah, ujian hanya ada UTS dan UAS. Tapi di kuliah, setiap selesai satu blok materi, langsung ada ujian. Aku jadi kewalahan di awal semester karena harus cepat beradaptasi."
+192,pembahasan,"Aku mulai bikin to-do list dan mengatur waktu belajar. Setelah masuk semester kedua, aku sudah mulai terbiasa dan bisa mengikuti materi lebih baik."
+193,pembahasan,"Sejauh ini cukup membantu, tapi aku masih ingin tahu apakah ada cara lain yang bisa lebih efektif."
+194,pembahasan,"Aku merasa sulit menemukan teman yang satu frekuensi denganku. Aku lebih suka berteman dengan orang yang ada manfaatnya buatku. Kalau mereka pintar di bidang yang aku kurang, aku bisa belajar dari mereka. Tapi kalau menurutku mereka hanya menjadi beban, aku tidak terlalu tertarik untuk berteman dengan mereka."
+195,pembahasan,"Kayaknya aku dianggap kurang asik, kurang bisa diajak ngobrol hal-hal santai seperti soal perasaan atau kehidupan pribadi. Aku juga sulit berempati kalau mereka cerita soal pacar atau masalah pribadi."
+196,pembahasan,"Sejak SMP. Dulu teman-temanku bilang aku nggak asik karena nggak bisa diajak ngobrol soal pacaran atau hal-hal emosional. Dari situ, aku mulai menjauhi mereka dan hanya berteman dengan yang menurutku Â‘bergunaÂ’ buatku."
+197,pembahasan,"Sejak kecil, aku merasa tidak ada yang spesial dalam diriku. Orang tuaku sering bilang aku tidak cantik. Rambutku mengembang dan keriting, ibuku tidak suka, jadi sejak kecil aku selalu disuruh rebonding. Sampai sekarang, aku merasa tidak nyaman dengan rambutku sendiri."
+198,pembahasan,IyaÂ… Aku merasa tidak berharga karena dari kecil aku dianggap Â‘kurangÂ’ oleh keluargaku sendiri.
+199,pembahasan,"Ya, aku memang agak terganggu. Saat orientasi kemarin, ada beberapa momen di mana aku merasa ditegur dengan nada yang keras, dan itu bikin aku langsung tegang. Aku jadi emosional, merasa nggak nyaman, dan seperti tertekan"
+200,pembahasan,"Seperti ada sesuatu yang langsung menghantam dadakuÂ… Aku merasa seperti kembali ke masa-masa dulu, ketika ayah sering menegurku dengan keras. Dulu, kalau aku melakukan sesuatu yang tidak sesuai dengan harapan orang tua, terutama ayah, aku bisa ditegur habis-habisan. Aku tahu maksudnya baik, tapi tetap saja aku merasa sulit."
+201,pembahasan,"IyaÂ… Dulu aku merasa gagal terus di mata ayah. Ada masa di mana aku melakukan banyak hal yang dia tidak setujui, dan itu membuat hubungan kami memburuk. Aku tahu sebagai anak pertama aku harus jadi contoh, harus bisa memenuhi ekspektasi keluarga. Apalagi ayah praktisi hukum, jadi dia ingin aku serius di bidang ini."
+202,pembahasan,"AwalnyaÂ… aku rasa karena ayah. Aku ingin membuktikan bahwa aku bisa berhasil dan bisa membuatnya bangga. Tapi lama-lama, aku mulai merasa tertarik juga. Aku suka beberapa mata kuliahnya dan mulai merasa nyaman. Aku sering diskusi dengan ayah soal hukum sekarang, dan itu membuat hubungan kami membaik. Aku ingin sukses di bidang ini, bukan hanya untuk ayah, tapi juga untuk diriku sendiri."
+203,pembahasan,"IyaÂ… Kadang aku takut kalau aku gagal, ayah bakal kecewa lagi. Aku nggak mau mengecewakan dia lagi seperti dulu"
+204,pembahasan,Mungkin lebih ke perasaan dalam diriku sendiriÂ… Aku hanya ingin memastikan kalau aku bisa melakukan yang terbaik.
+205,pembahasan,"Segalanya terasa berat. Aku tidak bisa menyelesaikan tugas-tugasku dengan baik, aku selalu menunda pekerjaan, dan semakin lama semakin banyak yang tertumpuk. Aku juga sadar kalau teman-temanku sudah mulai kesal karena aku kurang bisa berkontribusi dalam tugas kelompok."
+206,pembahasan,"Aku mulai mengerjakan tugas, lalu entah bagaimana aku malah terdistraksi. Kadang aku malah bermain handphone, membaca novel, atau tiba-tiba aku merasa mengantuk dan memilih tidur. Saat sadar sudah larut malam, aku panik dan buru-buru mengerjakan, tapi tetap tidak selesai."
+207,pembahasan,"Aku merasa sangat bersalahÂ… Aku tahu ini salahku, tapi aku tidak bisa mengendalikan diri. Aku hanya ingin berhenti merasa seperti ini."
+208,pembahasan,"Mereka mulai mengeluh kalau aku kurang berkontribusi. Beberapa dari mereka mencoba mengingatkanku soal tugas, tapi aku tetap tidak bisa mengerjakan dengan baik. Aku minta maaf, tapi aku tetap mengulangi kesalahan yang sama."
+209,pembahasan,"Aku merasa semakin buruk. Aku juga sering berbohong untuk menghindari masalahÂ… Aku sudah melakukannya sejak SD. Aku bilang ke guru kalau aku sudah mengumpulkan tugas tapi gurunya yang lupa, atau aku meyakinkan ibu bahwa tugas sudah selesai padahal tidak."
+210,pembahasan,"Aku takut dimarahi. Aku benci kalau orang marah padakuÂ… Aku pernah ketahuan berbohong dan akibatnya malah lebih parah, tapi tetap saja aku terus melakukannya. Aku seperti refleks berbohong setiap kali merasa terancam."
+211,pembahasan,"Ibu sering marahÂ… Kalau dia tahu aku tidak mengumpulkan tugas, dia akan berteriak, menjambak, atau memukulku dengan sapu. Aku sangat takut setiap kali dia marah."
+212,pembahasan,"TidakÂ… Aku tidak berani. Aku pernah menangis saat dimarahi dan tiba-tiba aku mulai melanturÂ… Aku bahkan tidak sadar apa yang aku katakan, tapi aku merasa sangat sakit dan kesepian saat itu."
+213,pembahasan,"Ia kagetÂ… Dia menangis dan meminta maaf, bahkan akhirnya setuju untuk membiarkan aku mencari bantuan psikolog. Tapi aku tetap takut kalau semuanya akan kembali seperti dulu."
+214,pembahasan,"Aku merasa semakin sulit bergaul dengan teman-temanku. Aku sudah mencoba untuk lebih terbuka, tetapi aku tetap merasa mereka tidak menghargai usaha yang aku lakukan. Aku juga merasa tertekan karena nilai IPK-ku tidak mencapai 4.00. Semua orang hanya mengenalku sebagai Â‘anak pintarÂ’, dan aku takut kalau mereka akan berubah pandangan jika aku tidak mempertahankan itu."
+215,pembahasan,"Aku merasa mereka tidak memiliki common sense. Setiap kali aku pergi keluar dengan mereka, aku yang harus mengurus semuanya. Aku harus menyetir, memesan makanan, bahkan membayar untuk mereka. Aku tidak mengerti kenapa mereka tidak bisa lebih mandiri dan bertanggung jawab."
+216,pembahasan,Tidak. Aku tidak ingin terlihat lemah atau terlalu banyak menuntut. Aku pikir mereka seharusnya bisa mengerti sendiri tanpa aku harus mengatakan apa-apa.
+217,pembahasan,"Ya, karena itu sudah sewajarnya. Tapi ternyata, tidak ada yang paham."
+218,pembahasan,"Mungkin, tapi aku tetap merasa standar yang aku tetapkan itu benar. Aku tidak ingin menurunkan standar hanya demi bisa berteman dengan mereka."
+219,pembahasan,"Aku takut orang-orang akan menganggap aku tidak sepintar yang mereka pikirkan. Semua orang hanya mengenalku sebagai Â‘anak pintarÂ’. Jika aku gagal mempertahankan itu, aku merasa mereka akan mulai meremehkan aku."
+220,pembahasan,"Aku tidak tahu... Aku takut kehilangan validasi dari mereka. Jika aku tidak pintar, lalu apa yang tersisa dari aku?"
+221,intervensi,"Iya, saya ingin belajar. Tapi saya merasa sulit untuk mengontrol perasaan saya."
+222,intervensi,"Saya belum tahu, Kak. Kadang saya ingin tetap bersama, tapi kadang saya berpikir mungkin lebih baik sendiri."
+223,intervensi,"Saya coba, tapi masih agak sulit fokus."
+224,intervensi,"Saya mencoba menenangkan diri dengan mengatakan Â‘ItÂ’s okay, ini cuma sebentar, pasti bisa kokÂ’. Tapi tetap saja saya masih merasa cemas."
+225,intervensi,"Tidak, mereka justru berusaha memahami saya dan sering memberi motivasi supaya saya lebih tenang."
+226,intervensi,"Tidak, Kak. Saya masih bisa mengendalikannya dan saya juga bisa mengabaikannya jika saya tidak ingin berbicara dengannya."
+227,intervensi,"Saya sering merasa bahwa pencapaian saya tidak sebesar teman-teman saya. Saya melihat mereka bisa mengatur waktu dengan baik, selalu aktif di kelas, dan sepertinya tidak terlalu kesulitan menghadapi kuliah. Saya takut tidak bisa berperan dengan baik dalam kehidupan saya sendiri."
+228,intervensi,Mungkin saya memang terlalu fokus pada kelemahan saya sendiriÂ…
+229,intervensi,"Iya, mereka selalu ingin saya menjadi kuat. Saya tidak ingin mengecewakan mereka, jadi saya hanya memendam semuanya."
+230,intervensi,Saya tidak pernah melihatnya dari sudut pandang itu sebelumnya. Saya biasanya hanya menyalahkan diri sendiri.
+231,intervensi,"Saya tidak ingin membicarakan terlalu banyak tentang itu, Kak. Saya hanya merasa malu. Itu adalah masa yang sangat buruk bagi saya."
+232,intervensi,"Terima kasih, Kak. Saya tahu saya harus bisa menerima masa lalu, tapi rasanya sulit. Kadang saya merasa ingin melupakan semuanya, tapi di sisi lain saya takut orang lain akan terus mengingatnya."
+233,intervensi,"Saya diminta membuat video perkenalan di TikTok. Saya sudah membuatnya, tapi saya takut untuk mengunggahnya. Saya khawatir kalau ada yang melihatnya dan mengenali saya dari foto yang dulu tersebar."
+234,intervensi,Saya tidak tahu... mungkin saya akan merasa lebih lega. Tapi saya juga takut kalau ada yang mengomentari sesuatu yang menyakitkan
+235,intervensi,"Sejujurnya, saya tidak merasa bersalah. Saya lebih takut kalau teman-teman saya akan menilai saya buruk setelah kejadian itu."
+236,intervensi,"Mungkin ada, tapi saya belum tahu caranya. Saya sering merasa kalau saya tidak bisa mengendalikan reaksi saya ketika marah."
+237,intervensi,"Saya berasal dari SMK, dan di sana saya lebih banyak praktek daripada teori. Begitu masuk kuliah, saya kesulitan mengikuti mata kuliah yang penuh dengan hitungan seperti rangkaian listrik. Di semester 1 saya hanya mendapat nilai 16 untuk mata kuliah itu, tapi di semester 2 saya sudah berusaha lebih keras dan nilainya naik jadi 50."
+238,intervensi,"Saya banyak bertanya kepada teman-teman yang lebih paham. Saya juga mencoba mengulang materi sendiri, tapi tetap terasa sulit bagi saya."
+239,intervensi,"Saya sebenarnya ingin mengikuti kelas tambahan atau bimbingan belajar, tapi saya ragu apakah saya masih bisa melanjutkan kuliah."
+240,intervensi,"Saya ingin mencari pekerjaan yang masih berhubungan dengan bidang teknik atau pekerjaan yang bisa membantu saya menabung. Kalau bisa, saya ingin bekerja di Maranatha, mungkin sebagai asisten laboratorium atau posisi lain yang memungkinkan."
+241,intervensi,"Ayah saya pernah bilang bahwa saya ini aneh, bahwa saya merasakan hal yang tidak wajar."
+242,intervensi,"Biasanya muncul saat saya merasa sendirian. Ketika saya melihat teman-teman yang bisa bermain bersama, tapi saya tidak pernah diajak. Rasanya saya tidak dibutuhkan dan tidak ada yang peduli jika saya ada atau tidak."
+243,intervensi,"Hanya ayah saya. Tapi seperti yang saya bilang, dia malah memarahi saya"
+244,intervensi,"Saya ingin punya teman, tapi saya tidak tahu bagaimana memulainya."
+245,intervensi,Tapi saya takut mereka tidak akan peduli dengan saya.
+246,intervensi,"Saya sebenarnya suka bahasa Mandarin dan budaya Cina, makanya saya mengambil program ini."
+247,intervensi,Itu bisa dicoba. Saya ingin punya teman yang bisa mengerti saya.
+248,intervensi,"Saya tidak tahu. Saya takut kalau saya mencoba lagi, saya akan dikhianati lagi."
+249,intervensi,"Mungkin saya bisa mulai berbicara dengan teman di kampus yang sudah lama saya kenal. Saya tahu dia tidak pernah menjelek-jelekkan saya, tapi saya juga tidak pernah terlalu terbuka dengannya."
+250,intervensi,Saya mengerti. Saya akan coba perlahan.
+251,intervensi,Tapi bagaimana caranya? Saya masih merasa marah dan kecewa.
+252,intervensi,Tapi saya tidak tahu bagaimana cara mengekspresikannya dengan benar.
+253,intervensi,"Pernah, tapi saya tidak begitu paham bagaimana cara melakukannya."
+254,intervensi,"Tapi saya takut kalau saya mengatakan itu, justru akan memperburuk hubungan saya dengan B dan teman-teman lainnya."
+255,intervensi,"Baik, saya akan mencoba. Tapi mungkin saya butuh latihan dulu."
+256,intervensi,"Iya. Saya takut kalau saya memaksa, saya akan dianggap membangkang atau tidak menghormati dosen."
+257,intervensi,"Tidak, saya tidak pernah mencatatnya."
+258,intervensi,"Oke, saya bisa coba"
+259,intervensi,Orang tua saya tidak akan senang kalau saya pergi ke psikiater. Nenek saya dulu ke psikiater dan selalu diberi obat dalam jumlah banyak. Akhirnya dia malah terkena diabetes. Orang tua saya tidak ingin hal itu terjadi pada saya.
+260,intervensi,Mungkin... Tapi saya juga tidak yakin. Saya tidak mau ada orang lain yang tahu soal ini.
+261,intervensi,"Mencatat? Untuk apa, Kak?"
+262,intervensi,"Oke, saya akan coba."
+263,intervensi,"Itu susah, Kak. Saya bahkan tidak tahu harus mulai dari mana."
+264,intervensi,"Iya, saya ingin tinggal hanya dengan ibu. Saya merasa lebih bisa bercerita kepadanya, meskipun kami juga sering bertengkar."
+265,intervensi,"Tidak, saya tidak mau ke psikiater. Saya tidak mau minum obat seperti nenek saya dulu."
+266,intervensi,Tapi orang tua saya tidak akan setuju
+267,intervensi,"Aku sebenarnya lebih bisa memahami materi jika belajar bersama. Tapi karena aku belum punya teman dekat di kampus, aku lebih banyak belajar sendiri."
+268,intervensi,Rasanya nyaman. Aku bisa cerita banyak hal tanpa merasa takut dihakimi.
+269,intervensi,"Biasanya kalau aku ketahuan melanggar aturan yang ibuku buat. Kalau aku ketahuan pacaran, ikut organisasi, atau melakukan hal di luar akademik, pasti langsung dimarahi."
+270,intervensi,"Maksudnya bagaimana, Kak?"
+271,intervensi,"Maaf, Kak, ibuku marah besar. Aku harus pulang sekarang."
+272,intervensi,"Mungkin aku harus coba, ya?"
+273,intervensi,Aku mauÂ… tapi aku nggak tahu gimana caranya.
+274,intervensi,Aku mauÂ… tapi aku takut.
+275,intervensi,"Mungkin karena aku merasa mereka lebih kompetitif? Aku ngerasa nggak punya tempat di sana. Aku takut kalau aku berusaha lebih keras, aku malah dinilai sok atau jadi saingan mereka."
+276,intervensi,"Aku belum pernah coba, tapi aku mau coba kalau itu bisa membantu."
+277,intervensi,"Iya, KakÂ… Aku jadi takut kalau kejadian itu bakal terulang lagi."
+278,intervensi,"Kayaknya lebih banyak negatifnya, Kak. Aku jadi overthinking terus. KayakÂ… dia masih peduli nggak, ya? Atau aku cuma jadi cadangan buat dia?"
+279,intervensi,"Maksudnya gimana, Kak?"
+280,intervensi,"Sebagian besar sih karena mantanku, tapi ada juga karena kuliah. Aku jadi nggak fokus, Kak. Aku gampang terdistraksi, sering kepikiran mantanku pas lagi belajar atau pas di kampus."
+281,intervensi,"KayaknyaÂ… nggak, Kak. Tapi aku juga nggak tahu harus gimana."
+282,intervensi,"Aku suka nulisÂ… Tapi kadang kalau aku udah terlalu sedih, aku malah nyakitin diri sendiri."
+283,intervensi,NggakÂ… Aku takut kalau mereka nggak mau ngobrol balik atau malah cuek.
+284,intervensi,Mungkin bisa dicobaÂ… Tapi gimana kalau mereka nggak balas?
+285,intervensi,"IyaÂ… Kadang aku berpikir, apakah aku ini salah terus di mata mereka?"
+286,intervensi,IyaÂ… Aku akan coba
+287,intervensi,"Kadang nyaman, kadang nggak. Aku suka kalau punya teman yang bisa diajak diskusi soal akademik, tapi aku juga merasa ada sesuatu yang kurang. Kayak, kok rasanya aku tetap merasa nggak sepenuhnya diterima?"
+288,intervensi,"Nggak pernah. Aku merasa ibuku adalah sosok yang sulit aku dekati. Aku ingin dekat, tapi nggak tahu bagaimana caranya."
+289,intervensi,"Itu masuk akalÂ… Aku ingin sukses bukan hanya karena ayah, tapi juga karena aku suka bidang ini."
+290,intervensi,"Aku biasanya menyendiri, mendengarkan musik, atau menulis jurnal. Tapi kadang aku hanya menahan semuanya sendiri dan itu rasanya nggak enak."
+291,intervensi,Itu terdengar lebih terarahÂ… Aku bisa coba itu!
+292,intervensi,"Ya, mungkin seperti itu."
+293,intervensi,Aku tidak tahu. Aku tidak terbiasa memikirkan hal-hal seperti itu.
+294,relaksasi,Itu masuk akal. Saya memang sering merasa seperti membeku saat dimarahi.
+295,relaksasi,"Iya, saya pikir itu satu-satunya cara agar saya bisa membantu keluarga dan tidak terlalu membebani mereka."
+296,relaksasi,"Itu masuk akal, Kak. Saya memang selalu berpikir bahwa saya akan dipermalukan, padahal kenyataannya teman-teman saya baik-baik saja."
+297,relaksasi,"Oke, Kak."
+298,relaksasi,Saya ingin fokus kuliah dan memperbaiki diri. Saya ingin keluarga saya bisa melihat saya sebagai pribadi yang normal.
+299,relaksasi,"IyaÂ… aku tahu ini nggak baik, tapi selalu aja kejadian kayak gini."
+300,relaksasi,Biasanya saat aku sendirianÂ… atau saat aku merasa sangat stres. Terutama kalau aku sedang diperlakukan tidak adil oleh orang tua atau saat aku diingatkan tentang masa lalu.
+301,relaksasi,"Ada, aku nggak suka pelajaran yang terlalu banyak hitung-hitungan atau yang harus ngapalin rumus-rumus. Kalau mata kuliah itu, aku langsung kehilangan semangat buat belajar."
+302,relaksasi,"Aku mau coba, tapi gimana caranya?"
+303,relaksasi,Kayaknya bisa dicobaÂ… tapi aku takut kalau mereka nggak nerima aku.
+304,relaksasi,NggakÂ… biasanya aku cuma menyendiri aja sampai perasaannya hilang sendiri.
+305,relaksasi,Itu masuk akal sihÂ… aku nggak pernah coba cara-cara itu sebelumnya.
+306,relaksasi,"WahÂ… ternyata ini lumayan membantu, ya."
+307,relaksasi,"Wah, aku jadi lebih tenangÂ… Aku bakal coba latihan ini kalau panik lagi."
+308,relaksasi,"Belum sihÂ… Aku biasanya malah tenggelam di media sosial, stalking dia atau nge-scroll tanpa tujuan."
+309,relaksasi,"WowÂ… aku jadi lebih tenang, Kak."
+310,relaksasi,OkeÂ… Aku coba deh.
+311,relaksasi,BelumÂ… Tapi aku biasanya mendengarkan musik atau menyendiri.
+312,relaksasi,Rasanya lebih enakÂ… Kayaknya aku bisa coba ini kalau sedang cemas.
+313,relaksasi,"Iya, mereka baik. Aku merasa nyaman, tapi kadang aku masih ragu untuk cerita lebih banyak"
+314,relaksasi,YaÂ… Aku mau mencoba.
+315,relaksasi,"Oke, aku bisa coba itu."
+316,relaksasi,Itu terdengar masuk akalÂ… Aku sering merasa kewalahan kalau harus mengerjakan semuanya sekaligus.
+317,relaksasi,"Aku tidak tahu apakah itu akan membantu, tapi aku bisa mencobanya."
+318,relaksasi,"Aku tidak yakin bisa melakukannya. Aku merasa kalau aku menurunkan standar, aku akan ikut menjadi seperti mereka."
+319,relaksasi,Aku akan coba memikirkannya... Tapi aku masih merasa sulit untuk benar-benar mengubah cara pandangku.
+320,solusi,"Saya mencoba, tapi saya masih kesulitan fokus."
+321,solusi,Saya merasa lebih nyaman. Saya paling suka gerakan menyentuh dada dengan lembut dan memeluk diri sendiri.
+322,solusi,Saya merasa lebih tenang setelah melakukan ini.
+323,solusi,"Saya merasa lebih tenang setelah mencoba ini, Kak."
+324,solusi,"Iya, itu benar. Saya memang menikmati perkuliahan, walaupun saya masih beradaptasi."
+325,solusi,Saya merasa lebih tenang setelah mencoba ini.
+326,solusi,"Saya suka latihan ini, Kak. Saya merasa lebih baik setelah mengatakannya."
+327,solusi,Itu terdengar mudah. Saya akan mencobanya jika merasa marah lagi.
+328,solusi,"Itu terdengar seperti ide yang baik. Saya tidak ingin terus menyimpan dendam, tapi saya juga tidak mau berhubungan lagi dengannya."
+329,solusi,"Itu terdengar lebih sopan, tapi tetap menyampaikan apa yang saya inginkan ya?"
+330,solusi,"Itu bisa dicoba, Kak. Tapi aku takut orang-orang sudah punya kelompoknya masing-masing."
+331,solusi,"Aku akan coba lebih aktif berbicara, Kak."
+332,solusi,"Baik, Kak. Mungkin aku bisa mulai melukis atau jalan-jalan sebentar untuk mengurangi stres."
+333,solusi,Hmm... aku tidak tahu apakah itu bisa berhasil. Tapi mungkin aku bisa mencoba.
+334,solusi,"Tidak usah, Kak. Aku takut nanti malah tambah parah. Aku akan coba bicara sendiri nanti."
+336,solusi,"Maksudnya gimana, Kak?"
+337,penutupan,Oke... Saya akan pikirkan lagi.
+338,penutupan,Mungkin... Saya tidak tahu. Saya harus berpikir dulu.
+339,penutupan,"Baik, aku akan mencobanya."
+340,penutupan,"Baik, Kak. Terima kasih banyak."
+341,penutupan,"Iya, Kak. Aku bakal coba. Terima kasih sudah mendengarkan."
+342,penutupan,"Iya, Kak. Itu kayaknya bisa membantu banget."
+343,penutupan,"Terima kasih, Kak. Aku nggak nyangka aku bisa cerita sejauh iniÂ…"
+344,penutupan,"Terima kasih, Kak. Aku akan coba semuanya, semoga bisa lebih baik."
+345,penutupan,"Iya, Kak. Aku bakal cobaÂ… Aku juga mau lanjut konseling sih, mungkin ini bisa membantu aku pelan-pelan."
+346,penutupan,"Iya, Kak. Aku akan coba semuanya. Aku jadi merasa lebih punya kendali atas situasi ini."
+347,penutupan,"IyaÂ… Aku akan coba, Kak. Terima kasih sudah mendengarkan aku."
+348,penutupan,"IyaÂ… Aku akan coba, Kak. Terima kasih sudah mendengarkan aku."
+349,penutupan,"Iya, aku akan cobaÂ… Terima kasih, Kak."
+350,penutupan,"Iya, aku merasa lebih lega setelah bicara ini. Terima kasih, Kak"
+351,penutupan,"Iya, aku akan coba. Aku merasa lebih lega setelah membicarakannya."
+352,penutupan,"Terima kasih juga, Kak. Aku merasa lebih lega setelah membicarakannya. Aku akan coba mulai menulis jurnal dan lebih terbuka dengan teman-temanku."
+353,penutupan,Itu sulitÂ… Tapi aku bisa coba.
+354,penutupan,"Terima kasih, Kak. Aku merasa sedikit lebih legaÂ… Walaupun aku tahu ini tidak akan mudah."
+355,penutupan,"Aku rasa cukup untuk hari ini. Aku merasa lebih baik setelah berbicara, meskipun aku masih belum yakin dengan semuanya."
+356,penutupan,"Baik, aku akan mencoba. Terima kasih, Kak."
