@@ -211,7 +211,7 @@ class VectorDBManager:
         df_qna = pd.read_csv(qna_csv_path)
         
         documents = []
-        # Asumsi kolom question dan answer
+        # kolom question dan answer
         for index, row in df_qna.iterrows():
             question = str(row['question']).strip()
             answer = str(row['answer']).strip()
@@ -238,8 +238,7 @@ class VectorDBManager:
 if __name__ == "__main__":
     db_manager = VectorDBManager()
     
-    # Build Bible index
-    db_manager.build_bible_index('data/alkitab_tb.csv')
+    # Build Bible index    db_manager.build_bible_index('data/alkitab_tb.csv')
     
     # Build QnA index
     db_manager.build_qna_index('data/dataset_qna.csv')

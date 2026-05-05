@@ -63,7 +63,7 @@ class RAGEngine:
     # Stages where bible verses should be retrieved and injected
     BIBLE_VERSE_STAGES = ['relaksasi', 'solusi']
 
-    def __init__(self, model_name="gemini-3.1-flash-lite", temperature=0.7):
+    def __init__(self, model_name="gemini-2.5-flash", temperature=0.7):
         # Retrieve the API key from environment variables
         self.api_key = os.getenv("GEMINI_API_KEY")
         if not self.api_key:

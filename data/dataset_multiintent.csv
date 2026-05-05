@@ -10,17 +10,17 @@ question,Intent
 "Halo Kak. Hari ini rasanya sedikit lebih baik, tetapi saya masih sering merasa lelah dan mudah kesal.",Rasa Syukur dan Apresiasi; Perasaan Marah dan Frustasi
 "Halo Kak, hari ini aku merasa sedikit lebih baik, tapi tetap masih ada rasa cemas dengan kuliah",Rasa Syukur dan Apresiasi; Perasaan Sebelum Menghadapi Kejadian
 "Halo Kak, sebenarnya hari ini perasaanku lebih baik dibanding pertemuan sebelumnya. Aku mencoba beberapa hal yang kita diskusikan, seperti lebih aktif bergerak dan berlibur sebentar. Itu cukup membantu.",Rasa Syukur dan Apresiasi; Perasaan Sebelum Menghadapi Kejadian
-"Baik, Kak ya walaupun agak capek. Maaf aku telat tadi",Perasaan Percaya ; Perasaan Sedih dan Kehilangan
-"Baik, Kak tapi ya, seperti yang aku bilang di kuesioner, aku masih merasa nggak nyaman dengan beberapa hal",Perasaan Percaya ; Perasaan Takut dan Kecemasan
-Baik atau mungkin tidak baik. Aku nggak tahu pasti.,Perasaan Sedih dan Kehilangan
-Baik atau mungkin tidak terlalu baik. Aku juga nggak yakin.,Perasaan Sedih dan Kehilangan
-Baik atau mungkin nggak baik juga. Aku nggak tahu.,Perasaan Sedih dan Kehilangan
-"Baik, Kak tapi jujur agak capek dan masih kepikiran banyak hal",Perasaan Sedih dan Kehilangan
-"Baik, Kak ya walaupun masih kepikiran beberapa hal sih",Perasaan Sedih dan Kehilangan
-"Baik tapi sebenarnya masih sering merasa cemas sih, Kak.",Perasaan Sebelum Menghadapi Kejadian
+"Baik, KakÂ ya walaupun agak capek. Maaf aku telat tadi",Perasaan Percaya ; Perasaan Sedih dan Kehilangan
+"Baik, KakÂ tapi ya, seperti yang aku bilang di kuesioner, aku masih merasa nggak nyaman dengan beberapa hal",Perasaan Percaya ; Perasaan Takut dan Kecemasan
+BaikÂ atau mungkin tidak baik. Aku nggak tahu pasti.,Perasaan Sedih dan Kehilangan
+BaikÂ atau mungkin tidak terlalu baik. Aku juga nggak yakin.,Perasaan Sedih dan Kehilangan
+BaikÂ atau mungkin nggak baik juga. Aku nggak tahu.,Perasaan Sedih dan Kehilangan
+"Baik, KakÂ tapi jujur agak capek dan masih kepikiran banyak hal",Perasaan Sedih dan Kehilangan
+"Baik, KakÂ ya walaupun masih kepikiran beberapa hal sih",Perasaan Sedih dan Kehilangan
+"BaikÂ tapi sebenarnya masih sering merasa cemas sih, Kak.",Perasaan Sebelum Menghadapi Kejadian
 "Baik, Kak. Aku memang penasaran sih, apakah yang aku lakukan untuk menghadapi masalahku selama ini sudah benar atau belum.",Perasaan Takut dan Kecemasan
-"Baik, Kak walaupun masih agak canggung sih karena belum pernah konseling sebelumnya",Perasaan Takut dan Kecemasan
-Aku tidak tahu Aku merasa sangat lelah dan bingung dengan semuanya.,Perasaan Takut dan Kecemasan
+"Baik, KakÂ walaupun masih agak canggung sih karena belum pernah konseling sebelumnya",Perasaan Takut dan Kecemasan
+Aku tidak tahuÂ Aku merasa sangat lelah dan bingung dengan semuanya.,Perasaan Takut dan Kecemasan
 "Halo Kak. Aku tidak tahu... Sejujurnya, aku merasa lebih buruk dibandingkan sesi sebelumnya.",Perasaan Takut dan Kecemasan
 "Saya masih sering merasa tidak percaya diri dan masih mengalami konflik antara pikiran dan perasaan saya. Tapi, saya mencoba untuk lebih menyadari ketika pikiran buruk muncul.",Reaksi Terkejut dan Tidak Terduga; Perasaan Takut dan Kecemasan; Perasaan Sebelum Menghadapi Kejadian
 "Iya, saya masih merasa tertekan saat di rumah. Saya takut melakukan kesalahan karena ayah saya bisa marah dan memukul saya. Saya juga masih merasa canggung saat berbicara dengan teman-teman saya.",Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan
@@ -72,7 +72,7 @@ Teman saya mengatakan sesuatu yang menyebalkan tentang kejadian lama itu. Saya l
 "Saya merasa cukup cemas, Kak. Saya bingung dengan apa yang harus saya lakukan mengenai beasiswa saya yang sudah pasti akan dicabut.",Perasaan Sebelum Menghadapi Kejadian
 "Saya sebenarnya bukan hanya bingung tentang beasiswa ini, Kak, tapi juga merasa bersalah. Saya belum memberi tahu ibu saya soal beasiswa yang akan dihentikan, dan saya takut mengecewakan beliau.",Perasaan Benci dan Jijik; Reaksi Terkejut dan Tidak Terduga
 "Ibu saya sangat bangga saya bisa kuliah di Maranatha, apalagi karena saya satu-satunya anak di keluarga yang bisa kuliah. Beliau sering membanggakan saya ke tetangga. Saya takut kalau saya memberitahu ibu, beliau akan kecewa atau sedih.",Rasa Syukur dan Apresiasi; Perasaan Takut dan Kecemasan
-"Ya kalau saya terus menyembunyikannya, akhirnya ibu tetap akan tahu. Saya hanya tidak tahu bagaimana cara mengatakannya dengan baik.",Perasaan Takut dan Kecemasan
+"YaÂ kalau saya terus menyembunyikannya, akhirnya ibu tetap akan tahu. Saya hanya tidak tahu bagaimana cara mengatakannya dengan baik.",Perasaan Takut dan Kecemasan
 "Itu bisa jadi ide yang bagus, Kak. Kakak kedua saya yang membiayai kehidupan saya dan ibu, jadi mungkin saya bisa bicara dengannya dulu untuk mencari cara terbaik sebelum berbicara dengan ibu.",Perasaan Percaya 
 "Saya tidak tahu apakah itu mungkin, tapi saya ingin mencobanya. Saya ingin merasa bahwa saya sudah melakukan segalanya sebelum benar-benar berhenti kuliah.",Perasaan Percaya ; Perasaan Sebelum Menghadapi Kejadian
 Saya berpikir untuk mencari pekerjaan dulu. Mungkin saya bisa bekerja dan menabung untuk kembali kuliah di kemudian hari.,Perasaan Sebelum Menghadapi Kejadian
@@ -117,116 +117,116 @@ Aku masih sering berkomunikasi dengannya. Kami bertemu setiap liburan semester. 
 "Aku marah, Kak. Tapi aku juga takut. Aku tahu ibuku ingin aku fokus kuliah, tapi aku juga merasa seperti tidak bisa jadi diri sendiri. Aku merasa terlalu dikekang.",Perasaan Percaya ; Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan; Perasaan Marah dan Frustasi
 "Tidak, Kak. Aku takut kalau aku mencoba bicara, malah tambah dimarahi atau dilarang lebih banyak hal lagi",Perasaan Benci dan Jijik; Perasaan Takut dan Kecemasan
 Aku juga ingin bisa menghindari konflik. Tapi aku merasa seperti selalu salah di mata ibuku.,Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan
-"Itu masuk akal. Aku tidak mau terus-menerus merasa putus asa, jadi aku akan coba. Kak, ibuku menelepon. Aku harus angkat dulu",Perasaan Percaya ; Perasaan Sebelum Menghadapi Kejadian
-"Aku pusing banget, Kak. Aku merasa kayak nggak punya waktu buat diri sendiri. Aku kuliah, magang, terus masih harus ngurus organisasi juga. Aku nggak tahu lagi harus gimana Aku kepikiran buat keluar dari organisasi, tapi aku nggak yakin keputusan itu benar.",Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan; Perasaan Sebelum Menghadapi Kejadian
-Iya Awalnya aku nggak niat jadi ketua. Nama aku cuma dicantumin biar ada pilihan lebih dari satu. Tapi tiba-tiba aku malah yang kepilih,Perasaan Sedih dan Kehilangan; Reaksi Terkejut dan Tidak Terduga
+"Itu masuk akal. Aku tidak mau terus-menerus merasa putus asa, jadi aku akan coba. Kak, ibuku menelepon. Aku harus angkat duluÂ",Perasaan Percaya ; Perasaan Sebelum Menghadapi Kejadian
+"Aku pusing banget, Kak. Aku merasa kayak nggak punya waktu buat diri sendiri. Aku kuliah, magang, terus masih harus ngurus organisasi juga. Aku nggak tahu lagi harus gimanaÂ Aku kepikiran buat keluar dari organisasi, tapi aku nggak yakin keputusan itu benar.",Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan; Perasaan Sebelum Menghadapi Kejadian
+IyaÂ Awalnya aku nggak niat jadi ketua. Nama aku cuma dicantumin biar ada pilihan lebih dari satu. Tapi tiba-tiba aku malah yang kepilih,Perasaan Sedih dan Kehilangan; Reaksi Terkejut dan Tidak Terduga
 "Awalnya biasa aja. Aku pikir bisa dijalanin. Tapi makin lama aku sadar kalau aku nggak punya cukup pengalaman, terus aku denger juga ada yang ngomongin aku di belakang. Katanya aku ketua yang nggak kerja.",Perasaan Percaya ; Perasaan Sedih dan Kehilangan; Perasaan Marah dan Frustasi; Perasaan Sebelum Menghadapi Kejadian
-"Iya padahal aku udah berusaha sebisa mungkin. Tapi tetap aja kayaknya aku kurang. Aku juga merasa alumni lebih mendukung kandidat lain waktu pemilihan dulu, jadi kayaknya mereka nggak suka aku dari awal",Perasaan Percaya ; Perasaan Sedih dan Kehilangan
+"IyaÂ padahal aku udah berusaha sebisa mungkin. Tapi tetap aja kayaknya aku kurang. Aku juga merasa alumni lebih mendukung kandidat lain waktu pemilihan dulu, jadi kayaknya mereka nggak suka aku dari awal",Perasaan Percaya ; Perasaan Sedih dan Kehilangan
 "Awalnya aku pikir cuma perasaan, tapi lama-lama ada yang bilang kalau mereka memang lebih suka kandidat yang lain",Perasaan Percaya ; Perasaan Sedih dan Kehilangan
-"Iya, Kak Aku jadi kepikiran terus, padahal aku juga udah capek sama kuliah dan kerja magang",Perasaan Sedih dan Kehilangan; Perasaan Marah dan Frustasi
+"Iya, KakÂ Aku jadi kepikiran terus, padahal aku juga udah capek sama kuliah dan kerja magang",Perasaan Sedih dan Kehilangan; Perasaan Marah dan Frustasi
 "Magang itu sebenarnya lumayan membantu aku untuk biaya jajan, jadi aku nggak mau berhenti. Tapi jadinya aku harus pintar bagi waktu. Masalahnya, aku nggak bisa. Aku sering begadang, kurang tidur, bahkan pernah nggak tidur tiga hari.",Perasaan Benci dan Jijik; Rasa Syukur dan Apresiasi; Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan; Perasaan Marah dan Frustasi
 "Ya, tugas banyak banget. Ada tugas kuliah, terus harus nyiapin laporan buat magang, dan ada rapat organisasi. Aku ngerasa nggak bisa ninggalin salah satu, jadi akhirnya ya udah, begadang terus.",Perasaan Sedih dan Kehilangan; Perasaan Marah dan Frustasi; Perasaan Sebelum Menghadapi Kejadian
-"Sering Aku kepikiran keluar dari organisasi, tapi aku takut. Takut dibilang gagal, takut kalau aku malah bikin repot orang lain kalau pergi sekarang, takut juga kalau aku benar-benar berhenti, malah makin nggak ada yang mendukung aku.",Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan; Perasaan Sebelum Menghadapi Kejadian
-Ayah aku dia masuk penjara bulan ini karena kasus di kantornya. Itu juga bikin aku makin kepikiran.,Perasaan Sedih dan Kehilangan
+"SeringÂ Aku kepikiran keluar dari organisasi, tapi aku takut. Takut dibilang gagal, takut kalau aku malah bikin repot orang lain kalau pergi sekarang, takut juga kalau aku benar-benar berhenti, malah makin nggak ada yang mendukung aku.",Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan; Perasaan Sebelum Menghadapi Kejadian
+Ayah akuÂ dia masuk penjara bulan ini karena kasus di kantornya. Itu juga bikin aku makin kepikiran.,Perasaan Sedih dan Kehilangan
 "Iya, aku jadi ngerasa harus lebih mandiri, nggak bisa terus bergantung sama keluarga. Aku harus cari cara buat bertahan sendiri.",Perasaan Sedih dan Kehilangan; Perasaan Sebelum Menghadapi Kejadian
 "Ada sih beberapa teman, tapi aku nggak mau kelihatan lemah.",Perasaan Marah dan Frustasi
-"Aku selalu kepikiran tentang apa yang orang lain pikirkan tentang aku. Kalau ada yang lihat aku sebentar aja, aku langsung mikir apa mereka mikir aku aneh? Apa mereka nggak suka aku? Pokoknya overthinking terus.",Perasaan Takut dan Kecemasan; Perasaan Sebelum Menghadapi Kejadian
+"Aku selalu kepikiran tentang apa yang orang lain pikirkan tentang aku. Kalau ada yang lihat aku sebentar aja, aku langsung mikirÂ Âapa mereka mikir aku aneh? Apa mereka nggak suka aku?Â Pokoknya overthinking terus.",Perasaan Takut dan Kecemasan; Perasaan Sebelum Menghadapi Kejadian
 "Mungkin saat aku sedang bersama teman-teman atau di tempat umum. Aku sering merasa kalau mereka sedang menilai aku, terutama soal penampilan aku",Perasaan Takut dan Kecemasan
-"Iya aku tahu mungkin nggak semua orang benar-benar memperhatikan aku, tapi aku tetap nggak bisa menghilangkan pikiran itu.",Perasaan Percaya ; Perasaan Takut dan Kecemasan
+"IyaÂ aku tahu mungkin nggak semua orang benar-benar memperhatikan aku, tapi aku tetap nggak bisa menghilangkan pikiran itu.",Perasaan Percaya ; Perasaan Takut dan Kecemasan
 "Iya, soalnya temanku sering cerita tentang masalah orang lain ke aku. Jadi aku kepikiran, gimana kalau dia juga cerita tentang aku ke orang lain?",Perasaan Percaya ; Perasaan Takut dan Kecemasan
-"Belum aku takut kalau aku ngomong, dia malah tersinggung dan jadi nggak mau temenan sama aku lagi.",Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan
-Iya aku takut dibilang lebay atau nggak percaya sama dia.,Perasaan Takut dan Kecemasan
-"Iya aku ngerasa gemuk, jadi aku pengen kurusan. Tapi kata orang-orang, aku sebenarnya nggak gemuk.",Perasaan Sedih dan Kehilangan; Reaksi Terkejut dan Tidak Terduga
-"Ya aku pengen ngerasa lebih percaya diri. Aku udah mulai diet, dan itu lumayan membantu aku ngerasa lebih baik.",Rasa Syukur dan Apresiasi; Perasaan Sebelum Menghadapi Kejadian
-"Iya, Kak. Aku juga nggak mau terlalu ekstrim sih cuma kadang masih kepikiran aja.",Perasaan Takut dan Kecemasan; Perasaan Sebelum Menghadapi Kejadian
-Ya aku sering nunda-nunda. Ujung-ujungnya aku harus begadang buat ngerjain tugas mendekati deadline.,Perasaan Sedih dan Kehilangan
-"Aku sudah mencoba beberapa kali sejak SMP. Aku nggak tahu kenapa, tapi rasanya aku nggak berguna dan lebih baik nggak ada saja.",Perasaan Sedih dan Kehilangan; Perasaan Marah dan Frustasi; Perasaan Sebelum Menghadapi Kejadian
-"Sepertinya karena aku merasa tidak dihargai. Dari dulu aku selalu merasa nggak cukup baik. Aku selalu dibandingkan, selalu dimarahi, dan aku merasa nggak pernah dianggap.",Perasaan Sedih dan Kehilangan; Reaksi Terkejut dan Tidak Terduga
-Tapi suara-suara itu mereka nggak berhenti. Aku dengar suara bapak-bapak atau kadang ibu-ibu yang menyuruh aku untuk mati.,Perasaan Takut dan Kecemasan
+"BelumÂ aku takut kalau aku ngomong, dia malah tersinggung dan jadi nggak mau temenan sama aku lagi.",Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan
+IyaÂ aku takut dibilang lebay atau nggak percaya sama dia.,Perasaan Takut dan Kecemasan
+"IyaÂ aku ngerasa gemuk, jadi aku pengen kurusan. Tapi kata orang-orang, aku sebenarnya nggak gemuk.",Perasaan Sedih dan Kehilangan; Reaksi Terkejut dan Tidak Terduga
+"YaÂ aku pengen ngerasa lebih percaya diri. Aku udah mulai diet, dan itu lumayan membantu aku ngerasa lebih baik.",Rasa Syukur dan Apresiasi; Perasaan Sebelum Menghadapi Kejadian
+"Iya, Kak. Aku juga nggak mau terlalu ekstrim sihÂ cuma kadang masih kepikiran aja.",Perasaan Takut dan Kecemasan; Perasaan Sebelum Menghadapi Kejadian
+YaÂ aku sering nunda-nunda. Ujung-ujungnya aku harus begadang buat ngerjain tugas mendekati deadline.,Perasaan Sedih dan Kehilangan
+"Aku sudah mencoba beberapa kaliÂ sejak SMP. Aku nggak tahu kenapa, tapi rasanya aku nggak berguna dan lebih baik nggak ada saja.",Perasaan Sedih dan Kehilangan; Perasaan Marah dan Frustasi; Perasaan Sebelum Menghadapi Kejadian
+"Sepertinya karena aku merasa tidak dihargai. Dari dulu aku selalu merasa nggak cukup baik. Aku selalu dibandingkan, selalu dimarahi, dan aku merasa nggak pernah dianggapÂ.",Perasaan Sedih dan Kehilangan; Reaksi Terkejut dan Tidak Terduga
+Tapi suara-suara ituÂ mereka nggak berhenti. Aku dengar suara bapak-bapak atau kadang ibu-ibu yang menyuruh aku untuk mati.,Perasaan Takut dan Kecemasan
 "Iya, aku mau coba",Perasaan Percaya 
-"Aku masih ingat semuanya kejadian waktu aku TK, SD, bahkan SMP. Aku takut. Aku merasa kotor. Aku merasa seharusnya aku bilang ke orang lain, tapi aku takut dimarahi",Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan
-"Tapi aku masih merasa takut aku masih ingat gang itu, aku masih ingat wajahnya. Aku merasa kalau aku lewat tempat itu, aku seperti kembali ke masa itu.",Perasaan Takut dan Kecemasan
+"Aku masih ingat semuanyaÂ kejadian waktu aku TK, SD, bahkan SMP. Aku takut. Aku merasa kotor. Aku merasa seharusnya aku bilang ke orang lain, tapi aku takut dimarahi",Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan
+"Tapi aku masih merasa takutÂ aku masih ingat gang itu, aku masih ingat wajahnya. Aku merasa kalau aku lewat tempat itu, aku seperti kembali ke masa itu.",Perasaan Takut dan Kecemasan
 "Aku merasa apapun yang aku lakukan nggak pernah cukup. Aku juara kelas, tapi dibandingin sama anak orang lain. Aku mau masuk arsitektur, tapi dilarang. Aku ngerasa nggak punya kendali atas hidupku sendiri.",Perasaan Sedih dan Kehilangan; Perasaan Marah dan Frustasi
-"Iya Aku nggak bisa bilang apa-apa ke mereka, karena mereka pasti bilang aku kurang bersyukur atau aku melawan kalau aku ngomong.",Perasaan Takut dan Kecemasan
-"Iya, aku merasa seperti nggak bisa mengikuti pelajaran dengan baik. Aku sering nggak ngerti penjelasan dosen, terus akhirnya aku jadi malas untuk mendengarkan lebih lanjut. Kadang, aku merasa dosen suka menilai aku sebagai yang paling nggak bisa di kelas, padahal ada yang lain juga sama seperti aku",Perasaan Sedih dan Kehilangan
+"IyaÂ Aku nggak bisa bilang apa-apa ke mereka, karena mereka pasti bilang aku Âkurang bersyukurÂ atau aku ÂmelawanÂ kalau aku ngomong.",Perasaan Takut dan Kecemasan
+"Iya, aku merasa seperti nggak bisa mengikuti pelajaran dengan baik. Aku sering nggak ngerti penjelasan dosen, terus akhirnya aku jadi malas untuk mendengarkan lebih lanjut. Kadang, aku merasa dosen suka menilai aku sebagai yang paling Ânggak bisaÂ di kelas, padahal ada yang lain juga sama seperti akuÂ",Perasaan Sedih dan Kehilangan
 "Banget. Aku jadi ngerasa nggak pede buat jawab atau berpartisipasi, karena takut salah atau semakin dianggap bodoh",Perasaan Takut dan Kecemasan
 "Aku sebenarnya punya teman, tapi lebih dekat dengan yang beda jurusan. Aku nggak tahu kenapa, rasanya lebih nyaman ngobrol sama mereka daripada sama teman-teman di kelas sendiri.",Perasaan Percaya ; Perasaan Sedih dan Kehilangan
-"Iya biasanya kalau aku merasa tertekan atau capek banget, aku mulai kepikiran buat nyakitin diri sendiri. Tapi aku nggak pernah benar-benar melakukannya, karena aku tahu itu salah",Perasaan Percaya ; Perasaan Sedih dan Kehilangan; Perasaan Marah dan Frustasi
-"Iya jadi misalnya aku lagi di tempat umum, tiba-tiba ada orang yang lihat aku, entah itu sengaja atau nggak aku langsung kepikiran, 'Apa mereka tahu tentang aku? Apa mereka ngeh sama foto itu?'. Terus aku mulai dengar suara di kepala aku bilang kalau aku nggak pantas hidup, kalau semua orang pasti bakal ngejek aku",Perasaan Takut dan Kecemasan
+"IyaÂ biasanya kalau aku merasa tertekan atau capek banget, aku mulai kepikiran buat nyakitin diri sendiri. Tapi aku nggak pernah benar-benar melakukannya, karena aku tahu itu salah",Perasaan Percaya ; Perasaan Sedih dan Kehilangan; Perasaan Marah dan Frustasi
+"IyaÂ jadi misalnya aku lagi di tempat umum, tiba-tiba ada orang yang lihat aku, entah itu sengaja atau nggakÂ aku langsung kepikiran, 'Apa mereka tahu tentang aku? Apa mereka ngeh sama foto itu?'. Terus aku mulai dengar suara di kepala aku bilang kalau aku nggak pantas hidup, kalau semua orang pasti bakal ngejek akuÂ",Perasaan Takut dan Kecemasan
 "Kadang aku coba buat nggak dengerin, tapi rasanya susah. Aku jadi panik, jantungku berdetak cepat, tanganku dingin, dan aku cuma mau cepat-cepat pergi. Kadang aku juga cuma bisa diam, nggak bisa bergerak, tapi di dalam kepalaku rasanya berantakan banget",Perasaan Takut dan Kecemasan; Perasaan Marah dan Frustasi
-"Iya aku takut kalau videonya viral terus ada yang ngeh sama aku. Aku takut ada yang ngomongin aku lagi, bilang kalau aku mirip sama foto itu aku nggak mau orang-orang tahu masa laluku",Perasaan Takut dan Kecemasan
-Sudah tapi aku belum berani upload. Aku takut.,Perasaan Takut dan Kecemasan
-"Aku juga nggak tahu. Mungkin karena cowok lebih nggak ribet? Mereka nggak banyak basa-basi. Tapi aku juga kadang merasa aneh sendiri karena dulu aku trauma, tapi sekarang malah lebih nyaman dengan mereka.",Perasaan Percaya ; Rasa Syukur dan Apresiasi; Reaksi Terkejut dan Tidak Terduga; Perasaan Takut dan Kecemasan
-"Aku tuh akhir-akhir ini merasa lelah banget, Kak. Aku ikut banyak kegiatan di UKM, dan itu membuat aku susah fokus di kuliah. Aku juga mulai mengalami panic attack, dan kayak aku nggak bisa ngontrol semuanya.",Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan
-"Aku ikut UKM karena syarat beasiswa, Kak. Tapi sebenarnya aku juga suka kegiatan-kegiatan itu. Masalahnya, aku terlalu banyak mengambil tanggung jawab. Aku jadi wakil ketua di satu kepanitiaan, terus juga ketua di paduan suara UKM semuanya jadi numpuk, dan aku nggak bisa fokus di kuliah.",Rasa Syukur dan Apresiasi; Perasaan Sedih dan Kehilangan; Perasaan Sebelum Menghadapi Kejadian
+"IyaÂ aku takut kalau videonya viral terus ada yang ngeh sama aku. Aku takut ada yang ngomongin aku lagi, bilang kalau aku mirip sama foto ituÂ aku nggak mau orang-orang tahu masa laluku",Perasaan Takut dan Kecemasan
+SudahÂ tapi aku belum berani upload. Aku takut.,Perasaan Takut dan Kecemasan
+"Aku juga nggak tahu. Mungkin karena cowok lebih nggak ribet? Mereka nggak banyak basa-basi. TapiÂ aku juga kadang merasa aneh sendiri karena dulu aku trauma, tapi sekarang malah lebih nyaman dengan mereka.",Perasaan Percaya ; Rasa Syukur dan Apresiasi; Reaksi Terkejut dan Tidak Terduga; Perasaan Takut dan Kecemasan
+"Aku tuh akhir-akhir ini merasa lelah banget, Kak. Aku ikut banyak kegiatan di UKM, dan itu membuat aku susah fokus di kuliah. Aku juga mulai mengalami panic attack, dan kayakÂ aku nggak bisa ngontrol semuanya.",Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan
+"Aku ikut UKM karena syarat beasiswa, Kak. Tapi sebenarnya aku juga suka kegiatan-kegiatan itu. Masalahnya, aku terlalu banyak mengambil tanggung jawab. Aku jadi wakil ketua di satu kepanitiaan, terus juga ketua di paduan suara UKMÂ semuanya jadi numpuk, dan aku nggak bisa fokus di kuliah.",Rasa Syukur dan Apresiasi; Perasaan Sedih dan Kehilangan; Perasaan Sebelum Menghadapi Kejadian
 "Jujur aja, nilainya turun. Aku nggak bisa fokus pas kuis karena tiba-tiba dikasih tugas mendadak dari UKM. Jadi otakku tuh kayak kebagi-bagi terus.",Perasaan Sedih dan Kehilangan; Reaksi Terkejut dan Tidak Terduga; Perasaan Takut dan Kecemasan
 "Rasanya panik, Kak. Aku jadi nggak bisa konsentrasi, dan malah makin stres. Aku kayak nggak bisa nolak juga, karena ada ekspektasi dari senior kalau aku harus bisa handle semuanya.",Perasaan Sedih dan Kehilangan; Reaksi Terkejut dan Tidak Terduga; Perasaan Takut dan Kecemasan; Perasaan Marah dan Frustasi
-"Pertama kali pas aku dengar ibu bertengkar sama abangku di kos. Aku langsung ke-trigger karena dulu waktu kecil, rumah sering berantakan gara-gara pertengkaran di keluarga. Aku jadi ngerasa kayak kembali ke masa lalu tiba-tiba napas aku jadi berat, terus aku nggak bisa mikir jernih, semuanya ngeblank. Aku pingsan.",Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan
-Aku mau cerita soal mantanku dulu Aku ngerasa kayak aku nggak bisa lepas dari dia.,Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan
-"Dulu, aku sama dia tuh cocok banget, Kak. Aku pikir dia orang yang bisa jadi pasangan serius buat aku. Tapi ya setelah aku tahu dia selingkuh, aku jadi bingung. Aku marah, aku kecewa, tapi aku masih sayang. Aku nggak tahu harus gimana",Perasaan Benci dan Jijik; Perasaan Sedih dan Kehilangan; Reaksi Terkejut dan Tidak Terduga; Perasaan Marah dan Frustasi
+"Pertama kali pas aku dengar ibu bertengkar sama abangku di kos. Aku langsung ke-trigger karena dulu waktu kecil, rumah sering berantakan gara-gara pertengkaran di keluarga. Aku jadi ngerasa kayak kembali ke masa laluÂ tiba-tiba napas aku jadi berat, terus aku nggak bisa mikir jernih, semuanya ngeblank. Aku pingsan.",Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan
+Aku mau cerita soal mantanku duluÂ Aku ngerasa kayakÂ aku nggak bisa lepas dari dia.,Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan
+"Dulu, aku sama dia tuh cocok banget, Kak. Aku pikir dia orang yang bisa jadi pasangan serius buat aku. Tapi yaÂ setelah aku tahu dia selingkuh, aku jadi bingung. Aku marah, aku kecewa, tapi aku masih sayang. Aku nggak tahu harus gimanaÂ",Perasaan Benci dan Jijik; Perasaan Sedih dan Kehilangan; Reaksi Terkejut dan Tidak Terduga; Perasaan Marah dan Frustasi
 "Aku kayak nggak percaya, Kak. Aku pikir, aku cukup buat dia. Aku pikir kita serius. Tapi nyatanya dia bisa dekat sama cewek lain dengan gampang.",Perasaan Percaya ; Reaksi Terkejut dan Tidak Terduga; Perasaan Marah dan Frustasi
-"Iya Aku masih sering kepo media sosialnya, kadang aku juga ketemu dia. Kami masih teman, sih Tapi ya aku nggak tahu ini sehat atau nggak buat aku.",Perasaan Percaya ; Rasa Syukur dan Apresiasi; Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan
-Aku mau cerita soal pacarku dulu Aku ngerasa kayak aku itu nggak diprioritaskan sama dia.,Perasaan Sedih dan Kehilangan
-"Dulu, awal-awal pacaran aku ngerasa diperhatikan banget. Tapi sekarang, dia jarang ngehubungin aku duluan. Kalau aku nggak chat, ya udah, dia juga nggak bakal ngehubungin. Terus kalau aku minta dijemput, dia mau sih, tapi kayak ada syaratnya gitu. Kalau aku beliin dia bensin atau makanan, baru dia jemput. Kalau aku bilang aku nggak punya uang, dia tiba-tiba punya alasan buat nggak bisa ketemu.",Rasa Syukur dan Apresiasi; Perasaan Sedih dan Kehilangan
-"Aku kesel, sih. Aku ngerasa kayak aku nggak sepenting itu buat dia. Tapi aku juga bingung Aku sayang sama dia, Kak, tapi aku juga capek.",Perasaan Percaya ; Perasaan Sedih dan Kehilangan; Reaksi Terkejut dan Tidak Terduga; Perasaan Marah dan Frustasi
+"IyaÂ Aku masih sering kepo media sosialnya, kadang aku juga ketemu dia. Kami masih teman, sihÂ Tapi yaÂ aku nggak tahu ini sehat atau nggak buat aku.",Perasaan Percaya ; Rasa Syukur dan Apresiasi; Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan
+Aku mau cerita soal pacarku duluÂ Aku ngerasa kayakÂ aku itu nggak diprioritaskan sama dia.,Perasaan Sedih dan Kehilangan
+"Dulu, awal-awal pacaran aku ngerasa diperhatikan banget. Tapi sekarang, dia jarang ngehubungin aku duluan. Kalau aku nggak chat, ya udah, dia juga nggak bakal ngehubungin. Terus kalau aku minta dijemput, dia mau sih, tapi kayakÂ ada syaratnya gitu. Kalau aku beliin dia bensin atau makanan, baru dia jemput. Kalau aku bilang aku nggak punya uang, dia tiba-tiba punya alasan buat nggak bisa ketemu.",Rasa Syukur dan Apresiasi; Perasaan Sedih dan Kehilangan
+"Aku kesel, sih. Aku ngerasa kayak aku nggak sepenting itu buat dia. Tapi aku juga bingungÂ Aku sayang sama dia, Kak, tapi aku juga capek.",Perasaan Percaya ; Perasaan Sedih dan Kehilangan; Reaksi Terkejut dan Tidak Terduga; Perasaan Marah dan Frustasi
 "Iya, kayak aku yang lebih effort dibanding dia. Aku pikir pacaran tuh harusnya bikin bahagia, tapi kenapa aku malah ngerasa kayak gini?",Perasaan Percaya ; Perasaan Sedih dan Kehilangan
-"Iya Aku ngerasa mama lebih perhatian ke adikku dibanding ke aku. Waktu aku sakit beberapa bulan lalu, dokter nyaranin aku buat dirawat, tapi mama lebih pilih buat adikku aja yang dirawat di rumah sakit. Aku cuma disuruh istirahat di rumah.",Perasaan Sedih dan Kehilangan; Reaksi Terkejut dan Tidak Terduga; Perasaan Takut dan Kecemasan
-"Sedih banget, Kak. Kayak aku tuh nggak sepenting itu buat mereka. Aku juga sakit, aku juga butuh dirawat, tapi mereka lebih pilih adikku.",Perasaan Sedih dan Kehilangan
-Pernah Aku bilang ke mama kalau aku juga butuh perhatian. Tapi dia bilang aku jangan banyak permintaan.,Perasaan Sedih dan Kehilangan
-"Iya, Kak Makanya aku sering diem aja, aku lebih milih nggak cerita lagi ke mama soal perasaanku.",Perasaan Benci dan Jijik; Perasaan Sedih dan Kehilangan
-Aku nggak suka ada di tempat ramai. Rasanya nggak nyaman. Aku lebih suka sendiri,Perasaan Benci dan Jijik; Perasaan Sedih dan Kehilangan
-"Dari kecil, kayaknya dari SD Aku nggak suka main keluar, lebih nyaman di rumah aja.",Perasaan Benci dan Jijik; Perasaan Sedih dan Kehilangan
-Iya Di media sosial lebih gampang. Aku bisa ngobrol sama teman-temanku tanpa harus bertemu langsung.,Rasa Syukur dan Apresiasi; Perasaan Sebelum Menghadapi Kejadian
-Mereka nggak melihat aku secara langsung Jadi aku nggak perlu khawatir kelihatan aneh atau gimana.,Perasaan Takut dan Kecemasan; Perasaan Sebelum Menghadapi Kejadian
+"IyaÂ Aku ngerasa mama lebih perhatian ke adikku dibanding ke aku. Waktu aku sakit beberapa bulan lalu, dokter nyaranin aku buat dirawat, tapi mama lebih pilih buat adikku aja yang dirawat di rumah sakit. Aku cuma disuruh istirahat di rumah.",Perasaan Sedih dan Kehilangan; Reaksi Terkejut dan Tidak Terduga; Perasaan Takut dan Kecemasan
+"Sedih banget, Kak. KayakÂ aku tuh nggak sepenting itu buat mereka. Aku juga sakit, aku juga butuh dirawat, tapi mereka lebih pilih adikku.",Perasaan Sedih dan Kehilangan
+PernahÂ Aku bilang ke mama kalau aku juga butuh perhatian. Tapi dia bilang aku jangan banyak permintaan.,Perasaan Sedih dan Kehilangan
+"Iya, KakÂ Makanya aku sering diem aja, aku lebih milih nggak cerita lagi ke mama soal perasaanku.",Perasaan Benci dan Jijik; Perasaan Sedih dan Kehilangan
+Aku nggak suka ada di tempat ramai. Rasanya nggak nyaman. Aku lebih suka sendiriÂ,Perasaan Benci dan Jijik; Perasaan Sedih dan Kehilangan
+"Dari kecil, kayaknya dari SDÂ Aku nggak suka main keluar, lebih nyaman di rumah aja.",Perasaan Benci dan Jijik; Perasaan Sedih dan Kehilangan
+IyaÂ Di media sosial lebih gampang. Aku bisa ngobrol sama teman-temanku tanpa harus bertemu langsung.,Rasa Syukur dan Apresiasi; Perasaan Sebelum Menghadapi Kejadian
+Mereka nggak melihat aku secara langsungÂ Jadi aku nggak perlu khawatir kelihatan aneh atau gimana.,Perasaan Takut dan Kecemasan; Perasaan Sebelum Menghadapi Kejadian
 "Aku ngerasa kayak nggak ada yang benar-benar suka sama aku. Mereka pikir aku aneh karena aku pendiam, jadi aku lebih milih diem aja.",Perasaan Sedih dan Kehilangan
 "Iya, mereka pasti mikir aku sombong. Tapi sebenernya aku cuma nggak tahu harus ngomong apa.",Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan
-"Iya Aku memang ingin berbicara soal rasa takut yang sering muncul. Aku tidak tahu kenapa, tapi akhir-akhir ini aku gampang kaget dan cemas setiap saat, bahkan ketika sedang belajar di kamar.",Perasaan Takut dan Kecemasan; Perasaan Sebelum Menghadapi Kejadian
+"IyaÂ Aku memang ingin berbicara soal rasa takut yang sering muncul. Aku tidak tahu kenapa, tapi akhir-akhir ini aku gampang kaget dan cemas setiap saat, bahkan ketika sedang belajar di kamar.",Perasaan Takut dan Kecemasan; Perasaan Sebelum Menghadapi Kejadian
 "Misalnya saat aku sedang belajar di kamar, tiba-tiba mendengar suara pintu dapur terbuka, aku langsung kaget dan merasa khawatir. Aku jadi selalu waspada seolah ada sesuatu yang buruk akan terjadi.",Perasaan Benci dan Jijik; Reaksi Terkejut dan Tidak Terduga; Perasaan Takut dan Kecemasan; Perasaan Sebelum Menghadapi Kejadian
-"Kayak aku takut ketahuan sesuatu. Padahal aku nggak melakukan hal yang salah. Tapi ada rasa seperti dihantui sesuatu, kayak perasaan bersalah yang tidak hilang.",Perasaan Takut dan Kecemasan
-"Mungkin sejak kejadian waktu SMA. Waktu itu, keluargaku melakukan ritual komunikasi dengan eyang yang katanya merasuki tubuh tanteku. Tiba-tiba, eyang bilang kalau kakakku sudah melakukan hal yang tidak senonoh dengan pacarnya. Aku benar-benar kaget dan tambah takut karena ibu mendukung pernyataan itu.",Reaksi Terkejut dan Tidak Terduga
-"kut Aku takut kalau tiba-tiba aku juga ketahuan. Aku tahu aku tidak melakukan hal sejauh kakakku, tapi pacarku dulu memang agak agresif mendekatiku. Aku berusaha menjaga batas, tapi tetap saja, aku takut tiba-tiba disebut melakukan sesuatu yang tidak benar. Aku nggak mau dipermalukan seperti kakakku.",Perasaan Benci dan Jijik; Perasaan Percaya ; Perasaan Takut dan Kecemasan; Perasaan Sebelum Menghadapi Kejadian
-"Iya, aku takut banget Setiap hari rasanya seperti ada yang mengawasi dan menilai aku, padahal aku nggak ngapa-ngapain.",Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan
-"Aku merasa ibu tidak pernah memahami aku. Misalnya, waktu aku minta dijemput karena capek kuliah, ibu tetap nyuruh aku pulang naik ojek sendiri. Aku tahu ini mungkin sepele, tapi rasanya kayak aku harus selalu mandiri dan nggak boleh mengeluh. Selain itu, pernah juga saat ada diskusi keluarga tentang liburan, aku ingin ke Taman Safari karena belum pernah lihat binatang secara langsung. Tapi ibu bersikeras memilih Dufan dengan alasan aku dulu pernah bilang ingin ke Dufan. Aku mencoba menjelaskan, tapi malah ibu diam dan mendiamkan aku selama empat hari.",Perasaan Percaya ; Perasaan Sedih dan Kehilangan; Perasaan Sebelum Menghadapi Kejadian
-"Kesel, sedih, merasa nggak dihargai Aku sering merasa seperti disalahkan hanya karena aku anak tengah. Aku merasa suara dan keinginanku tidak dianggap penting.",Perasaan Sedih dan Kehilangan; Reaksi Terkejut dan Tidak Terduga; Perasaan Marah dan Frustasi
+"KayakÂ aku takut ketahuan sesuatu. Padahal aku nggak melakukan hal yang salah. Tapi ada rasa seperti dihantui sesuatu, kayak perasaan bersalah yang tidak hilang.",Perasaan Takut dan Kecemasan
+"Mungkin sejak kejadian waktu SMA. Waktu itu, keluargaku melakukan ritual komunikasi dengan eyang yang katanya merasuki tubuh tanteku. Tiba-tiba, eyang bilang kalau kakakku sudah melakukan hal yang tidak senonoh dengan pacarnya. Aku benar-benar kagetÂ dan tambah takut karena ibu mendukung pernyataan itu.",Reaksi Terkejut dan Tidak Terduga
+"kutÂ Aku takut kalau tiba-tiba aku juga ÂketahuanÂ. Aku tahu aku tidak melakukan hal sejauh kakakku, tapi pacarku dulu memang agak agresif mendekatiku. Aku berusaha menjaga batas, tapi tetap saja, aku takut tiba-tiba disebut melakukan sesuatu yang tidak benar. Aku nggak mau dipermalukan seperti kakakku.",Perasaan Benci dan Jijik; Perasaan Percaya ; Perasaan Takut dan Kecemasan; Perasaan Sebelum Menghadapi Kejadian
+"Iya, aku takut bangetÂ Setiap hari rasanya seperti ada yang mengawasi dan menilai aku, padahal aku nggak ngapa-ngapain.",Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan
+"Aku merasa ibu tidak pernah memahami aku. Misalnya, waktu aku minta dijemput karena capek kuliah, ibu tetap nyuruh aku pulang naik ojek sendiri. Aku tahu ini mungkin sepele, tapi rasanya kayak aku harus selalu mandiri dan nggak boleh mengeluh. Selain itu, pernah juga saat ada diskusi keluarga tentang liburan, aku ingin ke Taman Safari karena belum pernah lihat binatang secara langsung. Tapi ibu bersikeras memilih Dufan dengan alasan Âaku dulu pernah bilang ingin ke DufanÂ. Aku mencoba menjelaskan, tapi malah ibu diam dan mendiamkan aku selama empat hari.",Perasaan Percaya ; Perasaan Sedih dan Kehilangan; Perasaan Sebelum Menghadapi Kejadian
+"Kesel, sedih, merasa nggak dihargaiÂ Aku sering merasa seperti disalahkan hanya karena aku anak tengah. Aku merasa suara dan keinginanku tidak dianggap penting.",Perasaan Sedih dan Kehilangan; Reaksi Terkejut dan Tidak Terduga; Perasaan Marah dan Frustasi
 "Aku merasa sulit berteman, sulit dihargai, dan juga merasa kesulitan dalam belajar sejak awal kuliah. Aku sudah coba beberapa cara untuk mengatasinya, tapi masih ada yang terasa kurang. Aku ingin tahu apakah yang aku lakukan sudah cukup atau masih perlu diperbaiki.",Perasaan Sedih dan Kehilangan; Perasaan Marah dan Frustasi
 "Iya, awalnya aku merasa kaget dengan sistem belajar di kuliah. Dulu waktu sekolah, ujian hanya ada UTS dan UAS. Tapi di kuliah, setiap selesai satu blok materi, langsung ada ujian. Aku jadi kewalahan di awal semester karena harus cepat beradaptasi.",Perasaan Sedih dan Kehilangan; Reaksi Terkejut dan Tidak Terduga
 "Aku mulai bikin to-do list dan mengatur waktu belajar. Setelah masuk semester kedua, aku sudah mulai terbiasa dan bisa mengikuti materi lebih baik.",Rasa Syukur dan Apresiasi; Perasaan Sebelum Menghadapi Kejadian
 "Sejauh ini cukup membantu, tapi aku masih ingin tahu apakah ada cara lain yang bisa lebih efektif.",Rasa Syukur dan Apresiasi; Perasaan Sebelum Menghadapi Kejadian
 "Aku merasa sulit menemukan teman yang satu frekuensi denganku. Aku lebih suka berteman dengan orang yang ada manfaatnya buatku. Kalau mereka pintar di bidang yang aku kurang, aku bisa belajar dari mereka. Tapi kalau menurutku mereka hanya menjadi beban, aku tidak terlalu tertarik untuk berteman dengan mereka.",Perasaan Benci dan Jijik; Perasaan Sedih dan Kehilangan; Perasaan Sebelum Menghadapi Kejadian
 "Kayaknya aku dianggap kurang asik, kurang bisa diajak ngobrol hal-hal santai seperti soal perasaan atau kehidupan pribadi. Aku juga sulit berempati kalau mereka cerita soal pacar atau masalah pribadi.",Perasaan Benci dan Jijik; Perasaan Sedih dan Kehilangan
-"Sejak SMP. Dulu teman-temanku bilang aku nggak asik karena nggak bisa diajak ngobrol soal pacaran atau hal-hal emosional. Dari situ, aku mulai menjauhi mereka dan hanya berteman dengan yang menurutku berguna buatku.",Perasaan Sedih dan Kehilangan; Perasaan Sebelum Menghadapi Kejadian
+"Sejak SMP. Dulu teman-temanku bilang aku nggak asik karena nggak bisa diajak ngobrol soal pacaran atau hal-hal emosional. Dari situ, aku mulai menjauhi mereka dan hanya berteman dengan yang menurutku ÂbergunaÂ buatku.",Perasaan Sedih dan Kehilangan; Perasaan Sebelum Menghadapi Kejadian
 "Sejak kecil, aku merasa tidak ada yang spesial dalam diriku. Orang tuaku sering bilang aku tidak cantik. Rambutku mengembang dan keriting, ibuku tidak suka, jadi sejak kecil aku selalu disuruh rebonding. Sampai sekarang, aku merasa tidak nyaman dengan rambutku sendiri.",Perasaan Benci dan Jijik; Perasaan Sedih dan Kehilangan
-Iya Aku merasa tidak berharga karena dari kecil aku dianggap kurang oleh keluargaku sendiri.,Perasaan Sedih dan Kehilangan
+IyaÂ Aku merasa tidak berharga karena dari kecil aku dianggap ÂkurangÂ oleh keluargaku sendiri.,Perasaan Sedih dan Kehilangan
 "Ya, aku memang agak terganggu. Saat orientasi kemarin, ada beberapa momen di mana aku merasa ditegur dengan nada yang keras, dan itu bikin aku langsung tegang. Aku jadi emosional, merasa nggak nyaman, dan seperti tertekan",Perasaan Benci dan Jijik; Perasaan Takut dan Kecemasan
-"Seperti ada sesuatu yang langsung menghantam dadaku Aku merasa seperti kembali ke masa-masa dulu, ketika ayah sering menegurku dengan keras. Dulu, kalau aku melakukan sesuatu yang tidak sesuai dengan harapan orang tua, terutama ayah, aku bisa ditegur habis-habisan. Aku tahu maksudnya baik, tapi tetap saja aku merasa sulit.",Perasaan Percaya ; Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan
-"Iya Dulu aku merasa gagal terus di mata ayah. Ada masa di mana aku melakukan banyak hal yang dia tidak setujui, dan itu membuat hubungan kami memburuk. Aku tahu sebagai anak pertama aku harus jadi contoh, harus bisa memenuhi ekspektasi keluarga. Apalagi ayah praktisi hukum, jadi dia ingin aku serius di bidang ini.",Perasaan Percaya ; Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan; Perasaan Marah dan Frustasi
-"Awalnya aku rasa karena ayah. Aku ingin membuktikan bahwa aku bisa berhasil dan bisa membuatnya bangga. Tapi lama-lama, aku mulai merasa tertarik juga. Aku suka beberapa mata kuliahnya dan mulai merasa nyaman. Aku sering diskusi dengan ayah soal hukum sekarang, dan itu membuat hubungan kami membaik. Aku ingin sukses di bidang ini, bukan hanya untuk ayah, tapi juga untuk diriku sendiri.",Rasa Syukur dan Apresiasi; Reaksi Terkejut dan Tidak Terduga; Perasaan Sebelum Menghadapi Kejadian
-"Iya Kadang aku takut kalau aku gagal, ayah bakal kecewa lagi. Aku nggak mau mengecewakan dia lagi seperti dulu",Perasaan Takut dan Kecemasan; Perasaan Sebelum Menghadapi Kejadian
-Mungkin lebih ke perasaan dalam diriku sendiri Aku hanya ingin memastikan kalau aku bisa melakukan yang terbaik.,Perasaan Sedih dan Kehilangan; Perasaan Sebelum Menghadapi Kejadian
+"Seperti ada sesuatu yang langsung menghantam dadakuÂ Aku merasa seperti kembali ke masa-masa dulu, ketika ayah sering menegurku dengan keras. Dulu, kalau aku melakukan sesuatu yang tidak sesuai dengan harapan orang tua, terutama ayah, aku bisa ditegur habis-habisan. Aku tahu maksudnya baik, tapi tetap saja aku merasa sulit.",Perasaan Percaya ; Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan
+"IyaÂ Dulu aku merasa gagal terus di mata ayah. Ada masa di mana aku melakukan banyak hal yang dia tidak setujui, dan itu membuat hubungan kami memburuk. Aku tahu sebagai anak pertama aku harus jadi contoh, harus bisa memenuhi ekspektasi keluarga. Apalagi ayah praktisi hukum, jadi dia ingin aku serius di bidang ini.",Perasaan Percaya ; Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan; Perasaan Marah dan Frustasi
+"AwalnyaÂ aku rasa karena ayah. Aku ingin membuktikan bahwa aku bisa berhasil dan bisa membuatnya bangga. Tapi lama-lama, aku mulai merasa tertarik juga. Aku suka beberapa mata kuliahnya dan mulai merasa nyaman. Aku sering diskusi dengan ayah soal hukum sekarang, dan itu membuat hubungan kami membaik. Aku ingin sukses di bidang ini, bukan hanya untuk ayah, tapi juga untuk diriku sendiri.",Rasa Syukur dan Apresiasi; Reaksi Terkejut dan Tidak Terduga; Perasaan Sebelum Menghadapi Kejadian
+"IyaÂ Kadang aku takut kalau aku gagal, ayah bakal kecewa lagi. Aku nggak mau mengecewakan dia lagi seperti dulu",Perasaan Takut dan Kecemasan; Perasaan Sebelum Menghadapi Kejadian
+Mungkin lebih ke perasaan dalam diriku sendiriÂ Aku hanya ingin memastikan kalau aku bisa melakukan yang terbaik.,Perasaan Sedih dan Kehilangan; Perasaan Sebelum Menghadapi Kejadian
 "Segalanya terasa berat. Aku tidak bisa menyelesaikan tugas-tugasku dengan baik, aku selalu menunda pekerjaan, dan semakin lama semakin banyak yang tertumpuk. Aku juga sadar kalau teman-temanku sudah mulai kesal karena aku kurang bisa berkontribusi dalam tugas kelompok.",Perasaan Sedih dan Kehilangan
 "Aku mulai mengerjakan tugas, lalu entah bagaimana aku malah terdistraksi. Kadang aku malah bermain handphone, membaca novel, atau tiba-tiba aku merasa mengantuk dan memilih tidur. Saat sadar sudah larut malam, aku panik dan buru-buru mengerjakan, tapi tetap tidak selesai.",Perasaan Benci dan Jijik; Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan
-"Aku merasa sangat bersalah Aku tahu ini salahku, tapi aku tidak bisa mengendalikan diri. Aku hanya ingin berhenti merasa seperti ini.",Perasaan Percaya ; Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan; Perasaan Sebelum Menghadapi Kejadian
+"Aku merasa sangat bersalahÂ Aku tahu ini salahku, tapi aku tidak bisa mengendalikan diri. Aku hanya ingin berhenti merasa seperti ini.",Perasaan Percaya ; Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan; Perasaan Sebelum Menghadapi Kejadian
 "Mereka mulai mengeluh kalau aku kurang berkontribusi. Beberapa dari mereka mencoba mengingatkanku soal tugas, tapi aku tetap tidak bisa mengerjakan dengan baik. Aku minta maaf, tapi aku tetap mengulangi kesalahan yang sama.",Perasaan Benci dan Jijik; Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan
-"Aku merasa semakin buruk. Aku juga sering berbohong untuk menghindari masalah Aku sudah melakukannya sejak SD. Aku bilang ke guru kalau aku sudah mengumpulkan tugas tapi gurunya yang lupa, atau aku meyakinkan ibu bahwa tugas sudah selesai padahal tidak.",Perasaan Benci dan Jijik; Perasaan Takut dan Kecemasan; Perasaan Sebelum Menghadapi Kejadian
-"Aku takut dimarahi. Aku benci kalau orang marah padaku Aku pernah ketahuan berbohong dan akibatnya malah lebih parah, tapi tetap saja aku terus melakukannya. Aku seperti refleks berbohong setiap kali merasa terancam.",Perasaan Benci dan Jijik; Perasaan Takut dan Kecemasan
-"Ibu sering marah Kalau dia tahu aku tidak mengumpulkan tugas, dia akan berteriak, menjambak, atau memukulku dengan sapu. Aku sangat takut setiap kali dia marah.",Perasaan Percaya ; Perasaan Takut dan Kecemasan
-"Tidak Aku tidak berani. Aku pernah menangis saat dimarahi dan tiba-tiba aku mulai melantur Aku bahkan tidak sadar apa yang aku katakan, tapi aku merasa sangat sakit dan kesepian saat itu.",Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan
-"Ia kaget Dia menangis dan meminta maaf, bahkan akhirnya setuju untuk membiarkan aku mencari bantuan psikolog. Tapi aku tetap takut kalau semuanya akan kembali seperti dulu.",Reaksi Terkejut dan Tidak Terduga; Perasaan Takut dan Kecemasan
-"Aku merasa semakin sulit bergaul dengan teman-temanku. Aku sudah mencoba untuk lebih terbuka, tetapi aku tetap merasa mereka tidak menghargai usaha yang aku lakukan. Aku juga merasa tertekan karena nilai IPK-ku tidak mencapai 4.00. Semua orang hanya mengenalku sebagai anak pintar, dan aku takut kalau mereka akan berubah pandangan jika aku tidak mempertahankan itu.",Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan; Perasaan Sebelum Menghadapi Kejadian
+"Aku merasa semakin buruk. Aku juga sering berbohong untuk menghindari masalahÂ Aku sudah melakukannya sejak SD. Aku bilang ke guru kalau aku sudah mengumpulkan tugas tapi gurunya yang lupa, atau aku meyakinkan ibu bahwa tugas sudah selesai padahal tidak.",Perasaan Benci dan Jijik; Perasaan Takut dan Kecemasan; Perasaan Sebelum Menghadapi Kejadian
+"Aku takut dimarahi. Aku benci kalau orang marah padakuÂ Aku pernah ketahuan berbohong dan akibatnya malah lebih parah, tapi tetap saja aku terus melakukannya. Aku seperti refleks berbohong setiap kali merasa terancam.",Perasaan Benci dan Jijik; Perasaan Takut dan Kecemasan
+"Ibu sering marahÂ Kalau dia tahu aku tidak mengumpulkan tugas, dia akan berteriak, menjambak, atau memukulku dengan sapu. Aku sangat takut setiap kali dia marah.",Perasaan Percaya ; Perasaan Takut dan Kecemasan
+"TidakÂ Aku tidak berani. Aku pernah menangis saat dimarahi dan tiba-tiba aku mulai melanturÂ Aku bahkan tidak sadar apa yang aku katakan, tapi aku merasa sangat sakit dan kesepian saat itu.",Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan
+"Ia kagetÂ Dia menangis dan meminta maaf, bahkan akhirnya setuju untuk membiarkan aku mencari bantuan psikolog. Tapi aku tetap takut kalau semuanya akan kembali seperti dulu.",Reaksi Terkejut dan Tidak Terduga; Perasaan Takut dan Kecemasan
+"Aku merasa semakin sulit bergaul dengan teman-temanku. Aku sudah mencoba untuk lebih terbuka, tetapi aku tetap merasa mereka tidak menghargai usaha yang aku lakukan. Aku juga merasa tertekan karena nilai IPK-ku tidak mencapai 4.00. Semua orang hanya mengenalku sebagai Âanak pintarÂ, dan aku takut kalau mereka akan berubah pandangan jika aku tidak mempertahankan itu.",Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan; Perasaan Sebelum Menghadapi Kejadian
 "Aku merasa mereka tidak memiliki common sense. Setiap kali aku pergi keluar dengan mereka, aku yang harus mengurus semuanya. Aku harus menyetir, memesan makanan, bahkan membayar untuk mereka. Aku tidak mengerti kenapa mereka tidak bisa lebih mandiri dan bertanggung jawab.",Perasaan Benci dan Jijik; Perasaan Marah dan Frustasi
 Tidak. Aku tidak ingin terlihat lemah atau terlalu banyak menuntut. Aku pikir mereka seharusnya bisa mengerti sendiri tanpa aku harus mengatakan apa-apa.,Perasaan Percaya ; Perasaan Takut dan Kecemasan
 "Ya, karena itu sudah sewajarnya. Tapi ternyata, tidak ada yang paham.",Perasaan Sedih dan Kehilangan; Perasaan Marah dan Frustasi
 "Mungkin, tapi aku tetap merasa standar yang aku tetapkan itu benar. Aku tidak ingin menurunkan standar hanya demi bisa berteman dengan mereka.",Perasaan Percaya ; Perasaan Sebelum Menghadapi Kejadian
-"Aku takut orang-orang akan menganggap aku tidak sepintar yang mereka pikirkan. Semua orang hanya mengenalku sebagai anak pintar. Jika aku gagal mempertahankan itu, aku merasa mereka akan mulai meremehkan aku.",Perasaan Takut dan Kecemasan
+"Aku takut orang-orang akan menganggap aku tidak sepintar yang mereka pikirkan. Semua orang hanya mengenalku sebagai Âanak pintarÂ. Jika aku gagal mempertahankan itu, aku merasa mereka akan mulai meremehkan aku.",Perasaan Takut dan Kecemasan
 "Aku tidak tahu... Aku takut kehilangan validasi dari mereka. Jika aku tidak pintar, lalu apa yang tersisa dari aku?",Perasaan Takut dan Kecemasan
 "Iya, saya ingin belajar. Tapi saya merasa sulit untuk mengontrol perasaan saya.",Perasaan Marah dan Frustasi
 "Saya belum tahu, Kak. Kadang saya ingin tetap bersama, tapi kadang saya berpikir mungkin lebih baik sendiri.",Perasaan Marah dan Frustasi
 "Saya coba, tapi masih agak sulit fokus.",Perasaan Marah dan Frustasi
-"Saya mencoba menenangkan diri dengan mengatakan Its okay, ini cuma sebentar, pasti bisa kok. Tapi tetap saja saya masih merasa cemas.",Perasaan Sebelum Menghadapi Kejadian
+"Saya mencoba menenangkan diri dengan mengatakan ÂItÂs okay, ini cuma sebentar, pasti bisa kokÂ. Tapi tetap saja saya masih merasa cemas.",Perasaan Sebelum Menghadapi Kejadian
 "Tidak, mereka justru berusaha memahami saya dan sering memberi motivasi supaya saya lebih tenang.",Rasa Syukur dan Apresiasi
 "Tidak, Kak. Saya masih bisa mengendalikannya dan saya juga bisa mengabaikannya jika saya tidak ingin berbicara dengannya.",Perasaan Percaya 
 "Saya sering merasa bahwa pencapaian saya tidak sebesar teman-teman saya. Saya melihat mereka bisa mengatur waktu dengan baik, selalu aktif di kelas, dan sepertinya tidak terlalu kesulitan menghadapi kuliah. Saya takut tidak bisa berperan dengan baik dalam kehidupan saya sendiri.",Perasaan Sedih dan Kehilangan; Reaksi Terkejut dan Tidak Terduga; Perasaan Sebelum Menghadapi Kejadian
-Mungkin saya memang terlalu fokus pada kelemahan saya sendiri,Perasaan Percaya 
+Mungkin saya memang terlalu fokus pada kelemahan saya sendiriÂ,Perasaan Percaya 
 "Iya, mereka selalu ingin saya menjadi kuat. Saya tidak ingin mengecewakan mereka, jadi saya hanya memendam semuanya.",Perasaan Percaya ; Perasaan Marah dan Frustasi
 Saya tidak pernah melihatnya dari sudut pandang itu sebelumnya. Saya biasanya hanya menyalahkan diri sendiri.,Reaksi Terkejut dan Tidak Terduga
 "Saya tidak ingin membicarakan terlalu banyak tentang itu, Kak. Saya hanya merasa malu. Itu adalah masa yang sangat buruk bagi saya.",Perasaan Benci dan Jijik; Perasaan Sedih dan Kehilangan
@@ -267,47 +267,47 @@ Rasanya nyaman. Aku bisa cerita banyak hal tanpa merasa takut dihakimi.,Rasa Syu
 "Biasanya kalau aku ketahuan melanggar aturan yang ibuku buat. Kalau aku ketahuan pacaran, ikut organisasi, atau melakukan hal di luar akademik, pasti langsung dimarahi.",Perasaan Takut dan Kecemasan; Perasaan Sebelum Menghadapi Kejadian
 "Maaf, Kak, ibuku marah besar. Aku harus pulang sekarang.",Perasaan Takut dan Kecemasan
 "Mungkin aku harus coba, ya?",Perasaan Percaya 
-Aku mau tapi aku nggak tahu gimana caranya.,Perasaan Sebelum Menghadapi Kejadian
-Aku mau tapi aku takut.,Perasaan Takut dan Kecemasan
+Aku mauÂ tapi aku nggak tahu gimana caranya.,Perasaan Sebelum Menghadapi Kejadian
+Aku mauÂ tapi aku takut.,Perasaan Takut dan Kecemasan
 "Mungkin karena aku merasa mereka lebih kompetitif? Aku ngerasa nggak punya tempat di sana. Aku takut kalau aku berusaha lebih keras, aku malah dinilai sok atau jadi saingan mereka.",Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan
 "Aku belum pernah coba, tapi aku mau coba kalau itu bisa membantu.",Perasaan Percaya ; Reaksi Terkejut dan Tidak Terduga
-"Iya, Kak Aku jadi takut kalau kejadian itu bakal terulang lagi.",Perasaan Takut dan Kecemasan
-"Kayaknya lebih banyak negatifnya, Kak. Aku jadi overthinking terus. Kayak dia masih peduli nggak, ya? Atau aku cuma jadi cadangan buat dia?",Perasaan Sedih dan Kehilangan; Perasaan Sebelum Menghadapi Kejadian
+"Iya, KakÂ Aku jadi takut kalau kejadian itu bakal terulang lagi.",Perasaan Takut dan Kecemasan
+"Kayaknya lebih banyak negatifnya, Kak. Aku jadi overthinking terus. KayakÂ dia masih peduli nggak, ya? Atau aku cuma jadi cadangan buat dia?",Perasaan Sedih dan Kehilangan; Perasaan Sebelum Menghadapi Kejadian
 "Sebagian besar sih karena mantanku, tapi ada juga karena kuliah. Aku jadi nggak fokus, Kak. Aku gampang terdistraksi, sering kepikiran mantanku pas lagi belajar atau pas di kampus.",Perasaan Sedih dan Kehilangan; Perasaan Takut dan Kecemasan
-"Kayaknya nggak, Kak. Tapi aku juga nggak tahu harus gimana.",Perasaan Sebelum Menghadapi Kejadian
-"Aku suka nulis Tapi kadang kalau aku udah terlalu sedih, aku malah nyakitin diri sendiri.",Perasaan Percaya ; Perasaan Takut dan Kecemasan
-Nggak Aku takut kalau mereka nggak mau ngobrol balik atau malah cuek.,Perasaan Takut dan Kecemasan
-Mungkin bisa dicoba Tapi gimana kalau mereka nggak balas?,Perasaan Takut dan Kecemasan
-"Iya Kadang aku berpikir, apakah aku ini salah terus di mata mereka?",Perasaan Benci dan Jijik
-Iya Aku akan coba,Perasaan Percaya 
+"KayaknyaÂ nggak, Kak. Tapi aku juga nggak tahu harus gimana.",Perasaan Sebelum Menghadapi Kejadian
+"Aku suka nulisÂ Tapi kadang kalau aku udah terlalu sedih, aku malah nyakitin diri sendiri.",Perasaan Percaya ; Perasaan Takut dan Kecemasan
+NggakÂ Aku takut kalau mereka nggak mau ngobrol balik atau malah cuek.,Perasaan Takut dan Kecemasan
+Mungkin bisa dicobaÂ Tapi gimana kalau mereka nggak balas?,Perasaan Takut dan Kecemasan
+"IyaÂ Kadang aku berpikir, apakah aku ini salah terus di mata mereka?",Perasaan Benci dan Jijik
+IyaÂ Aku akan coba,Perasaan Percaya 
 "Kadang nyaman, kadang nggak. Aku suka kalau punya teman yang bisa diajak diskusi soal akademik, tapi aku juga merasa ada sesuatu yang kurang. Kayak, kok rasanya aku tetap merasa nggak sepenuhnya diterima?",Rasa Syukur dan Apresiasi; Perasaan Sedih dan Kehilangan
 "Nggak pernah. Aku merasa ibuku adalah sosok yang sulit aku dekati. Aku ingin dekat, tapi nggak tahu bagaimana caranya.",Perasaan Takut dan Kecemasan
-"Itu masuk akal Aku ingin sukses bukan hanya karena ayah, tapi juga karena aku suka bidang ini.",Rasa Syukur dan Apresiasi
+"Itu masuk akalÂ Aku ingin sukses bukan hanya karena ayah, tapi juga karena aku suka bidang ini.",Rasa Syukur dan Apresiasi
 "Aku biasanya menyendiri, mendengarkan musik, atau menulis jurnal. Tapi kadang aku hanya menahan semuanya sendiri dan itu rasanya nggak enak.",Perasaan Sedih dan Kehilangan; Perasaan Sebelum Menghadapi Kejadian
-Itu terdengar lebih terarah Aku bisa coba itu!,Perasaan Percaya 
+Itu terdengar lebih terarahÂ Aku bisa coba itu!,Perasaan Percaya 
 "Ya, mungkin seperti itu.",Perasaan Percaya 
 Aku tidak tahu. Aku tidak terbiasa memikirkan hal-hal seperti itu.,Perasaan Sebelum Menghadapi Kejadian
 Itu masuk akal. Saya memang sering merasa seperti membeku saat dimarahi.,Perasaan Marah dan Frustasi
 "Iya, saya pikir itu satu-satunya cara agar saya bisa membantu keluarga dan tidak terlalu membebani mereka.",Perasaan Marah dan Frustasi
 "Itu masuk akal, Kak. Saya memang selalu berpikir bahwa saya akan dipermalukan, padahal kenyataannya teman-teman saya baik-baik saja.",Perasaan Sebelum Menghadapi Kejadian
 "Oke, Kak.",Perasaan Takut dan Kecemasan
-"Iya aku tahu ini nggak baik, tapi selalu aja kejadian kayak gini.",Perasaan Marah dan Frustasi
-Biasanya saat aku sendirian atau saat aku merasa sangat stres. Terutama kalau aku sedang diperlakukan tidak adil oleh orang tua atau saat aku diingatkan tentang masa lalu.,Perasaan Marah dan Frustasi
+"IyaÂ aku tahu ini nggak baik, tapi selalu aja kejadian kayak gini.",Perasaan Marah dan Frustasi
+Biasanya saat aku sendirianÂ atau saat aku merasa sangat stres. Terutama kalau aku sedang diperlakukan tidak adil oleh orang tua atau saat aku diingatkan tentang masa lalu.,Perasaan Marah dan Frustasi
 "Ada, aku nggak suka pelajaran yang terlalu banyak hitung-hitungan atau yang harus ngapalin rumus-rumus. Kalau mata kuliah itu, aku langsung kehilangan semangat buat belajar.",Perasaan Marah dan Frustasi
-Kayaknya bisa dicoba tapi aku takut kalau mereka nggak nerima aku.,Perasaan Marah dan Frustasi
-Nggak biasanya aku cuma menyendiri aja sampai perasaannya hilang sendiri.,Perasaan Marah dan Frustasi
-Itu masuk akal sih aku nggak pernah coba cara-cara itu sebelumnya.,Perasaan Sebelum Menghadapi Kejadian
-"Wah ternyata ini lumayan membantu, ya.",Perasaan Sebelum Menghadapi Kejadian
-"Wah, aku jadi lebih tenang Aku bakal coba latihan ini kalau panik lagi.",Perasaan Sebelum Menghadapi Kejadian
-"Belum sih Aku biasanya malah tenggelam di media sosial, stalking dia atau nge-scroll tanpa tujuan.",Perasaan Marah dan Frustasi
-"Wow aku jadi lebih tenang, Kak.",Perasaan Sebelum Menghadapi Kejadian
-Oke Aku coba deh.,Perasaan Percaya 
-Belum Tapi aku biasanya mendengarkan musik atau menyendiri.,Perasaan Sebelum Menghadapi Kejadian
-Rasanya lebih enak Kayaknya aku bisa coba ini kalau sedang cemas.,Perasaan Sebelum Menghadapi Kejadian
+Kayaknya bisa dicobaÂ tapi aku takut kalau mereka nggak nerima aku.,Perasaan Marah dan Frustasi
+NggakÂ biasanya aku cuma menyendiri aja sampai perasaannya hilang sendiri.,Perasaan Marah dan Frustasi
+Itu masuk akal sihÂ aku nggak pernah coba cara-cara itu sebelumnya.,Perasaan Sebelum Menghadapi Kejadian
+"WahÂ ternyata ini lumayan membantu, ya.",Perasaan Sebelum Menghadapi Kejadian
+"Wah, aku jadi lebih tenangÂ Aku bakal coba latihan ini kalau panik lagi.",Perasaan Sebelum Menghadapi Kejadian
+"Belum sihÂ Aku biasanya malah tenggelam di media sosial, stalking dia atau nge-scroll tanpa tujuan.",Perasaan Marah dan Frustasi
+"WowÂ aku jadi lebih tenang, Kak.",Perasaan Sebelum Menghadapi Kejadian
+OkeÂ Aku coba deh.,Perasaan Percaya 
+BelumÂ Tapi aku biasanya mendengarkan musik atau menyendiri.,Perasaan Sebelum Menghadapi Kejadian
+Rasanya lebih enakÂ Kayaknya aku bisa coba ini kalau sedang cemas.,Perasaan Sebelum Menghadapi Kejadian
 "Iya, mereka baik. Aku merasa nyaman, tapi kadang aku masih ragu untuk cerita lebih banyak",Perasaan Marah dan Frustasi; Perasaan Sebelum Menghadapi Kejadian
-Ya Aku mau mencoba.,Perasaan Percaya 
+YaÂ Aku mau mencoba.,Perasaan Percaya 
 "Oke, aku bisa coba itu.",Perasaan Percaya 
-Itu terdengar masuk akal Aku sering merasa kewalahan kalau harus mengerjakan semuanya sekaligus.,Perasaan Sebelum Menghadapi Kejadian
+Itu terdengar masuk akalÂ Aku sering merasa kewalahan kalau harus mengerjakan semuanya sekaligus.,Perasaan Sebelum Menghadapi Kejadian
 "Aku tidak tahu apakah itu akan membantu, tapi aku bisa mencobanya.",Perasaan Sebelum Menghadapi Kejadian
 "Aku tidak yakin bisa melakukannya. Aku merasa kalau aku menurunkan standar, aku akan ikut menjadi seperti mereka.",Perasaan Marah dan Frustasi
 Aku akan coba memikirkannya... Tapi aku masih merasa sulit untuk benar-benar mengubah cara pandangku.,Perasaan Marah dan Frustasi
@@ -333,17 +333,17 @@ Mungkin... Saya tidak tahu. Saya harus berpikir dulu.,Perasaan Sebelum Menghadap
 "Baik, Kak. Terima kasih banyak.",Rasa Syukur dan Apresiasi
 "Iya, Kak. Aku bakal coba. Terima kasih sudah mendengarkan.",Perasaan Percaya ; Rasa Syukur dan Apresiasi
 "Iya, Kak. Itu kayaknya bisa membantu banget.",Rasa Syukur dan Apresiasi
-"Terima kasih, Kak. Aku nggak nyangka aku bisa cerita sejauh ini",Rasa Syukur dan Apresiasi
+"Terima kasih, Kak. Aku nggak nyangka aku bisa cerita sejauh iniÂ",Rasa Syukur dan Apresiasi
 "Terima kasih, Kak. Aku akan coba semuanya, semoga bisa lebih baik.",Rasa Syukur dan Apresiasi; Perasaan Sebelum Menghadapi Kejadian
-"Iya, Kak. Aku bakal coba Aku juga mau lanjut konseling sih, mungkin ini bisa membantu aku pelan-pelan.",Perasaan Sebelum Menghadapi Kejadian
+"Iya, Kak. Aku bakal cobaÂ Aku juga mau lanjut konseling sih, mungkin ini bisa membantu aku pelan-pelan.",Perasaan Sebelum Menghadapi Kejadian
 "Iya, Kak. Aku akan coba semuanya. Aku jadi merasa lebih punya kendali atas situasi ini.",Rasa Syukur dan Apresiasi; Perasaan Sebelum Menghadapi Kejadian
-"Iya Aku akan coba, Kak. Terima kasih sudah mendengarkan aku.",Perasaan Percaya ; Rasa Syukur dan Apresiasi
-"Iya Aku akan coba, Kak. Terima kasih sudah mendengarkan aku.",Perasaan Percaya ; Rasa Syukur dan Apresiasi
-"Iya, aku akan coba Terima kasih, Kak.",Perasaan Percaya 
+"IyaÂ Aku akan coba, Kak. Terima kasih sudah mendengarkan aku.",Perasaan Percaya ; Rasa Syukur dan Apresiasi
+"IyaÂ Aku akan coba, Kak. Terima kasih sudah mendengarkan aku.",Perasaan Percaya ; Rasa Syukur dan Apresiasi
+"Iya, aku akan cobaÂ Terima kasih, Kak.",Perasaan Percaya 
 "Iya, aku merasa lebih lega setelah bicara ini. Terima kasih, Kak",Rasa Syukur dan Apresiasi
 "Iya, aku akan coba. Aku merasa lebih lega setelah membicarakannya.",Rasa Syukur dan Apresiasi
 "Terima kasih juga, Kak. Aku merasa lebih lega setelah membicarakannya. Aku akan coba mulai menulis jurnal dan lebih terbuka dengan teman-temanku.",Rasa Syukur dan Apresiasi; Perasaan Sebelum Menghadapi Kejadian
-Itu sulit Tapi aku bisa coba.,Perasaan Sebelum Menghadapi Kejadian
-"Terima kasih, Kak. Aku merasa sedikit lebih lega Walaupun aku tahu ini tidak akan mudah.",Perasaan Percaya ; Rasa Syukur dan Apresiasi
+Itu sulitÂ Tapi aku bisa coba.,Perasaan Sebelum Menghadapi Kejadian
+"Terima kasih, Kak. Aku merasa sedikit lebih legaÂ Walaupun aku tahu ini tidak akan mudah.",Perasaan Percaya ; Rasa Syukur dan Apresiasi
 "Aku rasa cukup untuk hari ini. Aku merasa lebih baik setelah berbicara, meskipun aku masih belum yakin dengan semuanya.",Rasa Syukur dan Apresiasi; Perasaan Takut dan Kecemasan
 "Baik, aku akan mencoba. Terima kasih, Kak.",Perasaan Percaya ; Rasa Syukur dan Apresiasi
