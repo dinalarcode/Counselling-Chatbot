@@ -5,6 +5,7 @@ import pandas as pd
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.documents import Document
+from config import opt
 
 # Indonesian stopwords untuk keyword extraction
 STOPWORDS_ID = {
@@ -25,7 +26,7 @@ STOPWORDS_ID = {
 
 
 class VectorDBManager:
-    def __init__(self, model_name='indobenchmark/indobert-base-p1'):
+    def __init__(self, model_name=opt.MODEL_NAME):
         self.embeddings = HuggingFaceEmbeddings(model_name=model_name)
         self.bible_db = None
         self.qna_db = None

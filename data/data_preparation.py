@@ -4,13 +4,13 @@ import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset, DataLoader
-from transformers import AutoTokenizer
+from transformers import BertTokenizer
 from config import opt
 
 pd.set_option('display.max_columns', None)
 dsqi = pd.read_csv('data/dataset_multiintent.csv', encoding='latin-1') # dsqi = dataset question intent
 
-tokenizer = AutoTokenizer.from_pretrained('indobenchmark/indobert-base-p1')
+tokenizer = BertTokenizer.from_pretrained(opt.MODEL_NAME)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # tokenizer.to(device)
 

@@ -5,6 +5,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 import numpy as np
 from transformers import AutoTokenizer, AutoModel, BertConfig, BertForSequenceClassification
+from config import opt
 
 class BertLayerNorm(nn.Module):
     def __init__(self, hidden_size, eps=1e-12):
@@ -28,9 +29,9 @@ class BertEmbedding(nn.Module):
         # self.bert = BertForSequenceClassification.from_pretrained("bert-base-uncased", num_labels)
         self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
         # mesin pertama untuk input pasien
-        self.bert = AutoModel.from_pretrained('indobenchmark/indobert-base-p1', output_hidden_states=True, output_attentions=True, ignore_mismatched_sizes=True)
+        self.bert = AutoModel.from_pretrained(opt.MODEL_NAME, output_hidden_states=True, output_attentions=True, ignore_mismatched_sizes=True)
         # mesin kedua untuk memahami intent
-        self.bertlabelencoder = AutoModel.from_pretrained('indobenchmark/indobert-base-p1', ignore_mismatched_sizes=True)
+        self.bertlabelencoder = AutoModel.from_pretrained(opt.MODEL_NAME, ignore_mismatched_sizes=True)
         # self.dropout = nn.Dropout(0.1)
         # self.classifier = nn.Linear(config.hidden_size, num_labels)
 
