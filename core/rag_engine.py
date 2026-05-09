@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 
 # Load the predictor and VectorDBManager
@@ -63,16 +64,22 @@ class RAGEngine:
     # Stages where bible verses should be retrieved and injected
     BIBLE_VERSE_STAGES = ['relaksasi', 'solusi']
 
-    def __init__(self, model_name="gemini-2.5-flash", temperature=0.7):
+    def __init__(self, model_name="deepseek-v4-pro", temperature=0.7):
         # Retrieve the API key from environment variables
-        self.api_key = os.getenv("GEMINI_API_KEY")
+        self.api_key = os.getenv("DEEPSEEK_API_KEY")
         if not self.api_key:
             raise ValueError("GEMINI_API_KEY is missing. Please set it in the .env file.")
 
         # Initialize the LLM (Gemini)
-        self.llm = ChatGoogleGenerativeAI(
-            model=model_name,
-            google_api_key=self.api_key,
+        # self.llm = ChatGoogleGenerativeAI(
+        #     model=model_name,
+        #     google_api_key=self.api_key,
+        #     temperature=temperature
+        # )
+        self.llm = ChatOpenAI(
+            api_key=self.api_key,
+            model="deepseek-v4-pro",
+            base_url="https://api.deepseek.com",
             temperature=temperature
         )
 

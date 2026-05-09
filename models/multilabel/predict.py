@@ -3,12 +3,12 @@ import torch
 from config import opt
 from data.data_preparation import listof_intent, tokenized_intent
 from models.multilabel.bert_model import BertEmbedding
-from transformers import BertTokenizer
+from transformers import AutoTokenizer
 
 class predictor:
     def __init__(self, model_path = 'checkpoint/IndoBERT_multi_label_zsl.pt', thresold = 0.5):
         self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device ('cpu')
-        self.tokenizer = BertTokenizer.from_pretrained(opt.MODEL_NAME)
+        self.tokenizer = AutoTokenizer.from_pretrained(opt.MODEL_NAME)
         self.thresold = thresold
 
         # kerangka model
@@ -30,7 +30,7 @@ class predictor:
         encoding = self.tokenizer(
             text,
             add_special_tokens = True,
-            max_length = 128,
+            max_length = opt.max_len,
             padding='max_length',
             truncation = True,
             return_attention_mask = True,

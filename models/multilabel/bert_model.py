@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 import numpy as np
-from transformers import AutoTokenizer, AutoModel, BertConfig, BertForSequenceClassification
+from transformers import AutoTokenizer, AutoModel, BertConfig, AlbertTokenizer, BertForSequenceClassification
 from config import opt
 
 class BertLayerNorm(nn.Module):
@@ -43,6 +43,7 @@ class BertEmbedding(nn.Module):
             return_dict=True
         )
         clusters = output_label.pooler_output
+        # clusters = output_label.last_hidden_state[:, 0, :] # khusus untuk distilbert
 
         # membaca pertanyaan
         output_utterance = self.bert(
@@ -55,11 +56,12 @@ class BertEmbedding(nn.Module):
 
         # ekstrak output yang diperlukan
         pooled_output = output_utterance.pooler_output
+        # pooled_output = output_utterance.last_hidden_state[:, 0, :] # khusus untuk distilbert
 
         gram = torch.mm(clusters, clusters.permute(1,0)) # (n, n)
         weight = torch.mm(pooled_output, clusters.permute(1,0))
 
-        logits = torch.mm(weight, torch.inverse(gram)) * np.sqrt(768)
+        logits = torch.mm(weight, torch.inverse(gram)) * np.sqrt(opt.hidden_size)
 
         return logits
         # loss = self.bert(input_ids, attention_mask=mask, labels=labels)

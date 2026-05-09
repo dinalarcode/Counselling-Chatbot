@@ -26,7 +26,7 @@ STOPWORDS_ID = {
 
 
 class VectorDBManager:
-    def __init__(self, model_name=opt.MODEL_NAME):
+    def __init__(self, model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"):
         self.embeddings = HuggingFaceEmbeddings(model_name=model_name)
         self.bible_db = None
         self.qna_db = None

@@ -4,13 +4,13 @@ import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset, DataLoader
-from transformers import BertTokenizer
+from transformers import AutoTokenizer
 from config import opt
 
 pd.set_option('display.max_columns', None)
 dsqi = pd.read_csv('data/dataset_multiintent.csv', encoding='latin-1') # dsqi = dataset question intent
 
-tokenizer = BertTokenizer.from_pretrained(opt.MODEL_NAME)
+tokenizer = AutoTokenizer.from_pretrained(opt.MODEL_NAME)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # tokenizer.to(device)
 
@@ -37,7 +37,7 @@ df_inten = pd.DataFrame(encoded_labels, columns=mlb.classes_).astype('float32')
 dsqi_encoded = pd.concat([dsqi['question'], df_inten], axis=1)
 
 class LABANDataset(Dataset):
-    def __init__(self, dataframe, tokenizer, max_len=128):
+    def __init__(self, dataframe, tokenizer, max_len=opt.max_len):
         self.data = dataframe 
         self.tokenizer = tokenizer
         self.max_len = max_len

@@ -35,6 +35,8 @@ def train():
     best_val_f1 = 0
     history_train_loss = []
     history_val_loss = []
+    history_train_f1 = []
+    history_val_f1 = []
 
     # Start training
     for epoch in range(opt.epochs):
@@ -91,6 +93,7 @@ def train():
         print('Average train loss: {:.4f} '.format(avg_train_loss))
         
         f1 = f1_score(all_target, all_predict, average='micro')
+        history_train_f1.append(f1)
         print(f'F1 = {f1:.4f}')
 
         # validation phase
@@ -134,6 +137,7 @@ def train():
         val_avg_loss = val_loss_total / len(val_dataload)
         history_val_loss.append(val_avg_loss)
         val_f1 = f1_score(vall_target, vall_predict, average='micro')
+        history_val_f1.append(val_f1)
 
         print('Average validation loss: {:.4f} '.format(val_avg_loss))
         print(f'Validation F1 = {val_f1:.4f}')
@@ -149,13 +153,28 @@ def train():
 
     # end of training loop
     # plot
+    plt.figure(figsize=(12, 5))
+    
+    # plot loss
+    plt.subplot(1, 2, 1)
     plt.plot(history_train_loss, label='Training Loss')
     plt.plot(history_val_loss, label='Validation Loss')
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
     plt.title('Training Loss vs Validation Loss')
     plt.legend()
-    plt.savefig('models/multilabel/training_loss_vs_validation_loss.png')
+
+    # plot F1
+    plt.subplot(1, 2, 2)
+    plt.plot(history_train_f1, label='Training F1')
+    plt.plot(history_val_f1, label='Validation F1')
+    plt.xlabel('Epoch')
+    plt.ylabel('F1 Score')
+    plt.title('Training F1 vs Validation F1')
+    plt.legend()
+
+    plt.tight_layout()
+    plt.savefig(opt.metric_files_name)
     plt.clf()
 
     # ====== TESTING PHASE ======
