@@ -9,6 +9,5 @@ checkpoint/
 
 venv/
 __pycache__/config.cpython-313.pyc
-
-claude.md
+data/augmentation/raw_generated/
 
