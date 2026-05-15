@@ -128,19 +128,20 @@ class VectorDBManager:
             return []
 
         # --- Step 1: Bangun combined query ---
-        # Gabungkan semua intent + kata kunci user
+        # Gabungkan semua intent + kata kunci user (compute once, reuse below)
+        keywords = self._get_keyword_list(user_input) if user_input else []
         intent_part = " ".join(intents) if intents else ""
-        keyword_part = self._extract_keywords(user_input) if user_input else ""
-        
+        keyword_part = " ".join(keywords)
+
         combined_query = f"{intent_part} {keyword_part}".strip()
-        
+
         if not combined_query:
             return []
-        
+
         # --- Step 2: Semantic search di FAISS ---
         # Ambil lebih banyak kandidat untuk re-ranking
         candidate_count = max(k * 10, 20)
-        
+
         try:
             candidates_with_scores = self.bible_db.similarity_search_with_score(
                 combined_query, k=candidate_count
@@ -148,13 +149,11 @@ class VectorDBManager:
         except Exception as e:
             print(f"[ERROR] FAISS search gagal: {e}")
             return []
-        
+
         if not candidates_with_scores:
             return []
-        
+
         # --- Step 3: Keyword refinement ---
-        # Ekstrak kata kunci dari user_input untuk re-scoring
-        keywords = self._get_keyword_list(user_input) if user_input else []
         
         scored_candidates = []
         for doc, faiss_score in candidates_with_scores:
@@ -208,24 +207,37 @@ class VectorDBManager:
 
     # ── QnA Index (unchanged) ─────────────────────────────────────
 
-    def build_qna_index(self, qna_csv_path='data/dataset_qna.csv'):
+    def build_qna_index(self, qna_csv_path='data/dataset_qna.csv', index_dir='data/faiss_qna_index'):
+        if os.path.exists(index_dir):
+            try:
+                print("Memuat QnA FAISS index dari disk...")
+                self.qna_db = FAISS.load_local(
+                    index_dir, self.embeddings,
+                    allow_dangerous_deserialization=True
+                )
+                print(f"QnA index dimuat. Total dokumen: {self.qna_db.index.ntotal}")
+                return
+            except Exception as e:
+                print(f"Gagal memuat QnA index dari disk: {e}")
+                print("Membangun ulang QnA index...")
+
         df_qna = pd.read_csv(qna_csv_path)
-        
+
         documents = []
-        # kolom question dan answer
         for index, row in df_qna.iterrows():
             question = str(row['question']).strip()
             answer = str(row['answer']).strip()
             if pd.isna(question) or question == 'nan':
                 continue
-                
+
             page_content = f"Pertanyaan: {question}"
             doc = Document(page_content=page_content, metadata={"answer": answer})
             documents.append(doc)
-            
+
         if documents:
             self.qna_db = FAISS.from_documents(documents, self.embeddings)
-            print("QnA index built successfully.")
+            self.qna_db.save_local(index_dir)
+            print(f"QnA index built and saved to {index_dir}.")
         else:
             print("No valid QnA documents found.")
 

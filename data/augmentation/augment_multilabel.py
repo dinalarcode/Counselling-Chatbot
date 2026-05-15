@@ -9,7 +9,9 @@ Pipeline:
     2. Prompt Groq LLM for casual Indonesian student utterances
        that express ALL listed intents in a single sentence
     3. Parse pipe-delimited '|' output → multi-hot encoded DataFrame
-    4. Merge with existing dataset_multiintent.csv → augmented_multilabel.csv
+    4. Merge with existing data (accumulated output or original seed) → dataset_multiintent_augmented.csv
+        - First run : seeds from data/dataset_multiintent.csv
+        - Next runs : reads from data/augmentation/dataset_multiintent_augmented.csv (accumulated)
 
 Usage:
     python data/augmentation/augment_multilabel.py
@@ -45,27 +47,34 @@ load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
 GROQ_API_KEY: Optional[str] = None  # e.g. "gsk_abc123..."
 
 # Groq model
-GROQ_MODEL = "llama-3.3-70b-versatile"
+GROQ_MODEL = "llama-3.1-8b-instant"
 
 # Delay between API calls (seconds) to avoid free-tier rate limits
 CALL_DELAY = 8.0
 
 # File paths
-EXISTING_DATASET_CSV = os.path.join(PROJECT_ROOT, "data", "dataset_multiintent.csv")
-OUTPUT_CSV = os.path.join(PROJECT_ROOT, "data", "augmented_multilabel.csv")
+# Original seed dataset (used on first run only)
+SEED_DATASET_CSV = os.path.join(PROJECT_ROOT, "data", "dataset_multiintent.csv")
+# Accumulated output — used as source on subsequent runs
+OUTPUT_CSV = os.path.join(SCRIPT_DIR, "dataset_multiintent_augmented.csv")
 
 # Combination config: each tuple = (*intent_names, n_samples)
 # The last element is always the number of samples to generate.
 # All preceding elements are intent names that must co-occur.
 COMBINATION_CONFIG: list[tuple] = [
-    ("Perasaan Marah dan Frustasi",  "Perasaan Sedih dan Kehilangan",     50),
-    ("Perasaan Takut dan Kecemasan", "Reaksi Terkejut dan Tidak Terduga", 30),
+    # ("Perasaan Marah dan Frustasi",  "Perasaan Sedih dan Kehilangan",     50),
+    # ("Perasaan Takut dan Kecemasan", "Reaksi Terkejut dan Tidak Terduga", 30),
     ("Rasa Syukur dan Apresiasi",    "Perasaan Percaya",                  30),
-    ("Perasaan Benci dan Jijik",     "Perasaan Sedih dan Kehilangan",     30),
-    ("Perasaan Marah dan Frustasi",  "Perasaan Takut dan Kecemasan",      30),
+    # ("Perasaan Benci dan Jijik",     "Perasaan Sedih dan Kehilangan",     30),
+    # ("Perasaan Marah dan Frustasi",  "Perasaan Takut dan Kecemasan",      30),
+    # ("Perasaan Benci dan Jijik", "Reaksi Terkejut dan Tidak Terduga",     50),
+    # ("Rasa Syukur dan Apresiasi", "Perasaan Sebelum Menghadapi Kejadian", 50),
     # 3-label example:
-    # ("Perasaan Sedih dan Kehilangan", "Perasaan Takut dan Kecemasan",
-    #  "Perasaan Sebelum Menghadapi Kejadian", 20),
+    # ("Reaksi Terkejut dan Tidak Terduga", "Perasaan Benci dan Jijik", "Rasa Syukur dan Apresiasi", 50),
+    # ("Reaksi Terkejut dan Tidak Terduga", "Perasaan Benci dan Jijik", "Perasaan Sebelum Menghadapi Kejadian", 50),
+    ("Rasa Syukur dan Apresiasi", "Perasaan Sebelum Menghadapi Kejadian", "Perasaan Percaya", 50),
+    # ("Perasaan Percaya", "Perasaan Marah dan Frustasi", "Perasaan Takut dan Kecemasan", 50),
+    # ("Perasaan Marah dan Frustasi", "Perasaan Takut dan Kecemasan", "Perasaan Sedih dan Kehilangan", 50),
 ]
 
 
@@ -157,7 +166,8 @@ class MultiLabelAugmentor:
             "3. Kalimat HARUS mewakili SEMUA intent di atas secara alami dalam satu kalimat.\n"
             "4. JANGAN beri penomoran, label, penjelasan, atau tanda lain — hanya kalimatnya saja.\n"
             "5. Pisahkan setiap kalimat dengan karakter pipe '|' (tanpa spasi di sekitarnya).\n"
-            f"6. Output: tepat {n_samples} kalimat, dipisah '|'. "
+            "6. Jangan MENGULANGI kalimat yang sudah ada di dalam dataset.\n"            
+            f"7. Output: tepat {n_samples} kalimat, dipisah '|'. "
             "Contoh format: kalimat1|kalimat2|kalimat3\n\n"
             "Mulai output sekarang:"
         )
@@ -229,18 +239,87 @@ class MultiLabelAugmentor:
 
         return cleaned
 
+    # --- Near-duplicate detection ---
+
+    @staticmethod
+    def _tokenize(text: str) -> set:
+        """Simple whitespace tokenizer for Jaccard similarity."""
+        return set(text.lower().split())
+
+    @staticmethod
+    def _jaccard_similarity(set_a: set, set_b: set) -> float:
+        """Compute Jaccard similarity between two token sets."""
+        if not set_a or not set_b:
+            return 0.0
+        intersection = set_a & set_b
+        union = set_a | set_b
+        return len(intersection) / len(union)
+
+    def deduplicate(
+        self,
+        existing_sentences: list[str],
+        generated: list[str],
+        threshold: float = 0.75,
+    ) -> list[str]:
+        """
+        Remove near-duplicates from generated sentences.
+
+        Checks against both existing (accumulated) sentences AND
+        already-accepted generated sentences using Jaccard similarity.
+
+        Args:
+            existing_sentences: All known sentences to compare against.
+            generated:          Newly generated sentences to filter.
+            threshold:          Jaccard similarity threshold (>= this = duplicate).
+
+        Returns:
+            Filtered list with near-duplicates removed.
+        """
+        existing_tokens = [self._tokenize(s) for s in existing_sentences]
+        accepted: list[str] = []
+        accepted_tokens: list[set] = []
+
+        for sentence in generated:
+            sent_tokens = self._tokenize(sentence)
+
+            # Check against existing pool
+            is_dup = False
+            for ext_tok in existing_tokens:
+                if self._jaccard_similarity(sent_tokens, ext_tok) >= threshold:
+                    is_dup = True
+                    break
+
+            # Check against already-accepted generated in this batch
+            if not is_dup:
+                for acc_tok in accepted_tokens:
+                    if self._jaccard_similarity(sent_tokens, acc_tok) >= threshold:
+                        is_dup = True
+                        break
+
+            if not is_dup:
+                accepted.append(sentence)
+                accepted_tokens.append(sent_tokens)
+
+        return accepted
+
     # --- Public method ---
 
-    def generate(self, intents: tuple[str, ...], n_samples: int) -> list[str]:
+    def generate(
+        self,
+        intents: tuple[str, ...],
+        n_samples: int,
+        existing_sentences: Optional[list[str]] = None,
+    ) -> list[str]:
         """
         Generate n_samples sentences for an intent combination.
 
         Args:
-            intents:   Tuple of 2+ intent names.
-            n_samples: Number of sentences to request.
+            intents:            Tuple of 2+ intent names.
+            n_samples:          Number of sentences to request.
+            existing_sentences: Known sentences for near-duplicate filtering.
 
         Returns:
-            List of parsed sentences (may be fewer on API error).
+            List of deduplicated, clean sentences (may be fewer than n_samples).
         """
         prompt = self._build_prompt(intents, n_samples)
         print(f"  Calling Groq ({self.model})...", end=" ", flush=True)
@@ -251,7 +330,17 @@ class MultiLabelAugmentor:
             return []
 
         sentences = self._parse_pipe_output(raw)
-        print(f"got {len(sentences)} sentences.")
+        print(f"got {len(sentences)} raw sentences.", end=" ")
+
+        # Near-duplicate filter against existing pool
+        if existing_sentences:
+            before = len(sentences)
+            sentences = self.deduplicate(existing_sentences, sentences)
+            n_removed = before - len(sentences)
+            if n_removed > 0:
+                print(f"Removed {n_removed} near-duplicate(s).", end=" ")
+
+        print(f"Kept {len(sentences)}.")
         return sentences
 
 
@@ -280,21 +369,35 @@ def build_multihot_df(
     return pd.DataFrame(records)
 
 
-def load_existing_as_multihot(csv_path: str) -> pd.DataFrame:
+def load_dataset_as_multihot(csv_path: str, encoding: str = "utf-8-sig") -> pd.DataFrame:
     """
-    Load dataset_multiintent.csv and convert to multi-hot format.
+    Load a CSV in (question, Intent) format and convert to multi-hot.
+    Used for both original seed and accumulated output.
 
-    Input format:  question, Intent  (semicolon-separated labels)
+    Input format:  question, Intent (semicolon-separated labels)
     Output format: text, <8 binary intent columns>
     """
-    df = pd.read_csv(csv_path, encoding="utf-8-sig")
-    df = df.rename(columns={"question": "text", "Intent": "_labels_raw"})
+    try:
+        df = pd.read_csv(csv_path, encoding=encoding)
+    except UnicodeDecodeError:
+        df = pd.read_csv(csv_path, encoding="latin-1")
+
+    # Handle column names (renaming 'question' to 'text' for internal consistency)
+    if "question" in df.columns:
+        df = df.rename(columns={"question": "text"})
+    
+    if "Intent" not in df.columns:
+        # Fallback if somehow it's already multi-hot (for safety during transition)
+        if all(c in df.columns for c in ALL_INTENTS):
+            return df[["text"] + ALL_INTENTS]
+        raise ValueError(f"CSV at {csv_path} missing 'Intent' column.")
+
     df = df.dropna(subset=["text"]).copy()
-    df["_labels_raw"] = df["_labels_raw"].fillna("")
+    df["Intent"] = df["Intent"].fillna("")
 
     records = []
     for _, row in df.iterrows():
-        labels = {lbl.strip() for lbl in str(row["_labels_raw"]).split(";") if lbl.strip()}
+        labels = {lbl.strip() for lbl in str(row["Intent"]).split(";") if lbl.strip()}
 
         rec = {"text": row["text"]}
         for intent in ALL_INTENTS:
@@ -302,6 +405,25 @@ def load_existing_as_multihot(csv_path: str) -> pd.DataFrame:
         records.append(rec)
 
     return pd.DataFrame(records)
+
+
+def save_as_training_format(df: pd.DataFrame, output_path: str) -> None:
+    """
+    Convert internal multi-hot DataFrame back to (question, Intent) format and save.
+    """
+    out_records = []
+    for _, row in df.iterrows():
+        # Find all intents where value is 1
+        active_labels = [intent for intent in ALL_INTENTS if row[intent] == 1]
+        intent_str = "; ".join(active_labels)
+        
+        out_records.append({
+            "question": row["text"],
+            "Intent": intent_str
+        })
+    
+    df_out = pd.DataFrame(out_records)
+    df_out.to_csv(output_path, index=False, encoding="utf-8-sig")
 
 
 # ========================================================================
@@ -340,7 +462,33 @@ def run_multilabel_augmentation() -> None:
         *intents, n = entry
         print(f"  {' + '.join(intents):<55} {n:>5}")
 
-    # 3. Generate
+    # 3. Load existing dataset FIRST (needed for deduplication during generation)
+    #    Accumulated output or seed fallback
+    print(f"\n{'='*70}")
+    print("Loading existing dataset...")
+
+    # Check if accumulated output already exists and has content
+    if os.path.exists(OUTPUT_CSV) and os.path.getsize(OUTPUT_CSV) > 10:
+        try:
+            df_existing = load_dataset_as_multihot(OUTPUT_CSV)
+            print(f"  Loaded {len(df_existing)} accumulated rows from {os.path.basename(OUTPUT_CSV)}")
+        except Exception as exc:
+            print(f"  [WARNING] Failed to read {OUTPUT_CSV}: {exc}")
+            print(f"  Falling back to seed dataset...")
+            df_existing = pd.DataFrame(columns=["text"] + ALL_INTENTS)
+    else:
+        # First run — load original seed dataset
+        try:
+            df_existing = load_dataset_as_multihot(SEED_DATASET_CSV)
+            print(f"  First run — loaded {len(df_existing)} seed rows from {os.path.basename(SEED_DATASET_CSV)}")
+        except FileNotFoundError:
+            print(f"  [WARNING] {SEED_DATASET_CSV} not found. Using augmented data only.")
+            df_existing = pd.DataFrame(columns=["text"] + ALL_INTENTS)
+
+    # Build existing text pool for near-duplicate checking
+    existing_texts: list[str] = df_existing["text"].dropna().tolist()
+
+    # 4. Generate
     augmentor = MultiLabelAugmentor(api_key=api_key)
     augmented_frames: list[pd.DataFrame] = []
 
@@ -358,7 +506,7 @@ def run_multilabel_augmentation() -> None:
         print(f"  Target: {n_samples} samples")
 
         try:
-            sentences = augmentor.generate(intents, n_samples)
+            sentences = augmentor.generate(intents, n_samples, existing_texts)
         except Exception as exc:
             print(f"  [ERROR] {exc}")
             sentences = []
@@ -366,6 +514,9 @@ def run_multilabel_augmentation() -> None:
         if sentences:
             df_combo = build_multihot_df(sentences, intents)
             augmented_frames.append(df_combo)
+            # Add new sentences to the pool so subsequent combos
+            # in the same run also check against them
+            existing_texts.extend(sentences)
             print(f"  Collected: {len(df_combo)} rows")
         else:
             print("  No sentences collected.")
@@ -374,16 +525,6 @@ def run_multilabel_augmentation() -> None:
         if i < len(COMBINATION_CONFIG):
             print(f"  Waiting {CALL_DELAY:.0f}s...")
             time.sleep(CALL_DELAY)
-
-    # 4. Load existing dataset
-    print(f"\n{'='*70}")
-    print("Loading existing dataset...")
-    try:
-        df_existing = load_existing_as_multihot(EXISTING_DATASET_CSV)
-        print(f"  Loaded {len(df_existing)} rows from {os.path.basename(EXISTING_DATASET_CSV)}")
-    except FileNotFoundError:
-        print(f"  [WARNING] {EXISTING_DATASET_CSV} not found. Using augmented data only.")
-        df_existing = pd.DataFrame(columns=["text"] + ALL_INTENTS)
 
     # 5. Merge & save
     df_augmented = (
@@ -402,10 +543,19 @@ def run_multilabel_augmentation() -> None:
     # Drop empty text rows
     df_final = df_final.dropna(subset=["text"])
     df_final = df_final[df_final["text"].str.strip() != ""]
+
+    # Deduplicate by text (keep first occurrence) to prevent
+    # duplicates from accumulating across multiple runs
+    before_dedup = len(df_final)
+    df_final = df_final.drop_duplicates(subset=["text"], keep="first")
+    n_dupes = before_dedup - len(df_final)
+    if n_dupes > 0:
+        print(f"  Removed {n_dupes} duplicate row(s).")
+
     df_final = df_final.reset_index(drop=True)
 
     try:
-        df_final.to_csv(OUTPUT_CSV, index=False, encoding="utf-8")
+        save_as_training_format(df_final, OUTPUT_CSV)
     except Exception as exc:
         print(f"\n[ERROR] Failed to save CSV: {exc}")
         raise

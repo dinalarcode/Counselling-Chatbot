@@ -1,4 +1,5 @@
 import os
+import time
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import ChatOpenAI
@@ -63,6 +64,10 @@ class RAGEngine:
 
     # Stages where bible verses should be retrieved and injected
     BIBLE_VERSE_STAGES = ['relaksasi', 'solusi']
+
+    # Stages where intent classification can be safely skipped (no verse retrieval,
+    # accumulated intents from these stages don't feed primary_intents)
+    SKIP_CLASSIFICATION_STAGES = frozenset({'pembukaan'})
 
     def __init__(self, model_name="gemini-2.5-flash", temperature=0.7):
         # Retrieve the API key from environment variables
@@ -151,16 +156,29 @@ Respons Anda:
             self.STAGE_INSTRUCTIONS["pembahasan"]  # fallback
         )
 
-        # 1. Get Intent Predictions (always run for the current turn)
-        prediction = self.classifier.predict(user_input)
-        detected_intents = prediction.get('inten_terdeteksi', [])
-        intents_str = ", ".join(detected_intents) if detected_intents else "Umum"
+        _t0 = time.perf_counter()
+
+        # 1. Intent classification — skipped in stages where it has no effect on
+        # the response (no bible retrieval, intents not fed into primary_intents)
+        if current_stage in self.SKIP_CLASSIFICATION_STAGES:
+            detected_intents = []
+            intents_str = "Umum"
+            _t1 = time.perf_counter()
+            print(f"[TIMING] classifier.predict: skipped (stage={current_stage})")
+        else:
+            prediction = self.classifier.predict(user_input)
+            detected_intents = prediction.get('inten_terdeteksi', [])
+            intents_str = ", ".join(detected_intents) if detected_intents else "Umum"
+            _t1 = time.perf_counter()
+            print(f"[TIMING] classifier.predict: {(_t1 - _t0) * 1000:.1f}ms")
 
         # 2. Get Example Answer from QnA DB
         qna_results = self.vector_db.search_qna(user_input, k=1)
         example_answer = ""
         if qna_results:
             example_answer = qna_results[0].metadata.get('answer', '')
+        _t2 = time.perf_counter()
+        print(f"[TIMING] search_qna: {(_t2 - _t1) * 1000:.1f}ms")
 
         # 3. Get Bible Verses — ONLY during relaksasi (primary) and solusi (conditional)
         # This prevents premature spiritual guidance before the user has shared their burden.
@@ -179,6 +197,9 @@ Respons Anda:
             if verse_results:
                 bible_reference = verse_results[0].get('reference', '')
                 bible_verses = verse_results[0].get('text', '')
+        _t3 = time.perf_counter()
+        if current_stage in self.BIBLE_VERSE_STAGES:
+            print(f"[TIMING] retrieve_verse: {(_t3 - _t2) * 1000:.1f}ms")
 
         # 4. Build the bible section dynamically
         # Only include in the prompt if we actually have a verse
@@ -198,6 +219,10 @@ Respons Anda:
             "example_answer": example_answer,
             "bible_section": bible_section
         })
+
+        _t4 = time.perf_counter()
+        print(f"[TIMING] chain.invoke (LLM): {(_t4 - _t3) * 1000:.1f}ms")
+        print(f"[TIMING] total generate_response: {(_t4 - _t0) * 1000:.1f}ms")
 
         # Return the generated text and the context used (for development/debugging)
         return {

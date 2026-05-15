@@ -1,8 +1,8 @@
 class config:
     BATCH_SIZE = 16
-    max_len = 128
+    max_len = 50
     epochs = 50
-    LEARNING_RATE = 1e-5
+    LEARNING_RATE = 2e-5
     # MODEL_NAME = 'indobenchmark/indobert-lite-base-p1'
     # MODEL_NAME = 'sentence-transformers/all-MiniLM-L6-v2'
     MODEL_NAME = 'indolem/indobertweet-base-uncased' # sejauh ini paling akurat secara predict
@@ -12,6 +12,6 @@ class config:
     thresold = 0.5
     device = 'cuda'
     hidden_size = 768 
-    metric_files_name = f'models/multilabel/{MODEL_NAME.replace("/", "-")}_maxlen128_LR1e-5_training_metrics.png'
+    metric_files_name = f'models/multilabel/{MODEL_NAME.replace("/", "-")}_afteraugmented_training_metrics.png'
 
 opt = config()

@@ -118,6 +118,12 @@ class SessionManager:
         'penutupan': [],  # no transition from penutupan
     }
 
+    # Pre-compiled regex patterns for fast matching (compiled once at class load)
+    _COMPILED_SIGNALS = {
+        stage: [re.compile(p) for p in patterns]
+        for stage, patterns in TRANSITION_SIGNALS.items()
+    }
+
     def __init__(self, rag_engine):
         """
         Initialize the session manager.
@@ -270,16 +276,16 @@ class SessionManager:
     def _detect_transition_signal(self, user_input, stage):
         """
         Check if the user's message contains transition cues for the given stage.
-        Uses regex pattern matching on Indonesian phrases.
+        Uses pre-compiled regex patterns for fast matching.
         """
-        signals = self.TRANSITION_SIGNALS.get(stage, [])
-        if not signals:
+        compiled = self._COMPILED_SIGNALS.get(stage, [])
+        if not compiled:
             return False
 
         text_lower = user_input.lower().strip()
 
-        for pattern in signals:
-            if re.search(pattern, text_lower):
+        for pattern in compiled:
+            if pattern.search(text_lower):
                 return True
 
         return False

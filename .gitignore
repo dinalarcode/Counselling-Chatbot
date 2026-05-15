@@ -4,6 +4,8 @@
 /*.pyo
 /*.pym
 
+.env
+
 checkpoint/
 /*pt
 
