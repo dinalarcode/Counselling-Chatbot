@@ -16,10 +16,11 @@ _aug_path = 'data/augmentation/dataset_multiintent_augmented.csv'
 _orig_path = 'data/dataset_multiintent.csv'
 
 # Use augmented only if toggled ON AND the file exists
-# if USE_AUGMENTED and os.path.exists(_aug_path):
-#     _dataset_path = _aug_path
-# else:
-dsqi = pd.read_csv(_aug_path, encoding='utf-8-sig') # dsqi = dataset question intent
+if USE_AUGMENTED and os.path.exists(_aug_path):
+    _dataset_path = _aug_path
+else:
+    _dataset_path = _orig_path
+dsqi = pd.read_csv(_dataset_path, encoding='utf-8-sig') # dsqi = dataset question intent
 
 tokenizer = AutoTokenizer.from_pretrained(opt.MODEL_NAME)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

@@ -62,19 +62,49 @@ OUTPUT_CSV = os.path.join(SCRIPT_DIR, "dataset_multiintent_augmented.csv")
 # The last element is always the number of samples to generate.
 # All preceding elements are intent names that must co-occur.
 COMBINATION_CONFIG: list[tuple] = [
-    # ("Perasaan Marah dan Frustasi",  "Perasaan Sedih dan Kehilangan",     50),
-    # ("Perasaan Takut dan Kecemasan", "Reaksi Terkejut dan Tidak Terduga", 30),
-    ("Rasa Syukur dan Apresiasi",    "Perasaan Percaya",                  30),
-    # ("Perasaan Benci dan Jijik",     "Perasaan Sedih dan Kehilangan",     30),
-    # ("Perasaan Marah dan Frustasi",  "Perasaan Takut dan Kecemasan",      30),
-    # ("Perasaan Benci dan Jijik", "Reaksi Terkejut dan Tidak Terduga",     50),
-    # ("Rasa Syukur dan Apresiasi", "Perasaan Sebelum Menghadapi Kejadian", 50),
+    # ("Menyatakan Perasaan Marah dan Frustasi",  "Menyatakan Perasaan Sedih dan Kehilangan",     50),
+    ("Menyatakan Perasaan Takut dan Kecemasan", "Menyatakan Reaksi Terkejut dan Tidak Terduga", 30),
+    ("Menyatakan Rasa Syukur dan Apresiasi",    "Menyatakan Perasaan Percaya",                  30),
+    # ("Menyatakan Perasaan Benci dan Jijik",     "Menyatakan Perasaan Sedih dan Kehilangan",     30),
+    # ("Menyatakan Perasaan Marah dan Frustasi",  "Menyatakan Perasaan Takut dan Kecemasan",      30),
+    # ("Menyatakan Perasaan Benci dan Jijik", "Menyatakan Reaksi Terkejut dan Tidak Terduga",     50),
+    ("Menyatakan Rasa Syukur dan Apresiasi", "Menyatakan Perasaan Sebelum Menghadapi Kejadian", 50),
+    ("Menyatakan Perasaan Takut dan Kecemasan", "Menyatakan Perasaan Sedih dan Kehilangan", 30),
+    ("Menyatakan Perasaan Percaya", "Menyatakan Perasaan Sebelum Menghadapi Kejadian", 30),
+    ("Menyatakan Perasaan Takut dan Kecemasan", "Menyatakan Perasaan Sedih dan Kehilangan", 30),
+    # ("Menyatakan Perasaan Marah dan Frustasi", "Menyatakan Perasaan Percaya", 30),
+    # ("Menyatakan Perasaan Benci dan Jijik", "Menyatakan Rasa Syukur dan Apresiasi", 30),
+
+    # ("Menyatakan Perasaan Takut dan Kecemasan", "Mengisyaratkan Butuh Bantuan Profesional", 30),
+    # ("Menyatakan Perasaan Percaya", "Mengisyaratkan Butuh Bantuan Profesional", 30),
+    # ("Menyatakan Perasaan Benci dan Jijik", "Mengisyaratkan Butuh Bantuan Profesional", 30),
+    # ("Menyatakan Perasaan Takut dan Kecemasan", "Mengisyaratkan Butuh Bantuan Profesional", 30),
+    # ("Menyatakan Perasaan Marah dan Frustasi", "Mengisyaratkan Butuh Bantuan Profesional", 30),
+    # ("Menyatakan Perasaan Benci dan Jijik", "Mengisyaratkan Butuh Bantuan Profesional", 30),
+    # ("Menyatakan Perasaan Takut dan Kecemasan", "Mengisyaratkan Gejala Fisik", 30),
+    # ("Menyatakan Perasaan Percaya", "Mengisyaratkan Gejala Fisik", 30),
+    # ("Menyatakan Perasaan Benci dan Jijik", "Mengisyaratkan Gejala Fisik", 30),
+    # ("Menyatakan Perasaan Takut dan Kecemasan", "Mengisyaratkan Gejala Fisik", 30),
+    # ("Menyatakan Perasaan Marah dan Frustasi", "Mengisyaratkan Gejala Fisik", 30),
+    # ("Menyatakan Perasaan Benci dan Jijik", "Mengisyaratkan Gejala Fisik", 30),
     # 3-label example:
-    # ("Reaksi Terkejut dan Tidak Terduga", "Perasaan Benci dan Jijik", "Rasa Syukur dan Apresiasi", 50),
-    # ("Reaksi Terkejut dan Tidak Terduga", "Perasaan Benci dan Jijik", "Perasaan Sebelum Menghadapi Kejadian", 50),
-    ("Rasa Syukur dan Apresiasi", "Perasaan Sebelum Menghadapi Kejadian", "Perasaan Percaya", 50),
-    # ("Perasaan Percaya", "Perasaan Marah dan Frustasi", "Perasaan Takut dan Kecemasan", 50),
-    # ("Perasaan Marah dan Frustasi", "Perasaan Takut dan Kecemasan", "Perasaan Sedih dan Kehilangan", 50),
+    ("Menyatakan Reaksi Terkejut dan Tidak Terduga", "Menyatakan Perasaan Sedih dan Kehilangan", "Menyatakan Rasa Syukur dan Apresiasi", 50),
+    ("Menyatakan Reaksi Terkejut dan Tidak Terduga", "Menyatakan Rasa Syukur dan Apresiasi", "Menyatakan Perasaan Sebelum Menghadapi Kejadian", 50),
+    ("Menyatakan Rasa Syukur dan Apresiasi", "Menyatakan Perasaan Sebelum Menghadapi Kejadian", "Menyatakan Perasaan Percaya", 50),
+    # ("Menyatakan Perasaan Percaya", "Menyatakan Perasaan Marah dan Frustasi", "Menyatakan Perasaan Takut dan Kecemasan", 50),
+    # ("Menyatakan Perasaan Marah dan Frustasi", "Menyatakan Perasaan Takut dan Kecemasan", "Menyatakan Perasaan Sedih dan Kehilangan", 50),
+    # ("Menyatakan Perasaan Takut dan Kecemasan", "Mengisyaratkan Butuh Bantuan Profesional", "Mengisyaratkan Gejala Fisik", 50),
+    # ("Menyatakan Perasaan Percaya", "Mengisyaratkan Butuh Bantuan Profesional", "Mengisyaratkan Gejala Fisik", 50),
+    # ("Menyatakan Perasaan Benci dan Jijik", "Mengisyaratkan Butuh Bantuan Profesional", "Mengisyaratkan Gejala Fisik", 50),
+    # ("Menyatakan Perasaan Takut dan Kecemasan", "Mengisyaratkan Butuh Bantuan Profesional", "Mengisyaratkan Gejala Fisik", 50),
+    # ("Menyatakan Perasaan Marah dan Frustasi", "Mengisyaratkan Butuh Bantuan Profesional", "Mengisyaratkan Gejala Fisik", 50),
+    # ("Menyatakan Perasaan Benci dan Jijik", "Mengisyaratkan Butuh Bantuan Profesional", "Mengisyaratkan Gejala Fisik", 50),
+    # ("Menyatakan Perasaan Takut dan Kecemasan", "Mengisyaratkan Butuh Bantuan Profesional", "Mengisyaratkan Gejala Fisik", 50),
+    # ("Menyatakan Perasaan Percaya", "Mengisyaratkan Butuh Bantuan Profesional", "Mengisyaratkan Gejala Fisik", 50),
+    # ("Menyatakan Perasaan Benci dan Jijik", "Mengisyaratkan Butuh Bantuan Profesional", "Mengisyaratkan Gejala Fisik", 50),
+    # ("Menyatakan Perasaan Takut dan Kecemasan", "Mengisyaratkan Butuh Bantuan Profesional", "Mengisyaratkan Gejala Fisik", 50),
+    # ("Menyatakan Perasaan Marah dan Frustasi", "Mengisyaratkan Butuh Bantuan Profesional", "Mengisyaratkan Gejala Fisik", 50),
+    # ("Menyatakan Perasaan Benci dan Jijik", "Mengisyaratkan Butuh Bantuan Profesional", "Mengisyaratkan Gejala Fisik", 50),
 ]
 
 
@@ -83,33 +113,39 @@ COMBINATION_CONFIG: list[tuple] = [
 # ========================================================================
 
 ALL_INTENTS: list[str] = [
-    "Perasaan Benci dan Jijik",
-    "Perasaan Percaya",
-    "Rasa Syukur dan Apresiasi",
-    "Perasaan Sedih dan Kehilangan",
-    "Reaksi Terkejut dan Tidak Terduga",
-    "Perasaan Takut dan Kecemasan",
-    "Perasaan Marah dan Frustasi",
-    "Perasaan Sebelum Menghadapi Kejadian",
+    "Menyatakan Perasaan Benci dan Jijik",
+    "Menyatakan Perasaan Percaya",
+    "Menyatakan Rasa Syukur dan Apresiasi",
+    "Menyatakan Perasaan Sedih dan Kehilangan",
+    "Menyatakan Reaksi Terkejut dan Tidak Terduga",
+    "Menyatakan Perasaan Takut dan Kecemasan",
+    "Menyatakan Perasaan Marah dan Frustasi",
+    "Menyatakan Perasaan Sebelum Menghadapi Kejadian",
+    "Mengisyaratkan Gejala Fisik",
+    "Mengisyaratkan Butuh Bantuan Profesional"
 ]
 
 INTENT_DESCRIPTIONS: dict[str, str] = {
-    "Perasaan Benci dan Jijik":
+    "Menyatakan Perasaan Benci dan Jijik":
         "rasa benci, jijik, enggan, muak, atau menolak seseorang/situasi",
-    "Perasaan Percaya":
+    "Menyatakan Perasaan Percaya":
         "rasa percaya, terbuka, mau mencoba saran, atau mengikuti proses konseling",
-    "Rasa Syukur dan Apresiasi":
+    "Menyatakan Rasa Syukur dan Apresiasi":
         "rasa syukur, lega, apresiasi, merasa lebih baik, atau berterima kasih",
-    "Perasaan Sedih dan Kehilangan":
+    "Menyatakan Perasaan Sedih dan Kehilangan":
         "rasa sedih, kehilangan, duka, tidak berharga, putus asa, atau kesepian",
-    "Reaksi Terkejut dan Tidak Terduga":
+    "Menyatakan Reaksi Terkejut dan Tidak Terduga":
         "kaget, tidak percaya, bingung atas sesuatu yang mengejutkan",
-    "Perasaan Takut dan Kecemasan":
+    "Menyatakan Perasaan Takut dan Kecemasan":
         "rasa takut, khawatir, cemas, panik, gugup, atau merasa terancam",
-    "Perasaan Marah dan Frustasi":
+    "Menyatakan Perasaan Marah dan Frustasi":
         "kemarahan, frustrasi, kesal, jengkel, atau tidak sabar",
-    "Perasaan Sebelum Menghadapi Kejadian":
+    "Menyatakan Perasaan Sebelum Menghadapi Kejadian":
         "antisipasi, persiapan mental, niat/rencana sebelum menghadapi tantangan",
+    "Mengisyaratkan Gejala Fisik":
+        "mengeluh sakit kepala, pusing, mual, sesak napas, gemetar, kelelahan, atau gejala fisik lainnya",
+    "Mengisyaratkan Butuh Bantuan Profesional":
+        "meminta bantuan, mencari dukungan psikologis, konseling, atau bantuan dari profesional"
 }
 
 
@@ -375,7 +411,7 @@ def load_dataset_as_multihot(csv_path: str, encoding: str = "utf-8-sig") -> pd.D
     Used for both original seed and accumulated output.
 
     Input format:  question, Intent (semicolon-separated labels)
-    Output format: text, <8 binary intent columns>
+    Output format: text, <10 binary intent columns>
     """
     try:
         df = pd.read_csv(csv_path, encoding=encoding)
