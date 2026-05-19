@@ -326,7 +326,9 @@ Defined via `MultiLabelBinarizer` fitted on training CSV in `data/data_preparati
 
 ### 🎯 Thesis Evaluation (Required Before Submission)
 
-- [ ] **Full embedding model comparison** — Run `run_trainer.py` for each of the 6+ MODEL_NAME variants; aggregate Precision/Recall/F1 into a comparison table
+- [ ] **LABAN backbone comparison** — Run `evaluation/compare_embed_models.py` to train 6 transformer backbones with identical hyperparameters (50 epochs, same 80/10/10 split):
+  - IndoBERTweet, IndoBERT-Lite, IndoBERT, MiniLM-L6-v2, Multilingual-E5-small, DistilBERT-multilingual
+  - Output: `evaluation/results/backbone_comparison_summary.csv` (test F1/P/R per model), `backbone_comparison_per_intent.csv` (per-intent breakdown), `*_training_curve.png`
 - [ ] **Seen / Unseen test split** — Confirm zero-shot evaluation protocol; ensure test set contains utterances for unseen intent combinations
 - [ ] **Cosine similarity heatmap** — Generate per-intent-pair cosine similarity matrix visualization from label embeddings
 - [ ] **RAGAS evaluation** — Run RAGAS metrics (faithfulness, answer relevancy, context precision, context recall) over a sample of chatbot conversations
