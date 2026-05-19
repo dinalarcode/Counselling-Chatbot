@@ -48,16 +48,21 @@ Response → user
 
 **Counseling Stage Flow:**
 
-| # | Stage | Min Turns | Max Turns | Bible Verses | Classifier |
-|---|-------|-----------|-----------|--------------|------------|
-| 1 | pembukaan | 1 | 2 | No | **Skipped** |
-| 2 | pembahasan | 1 | 4 | No | Yes (accumulates primary_intents) |
-| 3 | intervensi | 1 | 3 | No | Yes |
-| 4 | solusi | 1 | 3 | Yes | Yes |
-| 5 | relaksasi | 1 | 3 | Yes | Yes |
-| 6 | penutupan | 1 | ∞ | No | Yes |
+| # | Stage | Min Turns | Max Turns | Bible Verses | Classifier | Special |
+|---|-------|-----------|-----------|--------------|------------|--------|
+| 1 | pembukaan | 1 | 2 | No | **Skipped** | |
+| 2 | pembahasan | 1 | 4 | No | Yes (accumulates primary_intents) | |
+| 3 | intervensi | 1 | 3 | No | Yes | |
+| 4 | solusi | 1 | 3 | Yes | Yes | CBT guidance if physical symptoms |
+| 5 | relaksasi | 1 | 3 | Yes | Yes | CBT guidance if physical symptoms |
+| 6 | penutupan | 1 | ∞ | No | Yes | Offers professional referral |
+| B | bantuan_profesional | — | — | Yes | Skipped | Branch stage + button |
 
 Auto-advances if max turns exceeded or user sends a transition signal phrase.
+
+**Branch flows:**
+- **Emergency:** `Mengisyaratkan Butuh Bantuan Profesional` detected at any stage → immediate jump to `bantuan_profesional`
+- **Penutupan offer:** User accepts professional referral offer at `penutupan` → transition to `bantuan_profesional`
 
 ---
 
@@ -113,19 +118,21 @@ The_Chatbot/
 
 ---
 
-## 4. The 8 Intent Labels
+## 4. The 10 Intent Labels
 
 Defined in `data/data_preparation.py` via `MultiLabelBinarizer` fitted on training data.
 Current intents (from training CSV):
 
-1. Kekhawatiran dan Kecemasan
-2. Perasaan Percaya
-3. Perasaan Sedih dan Kehilangan
-4. Perasaan Sebelum Menghadapi Kejadian
-5. Perasaan Takut dan Kecemasan
-6. Perasaan tidak Berharga dan Rendah Diri
-7. Perasaan tidak Berdaya
-8. Rasa Syukur dan Apresiasi
+1. Mengisyaratkan Butuh Bantuan Profesional
+2. Mengisyaratkan Gejala Fisik
+3. Menyatakan Perasaan Benci dan Jijik
+4. Menyatakan Perasaan Marah dan Frustasi
+5. Menyatakan Perasaan Percaya
+6. Menyatakan Perasaan Sebelum Menghadapi Kejadian
+7. Menyatakan Perasaan Sedih dan Kehilangan
+8. Menyatakan Perasaan Takut dan Kecemasan
+9. Menyatakan Rasa Syukur dan Apresiasi
+10. Menyatakan Reaksi Terkejut dan Tidak Terduga
 
 > **STOP CONDITION (CLAUDE.md):** Adding or removing an intent changes the model output dimension and requires full re-training. Never do this without explicit user confirmation.
 

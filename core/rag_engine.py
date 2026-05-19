@@ -42,7 +42,7 @@ class RAGEngine:
             "Bantu pengguna merumuskan langkah-langkah konkret yang bisa mereka ambil. "
             "Berikan saran praktis yang realistis dan dorong mereka untuk bertindak. "
             "Jika ada ayat Alkitab yang relevan dan mendukung langkah tersebut, "
-            "sebutkan secara lembut sebagai penguat — bukan menghakimi, "
+            "sebutkan secara lembut sebagai penguat \u2014 bukan menghakimi, "
             "melainkan sebagai sumber kekuatan dan inspirasi."
         ),
         "relaksasi": (
@@ -58,16 +58,41 @@ class RAGEngine:
             "Sesi konseling hampir selesai. Ringkas poin-poin penting yang sudah dibahas, "
             "berikan dorongan semangat terakhir, dan ucapkan terima kasih atas keterbukaan pengguna. "
             "Akhiri dengan doa singkat atau harapan baik. "
-            "Jangan menyertakan ayat Alkitab baru, cukup berikan penutupan yang hangat."
+            "Jangan menyertakan ayat Alkitab baru, cukup berikan penutupan yang hangat. "
+            "Di akhir respons, tawarkan dengan lembut: "
+            "'Jika kamu merasa membutuhkan pendampingan lebih lanjut dari konselor profesional, "
+            "kami bisa membantu menghubungkanmu. Apakah kamu mau?'"
+        ),
+        "bantuan_profesional": (
+            "Pengguna menunjukkan tanda-tanda bahwa mereka membutuhkan bantuan dari konselor profesional. "
+            "Sampaikan dengan penuh empati bahwa keputusan mereka untuk mencari bantuan adalah langkah yang sangat berani dan tepat. "
+            "Tegaskan bahwa mencari pertolongan bukanlah tanda kelemahan, melainkan tanda kekuatan dan keberanian. "
+            "Gunakan ayat Alkitab yang diberikan untuk menguatkan bahwa Tuhan mendukung mereka dalam langkah ini. "
+            "Informasikan bahwa mereka dapat melanjutkan untuk berbicara dengan konselor profesional "
+            "dengan menekan tombol yang akan muncul di layar. "
+            "Gunakan nada yang menenangkan, penuh kasih, dan memberikan harapan."
         ),
     }
 
+    # Additional CBT-based guidance injected into solusi/relaksasi prompts
+    # when the patient has shown physical symptoms (Mengisyaratkan Gejala Fisik)
+    PHYSICAL_SYMPTOM_CBT_GUIDANCE = (
+        "Selain itu, pengguna juga menunjukkan gejala fisik (seperti gangguan tidur, "
+        "kelelahan berlebihan, sesak napas, atau perubahan nafsu makan) yang sering "
+        "dipicu oleh kecemasan, pikiran berlebihan, dan perubahan hormonal. "
+        "Sarankan teknik-teknik coping praktis dari Cognitive Behavioral Therapy (CBT): "
+        "latihan pernapasan dalam (deep breathing), teknik mindfulness, dan strategi "
+        "relaksasi tubuh. Dorong juga aktivasi perilaku \u2014 ajak pengguna melakukan "
+        "aktivitas positif dan bertujuan untuk memulihkan energi fisik dan memperbaiki "
+        "suasana hati secara keseluruhan."
+    )
+
     # Stages where bible verses should be retrieved and injected
-    BIBLE_VERSE_STAGES = ['relaksasi', 'solusi']
+    BIBLE_VERSE_STAGES = ['relaksasi', 'solusi', 'bantuan_profesional']
 
     # Stages where intent classification can be safely skipped (no verse retrieval,
     # accumulated intents from these stages don't feed primary_intents)
-    SKIP_CLASSIFICATION_STAGES = frozenset({'pembukaan'})
+    SKIP_CLASSIFICATION_STAGES = frozenset({'pembukaan', 'bantuan_profesional'})
 
     def __init__(self, model_name="gemini-2.5-flash", temperature=0.7):
         # Retrieve the API key from environment variables
@@ -138,7 +163,7 @@ Respons Anda:
         # Create the LangChain processing chain
         self.chain = self.prompt_template | self.llm
 
-    def generate_response(self, user_input, current_stage="pembahasan", override_intents=None):
+    def generate_response(self, user_input, current_stage="pembahasan", override_intents=None, has_physical_symptoms=False):
         """
         Generate a counseling response.
 
@@ -149,12 +174,18 @@ Respons Anda:
                               instead of the current turn's detected intents. This allows
                               the SessionManager to pass accumulated intents from earlier
                               stages (e.g., pembahasan) for more relevant verse selection.
+            has_physical_symptoms: If True, inject CBT-based physical symptom guidance
+                                   into solusi/relaksasi stage instructions.
         """
         # Get stage-specific behavioral instruction
         stage_instruction = self.STAGE_INSTRUCTIONS.get(
             current_stage,
             self.STAGE_INSTRUCTIONS["pembahasan"]  # fallback
         )
+
+        # Inject CBT physical symptom guidance when applicable
+        if has_physical_symptoms and current_stage in ('solusi', 'relaksasi'):
+            stage_instruction = stage_instruction + " " + self.PHYSICAL_SYMPTOM_CBT_GUIDANCE
 
         _t0 = time.perf_counter()
 

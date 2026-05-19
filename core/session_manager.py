@@ -19,8 +19,41 @@ class SessionManager:
     and transition signals detected in user messages.
     """
 
-    # Ordered counseling stages
+    # Ordered counseling stages (normal linear flow)
     STAGE_ORDER = ['pembukaan', 'pembahasan', 'intervensi', 'solusi', 'relaksasi', 'penutupan']
+
+    # Branch stage — not part of the linear flow; accessed via emergency skip
+    # or penutupan referral offer
+    PROFESSIONAL_STAGE = 'bantuan_profesional'
+
+    # Intent names that trigger special behavior
+    PROFESSIONAL_INTENT = 'Mengisyaratkan Butuh Bantuan Profesional'
+    PHYSICAL_SYMPTOM_INTENT = 'Mengisyaratkan Gejala Fisik'
+
+    # Keyword-based safety net for professional help detection.
+    # These catch suicidal/hopeless expressions that the classifier may miss.
+    # Compiled once at class load for fast matching.
+    PROFESSIONAL_KEYWORDS = [
+        # Suicidal ideation
+        re.compile(r'\bmati\s*(aja|saja)\b', re.IGNORECASE),
+        re.compile(r'\bbunuh\s*diri\b', re.IGNORECASE),
+        re.compile(r'\bmengakhiri\s*(hidup|hidupku|nyawa)\b', re.IGNORECASE),
+        re.compile(r'\bgantung\s*diri\b', re.IGNORECASE),
+        re.compile(r'\bloncat\b.*\b(gedung|jembatan)\b', re.IGNORECASE),
+        re.compile(r'\bmending\s*mati\b', re.IGNORECASE),
+        re.compile(r'\b(lebih\s*baik|mending)\s*(ga|nggak|tidak)\s*ada\b', re.IGNORECASE),
+        re.compile(r'\b(gamau|ga\s*mau|nggak\s*mau|tidak\s*mau)\s*hidup\b', re.IGNORECASE),
+        # Hopelessness / giving up
+        re.compile(r'\bga\s*ada\s*(gunanya|artinya|tujuan)\b', re.IGNORECASE),
+        re.compile(r'\b(gaada|ga\s*ada)\s*(harapan|masa\s*depan)\b', re.IGNORECASE),
+        re.compile(r'\blebih\s*baik\s*(aku|saya|gue)\s*(pergi|hilang|mati)\b', re.IGNORECASE),
+        re.compile(r'\bselesai(kan)?\s*(hidup|semua)\b', re.IGNORECASE),
+        re.compile(r'\b(nyerah|menyerah)\b', re.IGNORECASE),
+        re.compile(r'\bgak?\s*berarti\b', re.IGNORECASE),
+        # Self-harm
+        re.compile(r'\b(nyakitin|menyakiti|melukai)\s*diri\b', re.IGNORECASE),
+        re.compile(r'\b(iris|sayat|potong)\s*(tangan|nadi|pergelangan)\b', re.IGNORECASE),
+    ]
 
     # Minimum turns required before a stage can transition
     MIN_TURNS = {
@@ -29,7 +62,7 @@ class SessionManager:
         'intervensi': 1,
         'solusi': 1,
         'relaksasi': 1,
-        'penutupan': 1,  # no transition from penutupan
+        'penutupan': 1,
     }
 
     # Maximum turns — force transition after this many turns (safety net)
@@ -115,7 +148,17 @@ class SessionManager:
             r'\bamin\b',
             r'\bberkat\b',
         ],
-        'penutupan': [],  # no transition from penutupan
+        'penutupan': [
+            # Transition signals for accepting the professional referral offer
+            r'\biya\b',
+            r'\bmau\b',
+            r'\bboleh\b',
+            r'\boke\b',
+            r'\bbaik\b',
+            r'\bsiap\b',
+            r'\blanjut\b',
+            r'^ya$',
+        ],
     }
 
     # Pre-compiled regex patterns for fast matching (compiled once at class load)
@@ -139,6 +182,8 @@ class SessionManager:
         self.accumulated_intents = Counter()  # intent → frequency
         self.primary_intents = []  # top intents derived from pembahasan
         self.session_ended = False
+        self.has_physical_symptoms = False  # tracks Mengisyaratkan Gejala Fisik across session
+        self.in_professional_stage = False  # True when in bantuan_profesional branch
 
     def chat(self, user_input):
         """
@@ -152,11 +197,13 @@ class SessionManager:
             dict with keys:
                 - response: The chatbot's response text
                 - debug: Debug info dict (stage, turn_count, transitioned, accumulated_intents, etc.)
+                - show_professional_button: True when bantuan_profesional stage is active
         """
         if self.session_ended:
             return {
                 "response": "Sesi konseling sudah berakhir. Semoga kamu merasa lebih baik. Tuhan memberkati!",
-                "debug": {"stage": "ended", "turn_count": self.turn_count}
+                "debug": {"stage": "ended", "turn_count": self.turn_count},
+                "show_professional_button": False
             }
 
         # Record user message in history
@@ -173,7 +220,8 @@ class SessionManager:
         result = self.rag_engine.generate_response(
             user_input,
             current_stage=self.current_stage,
-            override_intents=override_intents
+            override_intents=override_intents,
+            has_physical_symptoms=self.has_physical_symptoms
         )
 
         # Accumulate intents from this turn
@@ -181,24 +229,36 @@ class SessionManager:
         for intent in turn_intents:
             self.accumulated_intents[intent] += 1
 
+        # Track physical symptom intent across the entire session
+        if self.PHYSICAL_SYMPTOM_INTENT in turn_intents:
+            self.has_physical_symptoms = True
+
         # Update primary intents (top intents by frequency)
         self._update_primary_intents()
 
         # Record chatbot response in history
         self.conversation_history.append(("counselor", result['response']))
 
+        # --- Emergency skip: keyword-based safety net ---
+        # Check for suicidal/hopeless keywords BEFORE relying on the classifier.
+        # This catches cases the model misses (e.g., informal/slang expressions).
+        keyword_triggered = self._detect_professional_keywords(user_input)
+
+        # --- Emergency skip: classifier OR keyword based ---
+        if (self.PROFESSIONAL_INTENT in turn_intents or keyword_triggered) and not self.in_professional_stage:
+            return self._enter_professional_stage(user_input)
+
         # Check for transition
         transitioned = False
         previous_stage = self.current_stage
 
         if self._should_transition(user_input):
-            self._advance_stage()
-            transitioned = True
-
-        # Check if we reached penutupan and turn_count > min (session ending)
-        if self.current_stage == 'penutupan' and transitioned:
-            # Next chat after penutupan response would end the session
-            pass
+            # Penutupan → bantuan_profesional (user accepted the referral offer)
+            if self.current_stage == 'penutupan':
+                return self._enter_professional_stage(user_input)
+            else:
+                self._advance_stage()
+                transitioned = True
 
         # Build debug info
         debug = {
@@ -211,11 +271,13 @@ class SessionManager:
             "intents_this_turn": turn_intents,
             "bible_verses": result['context_used']['bible_verses'],
             "example_answer": result['context_used']['example_answer'],
+            "has_physical_symptoms": self.has_physical_symptoms,
         }
 
         return {
             "response": result['response'],
-            "debug": debug
+            "debug": debug,
+            "show_professional_button": False
         }
 
     def force_advance(self):
@@ -301,6 +363,64 @@ class SessionManager:
             if self.current_stage == 'intervensi':
                 self._snapshot_primary_intents()
 
+    def _enter_professional_stage(self, user_input):
+        """
+        Transition to the bantuan_profesional branch stage.
+        Generates a response with a Bible verse about seeking help,
+        sets session_ended, and signals the frontend to show the button.
+        """
+        self.current_stage = self.PROFESSIONAL_STAGE
+        self.in_professional_stage = True
+        self.turn_count = 0
+
+        # Override intents with a meaningful query so FAISS retrieves an
+        # encouraging Bible verse about hope, seeking help, and God's support.
+        # This is hardcoded because the bantuan_profesional stage always needs
+        # the same type of verse regardless of the user's specific words.
+        override = ['pertolongan harapan kekuatan Tuhan membantu tidak sendirian']
+
+        result = self.rag_engine.generate_response(
+            user_input,
+            current_stage=self.PROFESSIONAL_STAGE,
+            override_intents=override,
+            has_physical_symptoms=self.has_physical_symptoms
+        )
+
+        self.session_ended = True
+        self.conversation_history.append(("counselor", result['response']))
+
+        debug = {
+            "stage": self.PROFESSIONAL_STAGE,
+            "new_stage": self.PROFESSIONAL_STAGE,
+            "turn_count": self.turn_count,
+            "transitioned": True,
+            "accumulated_intents": dict(self.accumulated_intents),
+            "primary_intents": self.primary_intents,
+            "intents_this_turn": result['context_used']['intents'],
+            "bible_verses": result['context_used']['bible_verses'],
+            "example_answer": result['context_used']['example_answer'],
+            "has_physical_symptoms": self.has_physical_symptoms,
+        }
+
+        return {
+            "response": result['response'],
+            "debug": debug,
+            "show_professional_button": True
+        }
+
+    def _detect_professional_keywords(self, user_input):
+        """
+        Check if the user's message contains suicidal/hopeless keywords.
+        Acts as a safety net alongside the classifier for critical cases.
+
+        Returns:
+            bool: True if any professional help keyword pattern matches.
+        """
+        for pattern in self.PROFESSIONAL_KEYWORDS:
+            if pattern.search(user_input):
+                return True
+        return False
+
     def _update_primary_intents(self):
         """Update the primary intents list based on accumulated frequency."""
         if self.accumulated_intents:
@@ -324,3 +444,5 @@ class SessionManager:
         self.accumulated_intents = Counter()
         self.primary_intents = []
         self.session_ended = False
+        self.has_physical_symptoms = False
+        self.in_professional_stage = False

@@ -7,27 +7,23 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.documents import Document
 from config import opt
 
-# Indonesian stopwords untuk keyword extraction
-STOPWORDS_ID = {
-    'yang', 'di', 'dan', 'ini', 'itu', 'dengan', 'untuk', 'tidak', 'dari',
-    'dalam', 'akan', 'pada', 'juga', 'saya', 'ke', 'karena', 'sudah',
-    'ada', 'bisa', 'telah', 'mereka', 'kami', 'kamu', 'dia', 'aku',
-    'tapi', 'atau', 'kalau', 'jadi', 'ya', 'apa', 'lagi', 'bukan',
-    'lebih', 'masih', 'sangat', 'hal', 'seperti', 'hanya', 'saat',
-    'ketika', 'setelah', 'sebelum', 'mau', 'punya', 'tahu', 'sama',
-    'tentang', 'perlu', 'banyak', 'belum', 'kak', 'nggak', 'gak',
-    'dong', 'sih', 'nih', 'deh', 'lho', 'kan', 'kok', 'banget',
-    'sekali', 'kayak', 'gimana', 'gitu', 'udah', 'terus', 'pernah',
-    'sedang', 'juga', 'waktu', 'oleh', 'antara', 'setiap', 'bila',
-    'namun', 'lalu', 'bahwa', 'maka', 'sering', 'selalu', 'baru',
-    'harus', 'ingin', 'mungkin', 'bagi', 'meski', 'sambil',
-    'aku', 'saya', 'kita', 'merasa', 'biasa',
-}
+from Sastrawi.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFactory
+
+# Indonesian stopwords: Sastrawi's comprehensive list + colloquial extras
+_sastrawi_factory = StopWordRemoverFactory()
+STOPWORDS_ID = set(_sastrawi_factory.get_stop_words())
+# Tambahkan kata-kata informal/colloquial yang tidak ada di Sastrawi
+STOPWORDS_ID.update({
+    'kak', 'nggak', 'gak', 'dong', 'sih', 'nih', 'deh', 'lho', 'kan',
+    'kok', 'banget', 'kayak', 'gimana', 'gitu', 'udah', 'terus',
+    'aja', 'emang', 'doang', 'cuma', 'tuh', 'yah', 'wah',
+    'gatau', 'gapaham', 'gajelas', 'gamau', 'gaada', 'gabisa',
+})
 
 
 class VectorDBManager:
-    def __init__(self, model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"):
-        self.embeddings = HuggingFaceEmbeddings(model_name=model_name)
+    def __init__(self):
+        self.embeddings = HuggingFaceEmbeddings(model_name=opt.EMBED_MODEL)
         self.bible_db = None
         self.qna_db = None
 

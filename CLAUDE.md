@@ -190,33 +190,46 @@ The_Chatbot/
 - **`hidden_size` must match `MODEL_NAME` output dimension** — no automatic guard. Must be updated manually in `config.py` when switching models.
 - **Checkpoint format:** PyTorch `.pt` file at `checkpoint/IndoBERT_multi_label_zsl.pt`. Never commit binary weights to Git.
 
-### The 8 Intent Labels (fixed)
+### The 10 Intent Labels (fixed)
 
 Defined via `MultiLabelBinarizer` fitted on training CSV in `data/data_preparation.py`:
 
-1. Kekhawatiran dan Kecemasan
-2. Perasaan Percaya
-3. Perasaan Sedih dan Kehilangan
-4. Perasaan Sebelum Menghadapi Kejadian
-5. Perasaan Takut dan Kecemasan
-6. Perasaan tidak Berharga dan Rendah Diri
-7. Perasaan tidak Berdaya
-8. Rasa Syukur dan Apresiasi
+1. Mengisyaratkan Butuh Bantuan Profesional
+2. Mengisyaratkan Gejala Fisik
+3. Menyatakan Perasaan Benci dan Jijik
+4. Menyatakan Perasaan Marah dan Frustasi
+5. Menyatakan Perasaan Percaya
+6. Menyatakan Perasaan Sebelum Menghadapi Kejadian
+7. Menyatakan Perasaan Sedih dan Kehilangan
+8. Menyatakan Perasaan Takut dan Kecemasan
+9. Menyatakan Rasa Syukur dan Apresiasi
+10. Menyatakan Reaksi Terkejut dan Tidak Terduga
 
 ### Counseling Stage Machine
 
-| # | Stage | Min Turns | Max Turns | Bible Verses | Classifier |
-|---|-------|-----------|-----------|:---:|:---:|
-| 1 | `pembukaan` | 1 | 2 | ✗ | **Skipped** |
-| 2 | `pembahasan` | 1 | 4 | ✗ | ✓ (accumulates `primary_intents`) |
-| 3 | `intervensi` | 1 | 3 | ✗ | ✓ |
-| 4 | `solusi` | 1 | 3 | ✓ | ✓ |
-| 5 | `relaksasi` | 1 | 3 | ✓ | ✓ |
-| 6 | `penutupan` | 1 | ∞ | ✗ | ✓ |
+| # | Stage | Min Turns | Max Turns | Bible Verses | Classifier | Special |
+|---|-------|-----------|-----------|:---:|:---:|---|
+| 1 | `pembukaan` | 1 | 2 | ✗ | **Skipped** | |
+| 2 | `pembahasan` | 1 | 4 | ✗ | ✓ (accumulates `primary_intents`) | |
+| 3 | `intervensi` | 1 | 3 | ✗ | ✓ | |
+| 4 | `solusi` | 1 | 3 | ✓ | ✓ | CBT guidance if physical symptoms |
+| 5 | `relaksasi` | 1 | 3 | ✓ | ✓ | CBT guidance if physical symptoms |
+| 6 | `penutupan` | 1 | ∞ | ✗ | ✓ | Offers professional referral |
+| B | `bantuan_profesional` | — | — | ✓ | **Skipped** | Branch stage (see below) |
 
 - Stage advances automatically if max turns exceeded or user sends a regex-matched transition signal.
 - `primary_intents` are snapshotted at `pembahasan → intervensi` transition; `override_intents` ensures accumulated intents (not just current-turn intents) drive Bible verse selection.
 - **Do not alter stage transition logic** without explicit user confirmation — it affects therapeutic flow.
+
+#### Physical Symptom CBT Guidance
+- When `Mengisyaratkan Gejala Fisik` is detected at any point during the session, the `has_physical_symptoms` flag is set.
+- During `solusi` and `relaksasi`, extra CBT-based guidance is injected into the LLM prompt: deep breathing, mindfulness, relaxation strategies, and behavioral activation.
+
+#### Bantuan Profesional (Branch Stage)
+- **Emergency skip:** If `Mengisyaratkan Butuh Bantuan Profesional` is detected at ANY stage, the session immediately jumps to `bantuan_profesional`.
+- **Penutupan offer:** At `penutupan`, the chatbot offers professional referral. If the user accepts (detected via transition signals), the session transitions to `bantuan_profesional`.
+- In this stage: a Bible verse about seeking help is retrieved, an empathetic message is generated, and a "Hubungi Konselor Profesional" button is shown in the UI.
+- After this stage, `session_ended = True`.
 
 ### RAG Pipeline
 - Bible verse retrieval: semantic FAISS search → keyword re-rank → random tiebreaker (ensures verse diversity).

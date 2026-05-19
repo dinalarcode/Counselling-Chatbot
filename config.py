@@ -13,5 +13,6 @@ class config:
     device = 'cuda'
     hidden_size = 768 
     metric_files_name = f'models/multilabel/{MODEL_NAME.replace("/", "-")}_afteraugmented_training_metrics.png'
+    EMBED_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 
 opt = config()

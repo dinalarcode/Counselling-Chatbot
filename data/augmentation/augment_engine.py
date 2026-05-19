@@ -28,6 +28,8 @@ INTENT_DESCRIPTIONS = {
     "Perasaan Takut dan Kecemasan": "Ekspresi rasa takut, khawatir, cemas, panik, gugup, atau perasaan terancam",
     "Perasaan Marah dan Frustasi": "Ekspresi kemarahan, frustrasi, kesal, jengkel, atau perasaan tidak sabar terhadap situasi",
     "Perasaan Sebelum Menghadapi Kejadian": "Ekspresi antisipasi, persiapan mental, niat atau rencana sebelum menghadapi suatu peristiwa atau tantangan",
+    "Mengisyaratkan Gejala Fisik": "Mengungkapkan keluhan fisik seperti sakit kepala, sesak napas, susah tidur, gemetar, lemas, mual, atau kondisi fisik lainnya",
+    "Mengisyaratkan Butuh Bantuan Profesional": "Permintaan bantuan konseling, rujukan, nasihat keahlian, atau pengakuan tidak mampu menangani sendirian",
 }
 
 

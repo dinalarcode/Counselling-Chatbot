@@ -54,7 +54,10 @@ def chat():
             print(f"Bible Verses Used: {result['debug']['bible_verses']}")
         print("----------------------------\n")
         
-        return jsonify({"response": result["response"]})
+        return jsonify({
+            "response": result["response"],
+            "show_professional_button": result.get("show_professional_button", False)
+        })
     
     except Exception as e:
         print(f"Error during chat processing: {e}")

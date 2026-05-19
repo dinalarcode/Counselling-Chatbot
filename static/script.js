@@ -63,6 +63,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Format response (replace newlines with <br> for HTML)
                 const formattedResponse = data.response.replace(/\n/g, '<br>');
                 appendMessage(formattedResponse, 'bot', true);
+
+                // Show professional counselor button if flagged
+                if (data.show_professional_button) {
+                    appendProfessionalButton();
+                }
             } else {
                 appendMessage("Error: " + (data.error || "Gagal menghubungi server."), 'bot');
             }
@@ -86,6 +91,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         chatHistory.appendChild(msgDiv);
+        scrollToBottom();
+    }
+
+    // Utility: Append professional counselor button to chat
+    function appendProfessionalButton() {
+        const btnContainer = document.createElement('div');
+        btnContainer.className = 'professional-button-container';
+
+        const btn = document.createElement('button');
+        btn.id = 'btn-professional-counselor';
+        btn.className = 'professional-button';
+        btn.innerHTML = '💬 Hubungi Konselor Profesional';
+        btn.addEventListener('click', () => {
+            // Dummy action — will be replaced with live-chat integration later
+            alert('Fitur live-chat dengan konselor profesional akan segera tersedia. Silakan hubungi layanan konseling kampus Anda untuk saat ini.');
+        });
+
+        btnContainer.appendChild(btn);
+        chatHistory.appendChild(btnContainer);
         scrollToBottom();
     }
 

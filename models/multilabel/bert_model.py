@@ -61,6 +61,10 @@ class BertEmbedding(nn.Module):
         gram = torch.mm(clusters, clusters.permute(1,0)) # (n, n)
         weight = torch.mm(pooled_output, clusters.permute(1,0))
 
+        # Tikhonov regularization: add small epsilon*I to ensure gram is always invertible.
+        # Prevents torch.inverse() from crashing when label embeddings are near-linearly-dependent.
+        gram = gram + torch.eye(gram.size(0), device=gram.device) * 1e-4
+
         logits = torch.mm(weight, torch.inverse(gram)) * np.sqrt(opt.hidden_size)
 
         return logits
