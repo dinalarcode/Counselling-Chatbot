@@ -28,22 +28,25 @@ User (Browser)
 app.py  (Flask)
     ↓
 SessionManager.chat()          [core/session_manager.py]
-    ├─ Stage tracking (6 stages: pembukaan → pembahasan → intervensi → solusi → relaksasi → penutupan)
+    ├─ Stage tracking (6 linear + 1 branch: pembukaan → ... → penutupan → bantuan_profesional)
     ├─ Transition signal detection (regex per stage)
     ├─ Intent accumulation across turns (Counter → primary_intents)
+    ├─ Physical symptom tracking (has_physical_symptoms flag)
+    ├─ Professional help keyword safety net (17 compiled regex patterns)
     ↓
 RAGEngine.generate_response()  [core/rag_engine.py]
     ├─ Intent Classification — models/multilabel/predict.py (IndoBERTweet + LABAN)
-    │      SKIPPED in: pembukaan
+    │      SKIPPED in: pembukaan, bantuan_profesional
+    ├─ CBT guidance injection (solusi/relaksasi when physical symptoms detected)
     ├─ QnA FAISS search — core/vector_db.py
-    ├─ Bible Verse Retrieval — core/vector_db.py
-    │      ONLY in: relaksasi, solusi
+    ├─ Bible Verse Retrieval — core/vector_db.py (Sastrawi stopwords for keyword extraction)
+    │      ONLY in: relaksasi, solusi, bantuan_profesional
     │      Algorithm: semantic FAISS search → keyword re-rank → random tiebreaker
     ├─ Prompt assembly (LangChain PromptTemplate)
     ↓
 Gemini 2.5-Flash API call
     ↓
-Response → user
+Response → user (+ show_professional_button flag if bantuan_profesional)
 ```
 
 **Counseling Stage Flow:**
@@ -110,8 +113,12 @@ The_Chatbot/
 ├── templates/
 │   └── index.html            Single-page chat UI
 ├── static/
-│   ├── style.css             Cream/white theme, responsive layout
-│   └── script.js             Fetch-based chat, typing indicator, /reset on page load
+│   ├── style.css             Cream/white theme, responsive layout, professional button
+│   └── script.js             Fetch-based chat, typing indicator, professional button, /reset
+├── evaluation/
+│   ├── compare_embed_models.py  LABAN backbone comparison (6 models, identical hyperparams)
+│   ├── eval_seen_unseen.py      Zero-shot seen/unseen label evaluation (3 splits)
+│   └── results/                 Auto-created output CSVs and PNGs
 └── checkpoint/
     └── IndoBERT_multi_label_zsl.pt   Trained classifier weights (git-ignored)
 ```
@@ -158,12 +165,27 @@ Current intents (from training CSV):
 - [x] Multi-label combination augmentation (`augment_multilabel.py`) for intent pairs/triples
 - [x] Augmented dataset merged into `data/augmentation/dataset_multiintent_augmented.csv` (active training source)
 
-### 5.3 Runtime Optimizations — Done in Latest Session
-- [x] **QnA FAISS index persisted to disk** (`data/faiss_qna_index/`) — eliminates rebuild on every startup; saves 5-15s per restart
-- [x] **Regex patterns pre-compiled** at class load in `SessionManager._COMPILED_SIGNALS` — avoids re-compilation on every turn
-- [x] **Redundant keyword extraction removed** in `VectorDBManager.retrieve_verse()` — `_get_keyword_list()` called once, result reused for both query building and re-ranking
-- [x] **Conditional BERT skip** — `RAGEngine.SKIP_CLASSIFICATION_STAGES = frozenset({'pembukaan'})` skips the BERT forward pass in the opening stage where intents have no effect on response or verse retrieval
-- [x] **Per-phase timing instrumentation** added to `RAGEngine.generate_response()` — prints `[TIMING]` lines to console so bottlenecks can be measured
+### 5.3 Runtime Optimizations
+- [x] QnA FAISS index persisted to disk — eliminates rebuild on every startup
+- [x] Regex patterns pre-compiled at class load in `SessionManager._COMPILED_SIGNALS`
+- [x] Redundant keyword extraction removed in `VectorDBManager.retrieve_verse()`
+- [x] Conditional BERT skip for `pembukaan` and `bantuan_profesional` stages
+- [x] Per-phase timing instrumentation (`[TIMING]` lines in console)
+- [x] Sastrawi dynamic stopwords (809 words + colloquial extras) replaced hardcoded 80-word list
+
+### 5.4 New Intent Features (Session 2026-05-20)
+- [x] **Physical symptom CBT guidance** — `has_physical_symptoms` flag tracked across session; injects CBT coping strategies into solusi/relaksasi LLM prompts
+- [x] **Bantuan profesional branch stage** — emergency skip when `Mengisyaratkan Butuh Bantuan Profesional` detected (classifier OR keyword safety net)
+- [x] **Keyword safety net** — 17 compiled regex patterns catch suicidal/hopeless expressions the classifier may miss
+- [x] **Penutupan referral offer** — chatbot offers professional help at penutupan; user acceptance transitions to bantuan_profesional
+- [x] **"Hubungi Konselor Profesional" button** — dummy button in UI (placeholder for future live-chat)
+- [x] **Bible verse fix for bantuan_profesional** — hardcoded verse query ensures FAISS retrieves encouraging verse
+- [x] **Stale Bible FAISS index fixed** — dimension mismatch (768 vs 384) diagnosed and rebuilt with current MiniLM model
+
+### 5.5 Evaluation Framework (Session 2026-05-20)
+- [x] `evaluation/` directory created
+- [x] `compare_embed_models.py` — LABAN backbone comparison across 6 transformer models (IndoBERTweet, IndoBERT-Lite, IndoBERT, MiniLM-L6-v2, Multilingual-E5-small, DistilBERT-multilingual)
+- [x] `eval_seen_unseen.py` — Zero-shot evaluation with 3 seen/unseen splits; computes F1-Macro Seen, F1-Macro Unseen, F1-Macro All
 
 ---
 
@@ -257,12 +279,13 @@ Several packages may be unused in the final pipeline: `anthropic`, `openai` (Dee
 | 1 | **Typo `thresold`** | Low | `config.py:12` | Intentional per CLAUDE.md — do NOT rename without updating all references |
 | 2 | **`hidden_size = 768` hardcoded** | Medium | `config.py:14` | Must manually update if MODEL_NAME is changed. No validation guard. |
 | 3 | **`.env` not in `.gitignore`** | High | `.gitignore` | API keys visible in repo history. Rotate all keys before any public sharing. |
-| 4 | **`session_ended` never set** | Medium | `session_manager.py:136` | Field exists but is never flipped to `True`; session continues past penutupan |
+| 4 | **`session_ended` behavior** | Low | `session_manager.py` | Now set to `True` after bantuan_profesional; normal flow penutupan still open-ended |
 | 5 | **Bible index first-build: 10-30 min** | Medium | `vector_db.py:63` | Expected behavior, documented. Once built, loads fast from disk. |
 | 6 | **`knowledge_base.py` is dead code** | Low | `core/knowledge_base.py` | Not referenced in live app; confuses code readers |
 | 7 | **BERT loads two full models** | Medium | `bert_model.py:32-34` | LABAN needs dual encoders by design — label encoder + utterance encoder. This is correct architecture, not a bug, but doubles VRAM/RAM usage. |
 | 8 | **Max-turn force advance** | Low | `session_manager.py:260` | User can be cut off mid-explanation if they exceed pembahasan max (4 turns) |
 | 9 | **Groq API key needed for augmentation** | Low | `data/augmentation/` | Not needed for running the chatbot; only for generating new training data |
+| 10 | **Bible index must match embed model** | High | `data/faiss_bible_index/` | If EMBED_MODEL in config.py changes, delete the index folder and let it rebuild. Dimension mismatch causes silent FAISS failures. |
 
 ---
 
@@ -285,7 +308,13 @@ python models/multilabel/predict.py
 # 5. Test RAG pipeline
 python core/test_rag.py
 
-# 6. Run augmentation (dry run first to preview)
+# 6. Run evaluation — LABAN backbone comparison
+python evaluation/compare_embed_models.py
+
+# 7. Run evaluation — Seen/Unseen zero-shot
+python evaluation/eval_seen_unseen.py
+
+# 8. Run augmentation (dry run first to preview)
 python data/augmentation/run_augmentation.py --dry_run
 ```
 
@@ -315,4 +344,6 @@ All values live in `config.py` and are accessed via the `opt` singleton.
 
 | Date | Work Done |
 |------|-----------|
-| 2026-05-15 | Runtime optimization session: added timing instrumentation; persisted QnA FAISS index to disk; pre-compiled SessionManager regex patterns; removed redundant keyword extraction in `retrieve_verse`; added conditional BERT skip for `pembukaan` stage via `SKIP_CLASSIFICATION_STAGES` |
+| 2026-05-15 | Runtime optimization session: timing instrumentation, QnA FAISS persistence, regex precompile, keyword dedup, BERT skip |
+| 2026-05-19 | Intent schema sync (8→10 intents), training CSV casing fix, Tikhonov regularization for LABAN gram matrix |
+| 2026-05-20 | Physical symptom CBT guidance, bantuan_profesional branch stage, keyword safety net, Sastrawi stopwords, Bible FAISS index rebuilt, evaluation framework (backbone comparison + seen/unseen) |

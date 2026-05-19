@@ -329,7 +329,10 @@ Defined via `MultiLabelBinarizer` fitted on training CSV in `data/data_preparati
 - [ ] **LABAN backbone comparison** — Run `evaluation/compare_embed_models.py` to train 6 transformer backbones with identical hyperparameters (50 epochs, same 80/10/10 split):
   - IndoBERTweet, IndoBERT-Lite, IndoBERT, MiniLM-L6-v2, Multilingual-E5-small, DistilBERT-multilingual
   - Output: `evaluation/results/backbone_comparison_summary.csv` (test F1/P/R per model), `backbone_comparison_per_intent.csv` (per-intent breakdown), `*_training_curve.png`
-- [ ] **Seen / Unseen test split** — Confirm zero-shot evaluation protocol; ensure test set contains utterances for unseen intent combinations
+- [ ] **Seen / Unseen zero-shot evaluation** — Run `evaluation/eval_seen_unseen.py` to evaluate LABAN's zero-shot generalization:
+  - 3 splits (each holds out 3 intents as "unseen"), trains with unseen columns masked, evaluates on full 10-intent test set
+  - Metrics: **F1-Macro Seen**, **F1-Macro Unseen**, **F1-Macro All** (all computed as macro-average)
+  - Output: `evaluation/results/seen_unseen_summary.csv`, `seen_unseen_per_intent.csv`, `seen_unseen_aggregate.csv`
 - [ ] **Cosine similarity heatmap** — Generate per-intent-pair cosine similarity matrix visualization from label embeddings
 - [ ] **RAGAS evaluation** — Run RAGAS metrics (faithfulness, answer relevancy, context precision, context recall) over a sample of chatbot conversations
 
