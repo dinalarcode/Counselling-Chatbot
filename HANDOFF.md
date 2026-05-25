@@ -118,6 +118,7 @@ The_Chatbot/
 ├── evaluation/
 │   ├── compare_embed_models.py  LABAN backbone comparison (6 models, identical hyperparams)
 │   ├── eval_seen_unseen.py      Zero-shot seen/unseen label evaluation (3 splits)
+│   ├── eval_cosine_heatmap.py   Cosine similarity heatmap evaluation
 │   └── results/                 Auto-created output CSVs and PNGs
 └── checkpoint/
     └── IndoBERT_multi_label_zsl.pt   Trained classifier weights (git-ignored)
@@ -186,6 +187,12 @@ Current intents (from training CSV):
 - [x] `evaluation/` directory created
 - [x] `compare_embed_models.py` — LABAN backbone comparison across 6 transformer models (IndoBERTweet, IndoBERT-Lite, IndoBERT, MiniLM-L6-v2, Multilingual-E5-small, DistilBERT-multilingual)
 - [x] `eval_seen_unseen.py` — Zero-shot evaluation with 3 seen/unseen splits; computes F1-Macro Seen, F1-Macro Unseen, F1-Macro All
+
+### 5.6 Cosine Similarity Heatmap Evaluation (Session 2026-05-25)
+- [x] `eval_cosine_heatmap.py` — Assesses semantic consistency between utterance embeddings and label embeddings
+- [x] Three heatmaps generated: Label-vs-Label, Utterance Centroid-vs-Label, Per-Sample Utterance-vs-Label
+- [x] Per-intent metrics CSV with alignment gaps and separability scores
+- [x] Key findings: Label separation gap = 1.0540, Centroid alignment gap = 0.6048, Per-sample alignment gap = 0.4195
 
 ---
 
@@ -347,3 +354,4 @@ All values live in `config.py` and are accessed via the `opt` singleton.
 | 2026-05-15 | Runtime optimization session: timing instrumentation, QnA FAISS persistence, regex precompile, keyword dedup, BERT skip |
 | 2026-05-19 | Intent schema sync (8→10 intents), training CSV casing fix, Tikhonov regularization for LABAN gram matrix |
 | 2026-05-20 | Physical symptom CBT guidance, bantuan_profesional branch stage, keyword safety net, Sastrawi stopwords, Bible FAISS index rebuilt, evaluation framework (backbone comparison + seen/unseen) |
+| 2026-05-25 | Cosine similarity heatmap evaluation (eval_cosine_heatmap.py) — 3 heatmaps + metrics CSV; label separation gap = 1.0540, centroid alignment gap = 0.6048 |

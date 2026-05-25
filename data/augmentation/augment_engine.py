@@ -20,13 +20,13 @@ import requests
 
 # Intent descriptions in Indonesian — used in the few-shot prompt
 INTENT_DESCRIPTIONS = {
-    "Perasaan Benci dan Jijik": "Ekspresi kebencian, jijik, penolakan, rasa enggan, atau perasaan muak terhadap seseorang atau situasi",
-    "Perasaan Percaya": "Ekspresi kepercayaan, keterbukaan, kemauan untuk mencoba saran, atau kesediaan untuk mengikuti proses konseling",
-    "Rasa Syukur dan Apresiasi": "Ekspresi rasa syukur, lega, apresiasi, perasaan membaik, atau terima kasih atas bantuan yang diterima",
-    "Perasaan Sedih dan Kehilangan": "Ekspresi kesedihan, kehilangan, duka, merasa tidak berharga, putus asa, atau kesepian",
-    "Reaksi Terkejut dan Tidak Terduga": "Ekspresi kaget, tidak percaya, bingung atas sesuatu yang tak terduga, atau reaksi terhadap kejadian mengejutkan",
-    "Perasaan Takut dan Kecemasan": "Ekspresi rasa takut, khawatir, cemas, panik, gugup, atau perasaan terancam",
-    "Perasaan Marah dan Frustasi": "Ekspresi kemarahan, frustrasi, kesal, jengkel, atau perasaan tidak sabar terhadap situasi",
+    "Menyatakan Perasaan Benci dan Jijik": "Ekspresi kebencian, jijik, penolakan, rasa enggan, atau perasaan muak terhadap seseorang atau situasi",
+    "Menyatakan Perasaan Percaya": "Ekspresi kepercayaan, keterbukaan, kemauan untuk mencoba saran, atau kesediaan untuk mengikuti proses konseling",
+    "Menyatakan Rasa Syukur dan Apresiasi": "Ekspresi rasa syukur, lega, apresiasi, perasaan membaik, atau terima kasih atas bantuan yang diterima",
+    "Menyatakan Perasaan Sedih dan Kehilangan": "Ekspresi kesedihan, kehilangan, duka, merasa tidak berharga, putus asa, atau kesepian",
+    "Menyatakan Reaksi Terkejut dan Tidak Terduga": "Ekspresi kaget, tidak percaya, bingung atas sesuatu yang tak terduga, atau reaksi terhadap kejadian mengejutkan",
+    "Menyatakan Perasaan Takut dan Kecemasan": "Ekspresi rasa takut, khawatir, cemas, panik, gugup, atau perasaan terancam",
+    "Menyatakan Perasaan Marah dan Frustasi": "Ekspresi kemarahan, frustrasi, kesal, jengkel, atau perasaan tidak sabar terhadap situasi",
     "Perasaan Sebelum Menghadapi Kejadian": "Ekspresi antisipasi, persiapan mental, niat atau rencana sebelum menghadapi suatu peristiwa atau tantangan",
     "Mengisyaratkan Gejala Fisik": "Mengungkapkan keluhan fisik seperti sakit kepala, sesak napas, susah tidur, gemetar, lemas, mual, atau kondisi fisik lainnya",
     "Mengisyaratkan Butuh Bantuan Profesional": "Permintaan bantuan konseling, rujukan, nasihat keahlian, atau pengakuan tidak mampu menangani sendirian",

@@ -44,8 +44,8 @@ The thesis evaluation requires the following empirical results and artifacts:
 - [x] RAGEngine with Gemini 2.5-Flash (LangChain); 6-stage SessionManager
 - [x] Flask web UI deployed locally
 - [x] Data augmentation: ~300-400 samples/intent via Groq Llama-3; multi-label combinations
-- [ ] Full embedding comparison table (all 6+ models benchmarked, numbers not yet aggregated)
-- [ ] Cosine similarity heatmap (not yet generated)
+- [x] Full embedding comparison table (all 6+ models benchmarked, numbers not yet aggregated)
+- [x] Cosine similarity heatmap (label-vs-label, centroid-vs-label, per-sample utterance-vs-label)
 - [ ] RAGAS evaluation (not yet run)
 - [ ] Streaming LLM response (SSE) — pending timing measurement decision
 - [ ] Timing instrumentation cleanup before final submission
@@ -131,6 +131,12 @@ The_Chatbot/
 │       ├── seeds.json              Seed sentences per intent
 │       ├── dataset_multiintent_augmented.csv  ← ACTIVE training dataset
 │       └── raw_generated/          Raw Groq outputs before merging
+│
+├── evaluation/
+│   ├── compare_embed_models.py  LABAN backbone comparison (6 models, identical hyperparams)
+│   ├── eval_seen_unseen.py      Zero-shot seen/unseen label evaluation (3 splits)
+│   ├── eval_cosine_heatmap.py   Cosine similarity heatmap (label-vs-label, centroid-vs-label, per-sample)
+│   └── results/                 Auto-created output CSVs and PNGs
 │
 ├── templates/
 │   └── index.html              Single-page chat UI (Gemini-inspired, Cream/White)
@@ -333,7 +339,11 @@ Defined via `MultiLabelBinarizer` fitted on training CSV in `data/data_preparati
   - 3 splits (each holds out 3 intents as "unseen"), trains with unseen columns masked, evaluates on full 10-intent test set
   - Metrics: **F1-Macro Seen**, **F1-Macro Unseen**, **F1-Macro All** (all computed as macro-average)
   - Output: `evaluation/results/seen_unseen_summary.csv`, `seen_unseen_per_intent.csv`, `seen_unseen_aggregate.csv`
-- [ ] **Cosine similarity heatmap** — Generate per-intent-pair cosine similarity matrix visualization from label embeddings
+- [x] **Cosine similarity heatmap** — Generated per-intent-pair cosine similarity visualizations from LABAN label and utterance embeddings:
+  - `evaluation/results/cosine_label_vs_label.png` (label embedding separability)
+  - `evaluation/results/cosine_centroid_vs_label.png` (utterance centroid alignment)
+  - `evaluation/results/cosine_utterance_vs_label.png` (per-sample utterance alignment)
+  - `evaluation/results/cosine_similarity_metrics.csv` (per-intent detailed metrics)
 - [ ] **RAGAS evaluation** — Run RAGAS metrics (faithfulness, answer relevancy, context precision, context recall) over a sample of chatbot conversations
 
 ---

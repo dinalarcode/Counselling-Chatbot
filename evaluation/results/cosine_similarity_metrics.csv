@@ -1,0 +1,11 @@
+﻿intent,test_sample_count,label_self_similarity,label_avg_off_diagonal,centroid_to_own_label,centroid_avg_to_other_labels,centroid_alignment_gap,avg_sample_to_own_label,avg_sample_to_other_labels,sample_alignment_gap
+Mengisyaratkan Butuh Bantuan Profesional,51,1.0,-0.0536,0.4183,-0.1606,0.5789,0.3004,-0.1156,0.416
+Mengisyaratkan Gejala Fisik,47,1.0,-0.0692,0.4802,-0.1578,0.6381,0.3585,-0.1181,0.4766
+Menyatakan Perasaan Benci dan Jijik,50,1.0,-0.0359,0.386,-0.1882,0.5742,0.2596,-0.1283,0.3879
+Menyatakan Perasaan Marah dan Frustasi,42,1.0,-0.0409,0.395,-0.1907,0.5858,0.2634,-0.129,0.3924
+Menyatakan Perasaan Percaya,42,1.0,-0.0446,0.3395,-0.2056,0.5452,0.216,-0.1319,0.3479
+Menyatakan Perasaan Sebelum Menghadapi Kejadian,31,1.0,-0.0682,0.3909,-0.2228,0.6136,0.2656,-0.1531,0.4187
+Menyatakan Perasaan Sedih dan Kehilangan,54,1.0,-0.04,0.4748,-0.1841,0.6589,0.3443,-0.1345,0.4788
+Menyatakan Perasaan Takut dan Kecemasan,64,1.0,-0.0197,0.4032,-0.1738,0.5771,0.2725,-0.1186,0.3911
+Menyatakan Rasa Syukur dan Apresiasi,45,1.0,-0.065,0.4263,-0.2091,0.6353,0.2987,-0.1476,0.4463
+Menyatakan Reaksi Terkejut dan Tidak Terduga,27,1.0,-0.1028,0.4445,-0.1964,0.6409,0.3041,-0.1358,0.4399
