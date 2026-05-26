@@ -46,7 +46,7 @@ The thesis evaluation requires the following empirical results and artifacts:
 - [x] Data augmentation: ~300-400 samples/intent via Groq Llama-3; multi-label combinations
 - [x] Full embedding comparison table (all 6+ models benchmarked, numbers not yet aggregated)
 - [x] Cosine similarity heatmap (label-vs-label, centroid-vs-label, per-sample utterance-vs-label)
-- [ ] RAGAS evaluation (not yet run)
+- [/] RAGAS evaluation — script ready (`eval_ragas.py`), test template generated, pending manual reference authoring
 - [ ] Streaming LLM response (SSE) — pending timing measurement decision
 - [ ] Timing instrumentation cleanup before final submission
 
@@ -136,6 +136,9 @@ The_Chatbot/
 │   ├── compare_embed_models.py  LABAN backbone comparison (6 models, identical hyperparams)
 │   ├── eval_seen_unseen.py      Zero-shot seen/unseen label evaluation (3 splits)
 │   ├── eval_cosine_heatmap.py   Cosine similarity heatmap (label-vs-label, centroid-vs-label, per-sample)
+│   ├── eval_ragas.py            RAGAS evaluation (--generate template, --evaluate with Groq judge)
+│   ├── data/                    Test data for evaluations
+│   │   └── ragas_testset.csv    50-sample test template (user fills 'reference' column)
 │   └── results/                 Auto-created output CSVs and PNGs
 │
 ├── templates/
@@ -344,7 +347,11 @@ Defined via `MultiLabelBinarizer` fitted on training CSV in `data/data_preparati
   - `evaluation/results/cosine_centroid_vs_label.png` (utterance centroid alignment)
   - `evaluation/results/cosine_utterance_vs_label.png` (per-sample utterance alignment)
   - `evaluation/results/cosine_similarity_metrics.csv` (per-intent detailed metrics)
-- [ ] **RAGAS evaluation** — Run RAGAS metrics (faithfulness, answer relevancy, context precision, context recall) over a sample of chatbot conversations
+- [/] **RAGAS evaluation** — `evaluation/eval_ragas.py` with two-phase workflow:
+  - Phase 1 (`--generate`): Samples 50 QnA pairs, auto-assigns counseling stages, saves template CSV
+  - Phase 2 (`--evaluate`): Runs full RAG pipeline + RAGAS metrics (Faithfulness, AnswerRelevancy, ContextPrecision, ContextRecall) with Groq LLM judge (llama-3.1-8b-instant)
+  - **Status**: Script ready, template generated at `evaluation/data/ragas_testset.csv` — user must fill `reference` column with ideal responses (including Bible verses for solusi/relaksasi stages)
+  - Output: `evaluation/results/ragas_per_sample.csv`, `ragas_summary.csv`, `ragas_per_stage.csv`
 
 ---
 

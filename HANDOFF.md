@@ -119,6 +119,9 @@ The_Chatbot/
 │   ├── compare_embed_models.py  LABAN backbone comparison (6 models, identical hyperparams)
 │   ├── eval_seen_unseen.py      Zero-shot seen/unseen label evaluation (3 splits)
 │   ├── eval_cosine_heatmap.py   Cosine similarity heatmap evaluation
+│   ├── eval_ragas.py            RAGAS RAG quality evaluation (--generate / --evaluate)
+│   ├── data/                    Test data for evaluations
+│   │   └── ragas_testset.csv    50-sample test set (question, stage, reference, intent_override)
 │   └── results/                 Auto-created output CSVs and PNGs
 └── checkpoint/
     └── IndoBERT_multi_label_zsl.pt   Trained classifier weights (git-ignored)
@@ -189,10 +192,21 @@ Current intents (from training CSV):
 - [x] `eval_seen_unseen.py` — Zero-shot evaluation with 3 seen/unseen splits; computes F1-Macro Seen, F1-Macro Unseen, F1-Macro All
 
 ### 5.6 Cosine Similarity Heatmap Evaluation (Session 2026-05-25)
-- [x] `eval_cosine_heatmap.py` — Assesses semantic consistency between utterance embeddings and label embeddings
+- [x] `eval_cosine_heatmap.py` -- Assesses semantic consistency between utterance embeddings and label embeddings
 - [x] Three heatmaps generated: Label-vs-Label, Utterance Centroid-vs-Label, Per-Sample Utterance-vs-Label
 - [x] Per-intent metrics CSV with alignment gaps and separability scores
 - [x] Key findings: Label separation gap = 1.0540, Centroid alignment gap = 0.6048, Per-sample alignment gap = 0.4195
+
+### 5.7 RAGAS RAG Quality Evaluation (Session 2026-05-26)
+- [x] `eval_ragas.py` -- Two-phase RAGAS evaluation for the chatbot's RAG pipeline
+  - Phase 1 (`--generate`): Randomly samples 50 QnA pairs (seed=42), auto-assigns counseling stages via content heuristics, saves template CSV with empty `reference` column
+  - Phase 2 (`--evaluate`): Runs full RAG pipeline per sample, evaluates with RAGAS metrics using Groq LLM judge
+- [x] Test template generated at `evaluation/data/ragas_testset.csv` (50 samples across pembukaan/pembahasan/intervensi/solusi/relaksasi/penutupan)
+- [x] Metrics: Faithfulness, AnswerRelevancy, ContextPrecisionWithoutReference, ContextRecall
+- [x] LLM Judge: Groq `llama-3.1-8b-instant` (avoids self-judging bias with Gemini generator)
+- [x] Dependencies: `ragas==0.4.3`, `langchain-groq==1.1.2`, `datasets==4.8.5`
+- [ ] **Pending**: User must fill `reference` column in `ragas_testset.csv` with ideal responses (including Bible verses for solusi/relaksasi), then run `--evaluate`
+- Output: `ragas_per_sample.csv`, `ragas_summary.csv`, `ragas_per_stage.csv`
 
 ---
 
