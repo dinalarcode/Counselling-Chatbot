@@ -512,7 +512,10 @@ def main():
     df_per_intent.to_csv(per_intent_csv, index=False, encoding="utf-8-sig")
 
     # ── Aggregate across splits ──────────────────────────────────────────
-    ok = df_summary[~df_summary.get("status", pd.Series(dtype=str)).eq("FAILED")].copy()
+    if "status" in df_summary.columns:
+        ok = df_summary[df_summary["status"].ne("FAILED")].copy()
+    else:
+        ok = df_summary.copy()  # no failures — all rows are valid
     if not ok.empty:
         agg = {
             "mean_f1_macro_all":    round(ok["f1_macro_all"].mean(), 4),

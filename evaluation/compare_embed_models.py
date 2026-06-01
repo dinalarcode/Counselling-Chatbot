@@ -413,7 +413,10 @@ def main():
     print("  FINAL COMPARISON SUMMARY")
     print(f"{'='*65}")
 
-    ok = df_summary[~df_summary.get("status", pd.Series(dtype=str)).eq("FAILED")].copy()
+    if "status" in df_summary.columns:
+        ok = df_summary[df_summary["status"].ne("FAILED")].copy()
+    else:
+        ok = df_summary.copy()  # no failures — all rows are valid
     if not ok.empty:
         cols = ["model", "hidden_size", "test_f1_micro",
                 "test_precision_micro", "test_recall_micro",

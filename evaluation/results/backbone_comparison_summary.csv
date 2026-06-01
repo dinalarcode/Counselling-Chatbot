@@ -1,0 +1,7 @@
+﻿model,model_id,hidden_size,best_val_f1,test_loss,test_f1_micro,test_precision_micro,test_recall_micro,training_time_s,epochs
+IndoBERTweet,indolem/indobertweet-base-uncased,768,0.8947,29.4189,0.8991,0.9356,0.8653,1231.8,50
+IndoBERT-Lite,indobenchmark/indobert-lite-base-p1,768,0.3549,646.1539,0.3659,0.2351,0.8256,844.6,50
+IndoBERT,indobenchmark/indobert-base-p1,768,0.8892,29.6516,0.9318,0.9602,0.9051,1284.4,50
+MiniLM-L6-v2,sentence-transformers/all-MiniLM-L6-v2,384,0.8575,47.492,0.8944,0.9108,0.8786,2491.0,50
+Multilingual-E5,intfloat/multilingual-e5-small,384,0.8815,31.2376,0.9234,0.9425,0.9051,1029.8,50
+DistilBERT-multi,distilbert-base-multilingual-cased,768,0.8724,46.0291,0.8967,0.9229,0.872,996.4,50
