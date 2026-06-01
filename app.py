@@ -10,6 +10,64 @@ if SCRIPT_DIR not in sys.path:
 from core.rag_engine import RAGEngine
 from core.session_manager import SessionManager
 
+
+# ── Bible Test Session (sandbox for verse retrieval testing) ────────────
+
+class BibleTestSession:
+    """
+    Sandbox session for testing FAISS Bible verse retrieval.
+    Bypasses the LLM entirely — only runs LABAN classifier + FAISS.
+    Used by respondents to evaluate verse relevance (Cohen's Kappa).
+    """
+
+    def __init__(self, rag_engine):
+        self.rag_engine = rag_engine
+        self.active = False
+
+    def handle(self, user_input: str) -> str:
+        """
+        Run LABAN classification + FAISS retrieval.
+        Returns a formatted string with only the verse — no LLM.
+        """
+        # 1. Classify intents via LABAN
+        prediction = self.rag_engine.classifier.predict(user_input)
+        detected_intents = prediction.get('inten_terdeteksi', [])
+        scores = prediction.get('skore', {})
+
+        # 2. Retrieve verse via FAISS
+        verse_results = self.rag_engine.vector_db.retrieve_verse(
+            intents=detected_intents,
+            user_input=user_input,
+            k=1
+        )
+
+        # 3. Format output
+        intents_str = ", ".join(detected_intents) if detected_intents else "(tidak ada intent terdeteksi)"
+
+        if not verse_results:
+            return (
+                f"**Intent Terdeteksi:** {intents_str}\n\n"
+                f"⚠️ Tidak ada ayat yang ditemukan untuk input ini."
+            )
+
+        verse = verse_results[0]
+
+        # Console log for developer to record into Cohen's Kappa sheet
+        print(f"\n--- Bible Test ---")
+        print(f"Utterance: {user_input}")
+        print(f"Intents:   {intents_str}")
+        print(f"Verse:     {verse['reference']} — {verse['text']}")
+        print(f"------------------\n")
+
+        return (
+            f"**Intent Terdeteksi:** {intents_str}\n\n"
+            f"**Ayat:** {verse['reference']} (TB)\n\n"
+            f"\"{ verse['text']}\""
+        )
+
+
+# ── Flask app ───────────────────────────────────────────────────────────
+
 app = Flask(__name__)
 
 # Initialize global instances for the chatbot
@@ -17,11 +75,13 @@ print("Initializing RAGEngine and SessionManager...")
 try:
     rag = RAGEngine()
     chatbot_session = SessionManager(rag)
+    bible_test_session = BibleTestSession(rag)
     print("Initialization complete.")
 except Exception as e:
     print(f"Error during initialization: {e}")
     rag = None
     chatbot_session = None
+    bible_test_session = None
 
 @app.route("/")
 def index():
@@ -38,8 +98,33 @@ def chat():
     if not data or "message" not in data:
         return jsonify({"error": "No message provided."}), 400
 
-    user_input = data["message"]
-    
+    user_input = data["message"].strip()
+
+    # ── Bible Test Mode gate ─────────────────────────────────────────
+    if user_input.lower() == "bible test" and bible_test_session:
+        bible_test_session.active = True
+        print("\n--- Bible Test Mode ACTIVATED ---\n")
+        return jsonify({"response": (
+            "🔬 **Mode Bible Test Aktif**\n\n"
+            "Masukkan utterance dari daftar pengujian Anda.\n"
+            "Sistem akan menampilkan ayat yang diambil oleh FAISS (tanpa LLM).\n\n"
+            "Ketik `exit test` untuk kembali ke sesi normal."
+        )})
+
+    if user_input.lower() == "exit test" and bible_test_session:
+        bible_test_session.active = False
+        print("\n--- Bible Test Mode DEACTIVATED ---\n")
+        return jsonify({"response": "✅ Mode Bible Test dinonaktifkan. Sesi konseling normal dilanjutkan."})
+
+    if bible_test_session and bible_test_session.active:
+        try:
+            verse_response = bible_test_session.handle(user_input)
+            return jsonify({"response": verse_response})
+        except Exception as e:
+            print(f"Error during bible test: {e}")
+            return jsonify({"error": "Terjadi kesalahan saat mengambil ayat."}), 500
+    # ─────────────────────────────────────────────────────────────────
+
     # Process the message through the session manager
     try:
         result = chatbot_session.chat(user_input)

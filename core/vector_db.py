@@ -20,6 +20,65 @@ STOPWORDS_ID.update({
     'gatau', 'gapaham', 'gajelas', 'gamau', 'gaada', 'gabisa',
 })
 
+# ── Biblical Synonyms for Query Expansion ──────────────────────────────────
+# Maps each of the 10 LABAN intents to formal vocabulary found in the
+# Alkitab Terjemahan Baru (TB). These terms are injected into the FAISS
+# query so that informal user slang ("kesel", "capek") gets expanded with
+# formal biblical words ("murka", "lelah") that actually appear in the Bible.
+BIBLICAL_SYNONYMS = {
+    "Mengisyaratkan Butuh Bantuan Profesional": (
+        "pertolongan penolong selamatkan tolong lindungi "
+        "perlindungan harapan kekuatan penghiburan pemulihan"
+        "nasihat didikan hikmat teguran petunjuk jalan keluar terang kekuatan"
+    ),
+    "Mengisyaratkan Gejala Fisik": (
+        "sakit penyakit lemah lelah tubuh daging "
+        "luka menderita penderitaan kesembuhan"
+        "lesu penat letih sembuh menyegarkan membalut kekuatan baru memulihkan"
+    ),
+    "Menyatakan Perasaan Benci dan Jijik": (
+        "benci kebencian murka jijik kejijikan hina "
+        "menghina najis kekejian muak"
+        "kekejian muak mengampuni kasih damai memberkati pengampunan saudara"
+    ),
+    "Menyatakan Perasaan Marah dan Frustasi": (
+        "murka amarah marah gusar geram berang "
+        "kemarahan emosi mengeluh keluh kesah"
+        "dendam sabar kasih karunia menahan diri damai sejahtera lemah lembut"
+    ),
+    "Menyatakan Perasaan Percaya": (
+        "percaya iman beriman setia kesetiaan "
+        "pengharapan berharap yakin teguh penyertaan"
+        "berserah percaya setia dijagai janji aman tempat perlindungan"
+    ),
+    "Menyatakan Perasaan Sebelum Menghadapi Kejadian": (
+        "kuatir khawatir gelisah waswas gentar "
+        "bimbang ragu cemas menanti menunggu"
+        "berjaga-jaga pencobaan ujian waspada penyertaan jangan takut berani teguh melangkah"
+
+    ),
+    "Menyatakan Perasaan Sedih dan Kehilangan": (
+        "dukacita ratap tangis meratap bersedih perkabungan "
+        "berkabung kehilangan air mata patah hati remuk jiwa"
+        "duka ratapan hancur hati penghiburan dihibur sukacita memulihkan"
+    ),
+    "Menyatakan Perasaan Takut dan Kecemasan": (
+        "takut ketakutan gentar ngeri kecemasan gemetar "
+        "cemas waswas kuatir gelisah"
+        "damai berani aman perlindungan tempat perlindungan penolong"
+    ),
+    "Menyatakan Rasa Syukur dan Apresiasi": (
+        "syukur bersyukur puji pujian memuji ucapan syukur "
+        "berkat diberkati terima kasih sukacita"
+        "sukacita sorak karunia kebaikan melimpah"
+    ),
+    "Menyatakan Reaksi Terkejut dan Tidak Terduga": (
+        "heran takjub tercengang dahsyat ajaib mujizat "
+        "keajaiban terkejut terperanjat"
+        "gempar kedaulatan rencana damai sejahtera pegangan pertolongan ajaib"
+    ),
+}
+
 
 class VectorDBManager:
     def __init__(self):
@@ -124,12 +183,20 @@ class VectorDBManager:
             return []
 
         # --- Step 1: Bangun combined query ---
-        # Gabungkan semua intent + kata kunci user (compute once, reuse below)
+        # Gabungkan semua intent + kata kunci user + sinonim Alkitab
         keywords = self._get_keyword_list(user_input) if user_input else []
         intent_part = " ".join(intents) if intents else ""
         keyword_part = " ".join(keywords)
 
-        combined_query = f"{intent_part} {keyword_part}".strip()
+        # Inject biblical synonyms for each detected intent
+        synonym_parts = []
+        for intent in (intents or []):
+            synonyms = BIBLICAL_SYNONYMS.get(intent, "")
+            if synonyms:
+                synonym_parts.append(synonyms)
+        synonym_part = " ".join(synonym_parts)
+
+        combined_query = f"{intent_part} {keyword_part} {synonym_part}".strip()
 
         if not combined_query:
             return []
@@ -177,8 +244,12 @@ class VectorDBManager:
         # Jika beberapa kandidat punya skor sama di top, random pick
         if len(scored_candidates) > k:
             # Ambil grup teratas (skor keyword yang sama)
-            top_keyword_score = scored_candidates[0]["keyword_hits"]
-            top_group = [c for c in scored_candidates if c["keyword_hits"] == top_keyword_score]
+            top = scored_candidates[0]
+            top_group = [
+                c for c in scored_candidates
+                if c["keyword_hits"] == top["keyword_hits"]
+                and c["faiss_score"] == top["faiss_score"]
+            ]
             
             if len(top_group) > k:
                 # Random dari top group

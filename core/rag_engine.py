@@ -22,6 +22,7 @@ class RAGEngine:
             "dan tanyakan bagaimana perasaan mereka hari ini. "
             "Jangan memberikan nasihat atau ayat Alkitab di tahap ini. "
             "Buat pengguna merasa aman dan nyaman untuk bercerita."
+            "Jangan bertele-tele dalam menanggapi."
         ),
         "pembahasan": (
             "Pengguna sedang menceritakan masalahnya. "
@@ -31,6 +32,7 @@ class RAGEngine:
             "jangan terus memaksa mereka bercerita. Tanyakan secara halus apakah mereka siap "
             "untuk mendiskusikan pandangan lain atau melangkah maju. "
             "Fokus pada mendengarkan, belum memberikan solusi atau ayat Alkitab."
+            "Jangan bertele-tele dalam menanggapi."
         ),
         "intervensi": (
             "Anda sudah memahami masalah pengguna dan sekarang saatnya memberikan perspektif baru. "
@@ -44,6 +46,7 @@ class RAGEngine:
             "Jika ada ayat Alkitab yang relevan dan mendukung langkah tersebut, "
             "sebutkan secara lembut sebagai penguat \u2014 bukan menghakimi, "
             "melainkan sebagai sumber kekuatan dan inspirasi."
+            "Berikan jawaban yang singkat, padat, dan bermakna"
         ),
         "relaksasi": (
             "Bantu pengguna untuk menenangkan diri setelah diskusi yang panjang. "
