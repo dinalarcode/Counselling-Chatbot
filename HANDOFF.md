@@ -208,12 +208,51 @@ Current intents (from training CSV):
 - [ ] **Pending**: User must fill `reference` column in `ragas_testset.csv` with ideal responses (including Bible verses for solusi/relaksasi), then run `--evaluate`
 - Output: `ragas_per_sample.csv`, `ragas_summary.csv`, `ragas_per_stage.csv`
 
+### 5.8 Backbone Comparison Completed (Session 2026-06-02)
+- [x] `compare_embed_models.py` fully executed — all 6 transformer models trained and benchmarked
+- [x] Results in `evaluation/results/backbone_comparison_summary.csv`:
+
+| Model | F1-micro | Precision | Recall | Training Time |
+|-------|----------|-----------|--------|---------------|
+| **IndoBERT** | **0.9318** | **0.9602** | **0.9051** | 1284 s |
+| IndoBERTweet (active) | 0.8991 | 0.9356 | 0.8653 | 1232 s |
+| Multilingual-E5 | 0.9234 | 0.9425 | 0.9051 | 1030 s |
+| DistilBERT-multi | 0.8967 | 0.9229 | 0.8720 | 996 s |
+| MiniLM-L6-v2 | 0.8944 | 0.9108 | 0.8786 | 2491 s |
+| IndoBERT-Lite | 0.3659 | 0.2351 | 0.8256 | 845 s |
+
+- [x] 6 training curve PNGs saved to `evaluation/results/`
+- [x] Per-intent breakdown in `backbone_comparison_per_intent.csv`
+
+### 5.9 Seen/Unseen ZSL Evaluation Completed (Session 2026-06-02)
+- [x] `eval_seen_unseen.py` fully executed — 3 splits completed
+- [x] Results in `evaluation/results/seen_unseen_summary.csv` and `seen_unseen_aggregate.csv`:
+  - **F1-Macro Seen avg: 0.8997** (±0.008) — model classifies seen labels well
+  - **F1-Macro Unseen avg: 0.0** — model cannot predict labels it was not trained on
+  - **F1-Macro All avg: 0.6298** (±0.006) — confirms LABAN requires seen label embeddings at inference
+- [x] Aggregate statistics in `seen_unseen_aggregate.csv`
+
+### 5.10 BibleTestSession Added to app.py (Session 2026-06-02)
+- [x] `BibleTestSession` class added to `app.py` as a sandbox bypass mode
+- [x] Activate by typing `bible test` in chat UI; deactivate with `exit test`
+- [x] Bypasses LLM entirely — runs LABAN classification + FAISS retrieval only
+- [x] Prints intent scores + retrieved verse to console for manual recording into Cohen's Kappa evaluation sheet
+- [x] Used for inter-rater reliability evaluation of verse relevance quality
+
 ---
 
 ## 6. What Is Ongoing
 
-### 6.1 Performance Measurement (Started, Not Yet Measured)
-The timing instrumentation (`[TIMING]` prints) was added but the app has not been run since. The actual bottleneck — whether it is Gemini API latency, BERT inference, or FAISS search — has not yet been measured with real traffic.
+### 6.1 RAGAS Evaluation — Phase 2 Blocked on Manual Data Entry
+`eval_ragas.py --generate` has been run and the template is at `evaluation/data/ragas_testset.csv` (50 samples).
+The `reference` column is currently empty. The user must manually fill in ideal reference answers for each row
+(including relevant Bible verses for rows with stage=`solusi` or `relaksasi`), then run:
+```
+python evaluation/eval_ragas.py --evaluate
+```
+
+### 6.2 Performance Measurement (Started, Not Yet Measured)
+The timing instrumentation (`[TIMING]` prints) was added but the app has not been profiled with real traffic. The actual bottleneck — whether it is Gemini API latency, BERT inference, or FAISS search — has not yet been measured.
 
 **Next step:** Run the app, send messages through several stages, and read the terminal output:
 ```
@@ -225,7 +264,7 @@ The timing instrumentation (`[TIMING]` prints) was added but the app has not bee
 ```
 The distribution of these numbers determines what to optimize next (see §7.1).
 
-### 6.2 Legacy Code Not Yet Cleaned Up
+### 6.3 Legacy Code Not Yet Cleaned Up
 `core/knowledge_base.py` is a template-based engine that predates the current RAG approach. It is imported by `core/test_knowledge_base.py` but is **not used in the live app**. It has not been removed because the test script still references it.
 
 ---
@@ -299,14 +338,15 @@ Several packages may be unused in the final pipeline: `anthropic`, `openai` (Dee
 |---|-------|----------|------|-------|
 | 1 | **Typo `thresold`** | Low | `config.py:12` | Intentional per CLAUDE.md — do NOT rename without updating all references |
 | 2 | **`hidden_size = 768` hardcoded** | Medium | `config.py:14` | Must manually update if MODEL_NAME is changed. No validation guard. |
-| 3 | **`.env` not in `.gitignore`** | High | `.gitignore` | API keys visible in repo history. Rotate all keys before any public sharing. |
-| 4 | **`session_ended` behavior** | Low | `session_manager.py` | Now set to `True` after bantuan_profesional; normal flow penutupan still open-ended |
+| 3 | ~~**`.env` not in `.gitignore`**~~ | ~~High~~ | ~~`.gitignore`~~ | ✅ RESOLVED — `.env` is already in `.gitignore` |
+| 4 | **`session_ended` behavior** | Low | `session_manager.py` | Set to `True` after bantuan_profesional; normal penutupan flow remains open-ended |
 | 5 | **Bible index first-build: 10-30 min** | Medium | `vector_db.py:63` | Expected behavior, documented. Once built, loads fast from disk. |
 | 6 | **`knowledge_base.py` is dead code** | Low | `core/knowledge_base.py` | Not referenced in live app; confuses code readers |
 | 7 | **BERT loads two full models** | Medium | `bert_model.py:32-34` | LABAN needs dual encoders by design — label encoder + utterance encoder. This is correct architecture, not a bug, but doubles VRAM/RAM usage. |
 | 8 | **Max-turn force advance** | Low | `session_manager.py:260` | User can be cut off mid-explanation if they exceed pembahasan max (4 turns) |
 | 9 | **Groq API key needed for augmentation** | Low | `data/augmentation/` | Not needed for running the chatbot; only for generating new training data |
 | 10 | **Bible index must match embed model** | High | `data/faiss_bible_index/` | If EMBED_MODEL in config.py changes, delete the index folder and let it rebuild. Dimension mismatch causes silent FAISS failures. |
+| 11 | **`[TIMING]` prints in rag_engine.py** | Medium | `core/rag_engine.py` | Remove all `_t0/_t1/_t2/_t3/_t4` + print statements before final submission |
 
 ---
 
@@ -369,3 +409,5 @@ All values live in `config.py` and are accessed via the `opt` singleton.
 | 2026-05-19 | Intent schema sync (8→10 intents), training CSV casing fix, Tikhonov regularization for LABAN gram matrix |
 | 2026-05-20 | Physical symptom CBT guidance, bantuan_profesional branch stage, keyword safety net, Sastrawi stopwords, Bible FAISS index rebuilt, evaluation framework (backbone comparison + seen/unseen) |
 | 2026-05-25 | Cosine similarity heatmap evaluation (eval_cosine_heatmap.py) — 3 heatmaps + metrics CSV; label separation gap = 1.0540, centroid alignment gap = 0.6048 |
+| 2026-05-26 | RAGAS evaluation framework (eval_ragas.py) — two-phase pipeline with Groq judge; template CSV generated (50 samples); pending user `reference` fill |
+| 2026-06-02 | Backbone comparison completed (all 6 models, IndoBERT best @ F1=0.9318); Seen/Unseen ZSL evaluation completed (F1-Seen=0.8997, Unseen=0.0); BibleTestSession added to app.py for Cohen's Kappa verse evaluation |

@@ -44,9 +44,11 @@ The thesis evaluation requires the following empirical results and artifacts:
 - [x] RAGEngine with Gemini 2.5-Flash (LangChain); 6-stage SessionManager
 - [x] Flask web UI deployed locally
 - [x] Data augmentation: ~300-400 samples/intent via Groq Llama-3; multi-label combinations
-- [x] Full embedding comparison table (all 6+ models benchmarked, numbers not yet aggregated)
+- [x] Full embedding comparison table (all 6 models benchmarked) → `evaluation/results/backbone_comparison_summary.csv`
+- [x] Seen/Unseen zero-shot evaluation (3 splits) → `evaluation/results/seen_unseen_summary.csv`
 - [x] Cosine similarity heatmap (label-vs-label, centroid-vs-label, per-sample utterance-vs-label)
-- [/] RAGAS evaluation — script ready (`eval_ragas.py`), test template generated, pending manual reference authoring
+- [x] `BibleTestSession` added to `app.py` — sandbox mode for Cohen's Kappa verse retrieval testing
+- [/] RAGAS evaluation — script ready (`eval_ragas.py`), template at `evaluation/data/ragas_testset.csv`, pending manual `reference` column fill + `--evaluate` run
 - [ ] Streaming LLM response (SSE) — pending timing measurement decision
 - [ ] Timing instrumentation cleanup before final submission
 
@@ -88,15 +90,16 @@ The thesis evaluation requires the following empirical results and artifacts:
 ```
 The_Chatbot/
 ├── app.py                      Flask entry — /chat (POST), /reset (POST), / (GET)
+│                               Also contains BibleTestSession (Cohen's Kappa sandbox — "bible test" mode)
 ├── config.py                   Global config singleton `opt`; MODEL_NAME, hidden_size, thresold, etc.
 ├── CLAUDE.md                   AI coding context (this file)
 ├── HANDOFF.md                  Full project handoff & task tracker
 ├── requirement.txt             pip dependencies
 ├── test.py                     CUDA / PyTorch smoke test
-├── .env                        API keys — NOT committed (GEMINI_API_KEY, GROQ_API_KEY)
+├── .env                        API keys — NOT committed (GEMINI_API_KEY, GROQ_API_KEY); already in .gitignore
 │
 ├── core/
-│   ├── rag_engine.py           RAGEngine — orchestrates full pipeline; [TIMING] instrumentation
+│   ├── rag_engine.py           RAGEngine — orchestrates full pipeline; [TIMING] instrumentation (remove before submission)
 │   ├── vector_db.py            VectorDBManager — FAISS build/load/search (Bible + QnA)
 │   ├── session_manager.py      SessionManager — 6-stage state machine, intent accumulation
 │   ├── knowledge_base.py       LEGACY — template-based engine (dead code, not used in live app)
@@ -140,6 +143,16 @@ The_Chatbot/
 │   ├── data/                    Test data for evaluations
 │   │   └── ragas_testset.csv    50-sample test template (user fills 'reference' column)
 │   └── results/                 Auto-created output CSVs and PNGs
+│       ├── backbone_comparison_summary.csv      ✅ DONE — 6-model benchmark results
+│       ├── backbone_comparison_per_intent.csv   ✅ DONE — per-intent breakdown
+│       ├── *_training_curve.png                 ✅ DONE — 6 training curve plots
+│       ├── seen_unseen_summary.csv              ✅ DONE — 3-split ZSL results
+│       ├── seen_unseen_per_intent.csv           ✅ DONE — per-intent ZSL breakdown
+│       ├── seen_unseen_aggregate.csv            ✅ DONE — aggregated ZSL stats
+│       ├── cosine_label_vs_label.png            ✅ DONE
+│       ├── cosine_centroid_vs_label.png         ✅ DONE
+│       ├── cosine_utterance_vs_label.png        ✅ DONE
+│       └── cosine_similarity_metrics.csv        ✅ DONE
 │
 ├── templates/
 │   └── index.html              Single-page chat UI (Gemini-inspired, Cream/White)
@@ -283,8 +296,14 @@ Defined via `MultiLabelBinarizer` fitted on training CSV in `data/data_preparati
 - **Regex patterns pre-compiled** → `SessionManager._COMPILED_SIGNALS` at class load (not per-turn)
 - **Redundant keyword extraction removed** in `VectorDBManager.retrieve_verse()` — `_get_keyword_list()` called once, reused for query build and re-ranking
 - **Conditional BERT skip** → `RAGEngine.SKIP_CLASSIFICATION_STAGES = frozenset({'pembukaan'})` skips forward pass where classification has no effect
-- **`[TIMING]` instrumentation added** to `RAGEngine.generate_response()` — diagnostic only, must be removed before submission
+- **`[TIMING]` instrumentation added** to `RAGEngine.generate_response()` — diagnostic only, **must be removed before submission**
 - **Code quality:** Core pipeline is stable. `core/knowledge_base.py` is dead code (not used in live app; referenced only by `test_knowledge_base.py`).
+
+**Session: 2026-06-02 — Evaluation Completed**
+
+- **Backbone comparison completed** — All 6 transformer variants benchmarked at 50 epochs (identical hyperparams). Results in `evaluation/results/backbone_comparison_summary.csv`. IndoBERT is top performer (F1=0.9318) but IndoBERTweet (F1=0.8991) remains the active model.
+- **Seen/Unseen ZSL evaluation completed** — 3 splits run. F1-Macro Seen=0.8997, Unseen=0.0 across all splits (model cannot predict truly unseen labels — expected behavior for LABAN without label expansion).
+- **`BibleTestSession` added to `app.py`** — type `bible test` in chat UI to activate sandbox mode that bypasses LLM and shows raw FAISS verse retrieval output + intent scores. Used for Cohen's Kappa inter-rater reliability evaluation of verse relevance.
 
 ---
 
@@ -294,13 +313,14 @@ Defined via `MultiLabelBinarizer` fitted on training CSV in `data/data_preparati
 |---|-------|:--------:|----------|--------|
 | 1 | Typo `thresold` | Low | `config.py:12` | Canonical — do NOT rename |
 | 2 | `hidden_size` hardcoded | Medium | `config.py:14` | Update manually when switching MODEL_NAME |
-| 3 | `.env` not in `.gitignore` | **High** | `.gitignore` | Rotate keys before any public sharing |
-| 4 | `session_ended` never set to `True` | Medium | `session_manager.py` | Chatbot continues past `penutupan` |
+| 3 | ~~`.env` not in `.gitignore`~~ | ~~High~~ | ~~`.gitignore`~~ | ✅ RESOLVED — `.env` is already in `.gitignore` |
+| 4 | `session_ended` not set in normal flow | Low | `session_manager.py` | Set to `True` after `bantuan_profesional`; normal penutupan flow remains open-ended |
 | 5 | Bible FAISS first-build: 10–30 min | Medium | `vector_db.py` | Expected; loads fast on subsequent runs |
 | 6 | `knowledge_base.py` is dead code | Low | `core/` | Remove or move to `archive/` before submission |
 | 7 | LABAN loads 2 full BERT models | Medium | `bert_model.py` | By design (dual encoder) — doubles VRAM |
 | 8 | Max-turn force-advance | Low | `session_manager.py` | User may be cut off at `pembahasan` max (4 turns) |
 | 9 | Groq key needed for augmentation only | Info | `data/augmentation/` | Not needed for chatbot runtime |
+| 10 | `[TIMING]` prints still in `rag_engine.py` | Medium | `core/rag_engine.py` | Remove all `_t0/_t1/_t2/_t3/_t4` + print lines before final submission |
 
 ---
 
@@ -335,35 +355,34 @@ Defined via `MultiLabelBinarizer` fitted on training CSV in `data/data_preparati
 
 ### 🎯 Thesis Evaluation (Required Before Submission)
 
-- [ ] **LABAN backbone comparison** — Run `evaluation/compare_embed_models.py` to train 6 transformer backbones with identical hyperparameters (50 epochs, same 80/10/10 split):
-  - IndoBERTweet, IndoBERT-Lite, IndoBERT, MiniLM-L6-v2, Multilingual-E5-small, DistilBERT-multilingual
-  - Output: `evaluation/results/backbone_comparison_summary.csv` (test F1/P/R per model), `backbone_comparison_per_intent.csv` (per-intent breakdown), `*_training_curve.png`
-- [ ] **Seen / Unseen zero-shot evaluation** — Run `evaluation/eval_seen_unseen.py` to evaluate LABAN's zero-shot generalization:
-  - 3 splits (each holds out 3 intents as "unseen"), trains with unseen columns masked, evaluates on full 10-intent test set
-  - Metrics: **F1-Macro Seen**, **F1-Macro Unseen**, **F1-Macro All** (all computed as macro-average)
-  - Output: `evaluation/results/seen_unseen_summary.csv`, `seen_unseen_per_intent.csv`, `seen_unseen_aggregate.csv`
-- [x] **Cosine similarity heatmap** — Generated per-intent-pair cosine similarity visualizations from LABAN label and utterance embeddings:
-  - `evaluation/results/cosine_label_vs_label.png` (label embedding separability)
-  - `evaluation/results/cosine_centroid_vs_label.png` (utterance centroid alignment)
-  - `evaluation/results/cosine_utterance_vs_label.png` (per-sample utterance alignment)
-  - `evaluation/results/cosine_similarity_metrics.csv` (per-intent detailed metrics)
-- [/] **RAGAS evaluation** — `evaluation/eval_ragas.py` with two-phase workflow:
-  - Phase 1 (`--generate`): Samples 50 QnA pairs, auto-assigns counseling stages, saves template CSV
-  - Phase 2 (`--evaluate`): Runs full RAG pipeline + RAGAS metrics (Faithfulness, AnswerRelevancy, ContextPrecision, ContextRecall) with Groq LLM judge (llama-3.1-8b-instant)
-  - **Status**: Script ready, template generated at `evaluation/data/ragas_testset.csv` — user must fill `reference` column with ideal responses (including Bible verses for solusi/relaksasi stages)
-  - Output: `evaluation/results/ragas_per_sample.csv`, `ragas_summary.csv`, `ragas_per_stage.csv`
+- [x] **LABAN backbone comparison** — ✅ DONE. Results in `evaluation/results/backbone_comparison_summary.csv`.
+  - Best: **IndoBERT** (F1-micro=0.9318, P=0.9602, R=0.9051) vs active model **IndoBERTweet** (F1-micro=0.8991, P=0.9356, R=0.8653)
+  - IndoBERT-Lite failed badly (F1=0.3659) — numerical instability
+  - All 6 training curves saved as `*_training_curve.png`
+- [x] **Seen / Unseen zero-shot evaluation** — ✅ DONE. Results in `evaluation/results/seen_unseen_summary.csv`.
+  - 3 splits, F1-Macro Seen avg=0.8997 (±0.008), F1-Macro Unseen=0.0 (model cannot generalize to truly unseen labels)
+  - F1-Macro All avg=0.6298 (±0.006) — confirms LABAN requires seen labels at inference time
+- [x] **Cosine similarity heatmap** — ✅ DONE. Results in `evaluation/results/`.
+  - `cosine_label_vs_label.png` — label embedding separability; gap=1.0540
+  - `cosine_centroid_vs_label.png` — utterance centroid alignment; gap=0.6048
+  - `cosine_utterance_vs_label.png` — per-sample utterance alignment; gap=0.4195
+  - `cosine_similarity_metrics.csv` — per-intent detailed metrics
+- [/] **RAGAS evaluation** — Script ready, template generated. **Pending: user must fill `reference` column.**
+  - Phase 1 (`--generate`) ✅ done → template at `evaluation/data/ragas_testset.csv` (50 samples)
+  - Phase 2 (`--evaluate`) ⏳ blocked — user must first fill `reference` column with ideal responses
+  - Output (when run): `evaluation/results/ragas_per_sample.csv`, `ragas_summary.csv`, `ragas_per_stage.csv`
 
 ---
 
 ### 🔧 Cleanup (Before Final Submission)
 
-- [ ] Remove all `[TIMING]` diagnostic prints from `rag_engine.py`
+- [ ] Remove all `[TIMING]` diagnostic prints from `rag_engine.py` (lines with `_t0/_t1/_t2/_t3/_t4` + `[TIMING]` prints)
 - [ ] Delete or archive `core/knowledge_base.py` and `core/test_knowledge_base.py`
 - [ ] Audit and trim `requirement.txt` (remove unused: `anthropic`, `openai`, `aiml`, `beautifulsoup4`)
 - [ ] Add "Mulai Sesi Baru" reset button to UI (`static/script.js` + `index.html`)
-- [ ] Implement user-friendly Indonesian error message in `script.js` (replace raw 500 error string)
+- [ ] Improve server error display in `script.js` line 72 — currently shows raw `data.error` string; replace with user-friendly Indonesian message
 - [ ] Decide and implement `session_ended` behavior in `session_manager.py` (restart vs. closed-session notice)
-- [ ] Add `.env` to `.gitignore` and rotate all API keys before any public sharing
+- [x] ~~Add `.env` to `.gitignore`~~ — `.env` is already in `.gitignore` (resolved)
 
 ---
 

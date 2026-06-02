@@ -3,9 +3,10 @@ class config:
     max_len = 50
     epochs = 50
     LEARNING_RATE = 2e-5
+    MODEL_NAME = 'indobenchmark/indobert-base-p1'
     # MODEL_NAME = 'indobenchmark/indobert-lite-base-p1'
     # MODEL_NAME = 'sentence-transformers/all-MiniLM-L6-v2'
-    MODEL_NAME = 'indolem/indobertweet-base-uncased' # sejauh ini paling akurat secara predict
+    # MODEL_NAME = 'indolem/indobertweet-base-uncased' 
     # MODEL_NAME = 'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2'
     # MODEL_NAME = 'intfloat/multilingual-e5-small'
     # MODEL_NAME = 'distilbert-base-multilingual-cased' 
