@@ -219,21 +219,23 @@ Respons Anda:
         # When override_intents are provided (from SessionManager's accumulated intents),
         # use them instead of the current turn's intents for more relevant verse selection.
         # ALL intents are combined together to determine the 1 best verse.
+        # Uses LLM reranker: FAISS retrieves top-5 candidates, Gemini picks the best one.
         bible_verses = ""
         bible_reference = ""
         intents_for_verse = override_intents if override_intents else detected_intents
         if current_stage in self.BIBLE_VERSE_STAGES and intents_for_verse:
-            verse_results = self.vector_db.retrieve_verse(
+            verse_results = self.vector_db.retrieve_verse_with_llm(
                 intents=intents_for_verse,
                 user_input=user_input,
-                k=1
+                llm=self.llm,
+                k=5
             )
             if verse_results:
                 bible_reference = verse_results[0].get('reference', '')
                 bible_verses = verse_results[0].get('text', '')
         _t3 = time.perf_counter()
         if current_stage in self.BIBLE_VERSE_STAGES:
-            print(f"[TIMING] retrieve_verse: {(_t3 - _t2) * 1000:.1f}ms")
+            print(f"[TIMING] retrieve_verse_with_llm: {(_t3 - _t2) * 1000:.1f}ms")
 
         # 4. Build the bible section dynamically
         # Only include in the prompt if we actually have a verse

@@ -157,23 +157,15 @@ class VectorDBManager:
         print(f"Bible index selesai dibangun dan disimpan ke {index_dir}")
         print(f"Total dokumen: {self.bible_db.index.ntotal}")
 
-    def retrieve_verse(self, intents, user_input, k=1):
+    # ── FAISS Semantic Search (Layer 1 + 2) ──────────────────────────────
+
+    def _faiss_search(self, intents, user_input, k=5):
         """
-        Ambil ayat Alkitab yang paling relevan berdasarkan semua intent + input user.
+        Layer 1: Build combined query (intent + keywords + biblical synonyms)
+        Layer 2: FAISS semantic search → top-k candidate verses
         
-        Langkah:
-        1. Gabungkan semua intent + keyword user menjadi satu query
-        2. Cari di FAISS (semantic search) → ambil kandidat
-        3. Re-rank berdasarkan keyword match dari user_input
-        4. Jika ada seri, random pick
-        
-        Args:
-            intents: list of detected intent strings (e.g., ["Perasaan Sedih", "Perasaan Takut"])
-            user_input: teks input pengguna
-            k: jumlah ayat yang ingin dikembalikan
-            
         Returns:
-            list of dict: [{reference: str, text: str}, ...]
+            list of dict: [{reference: str, text: str}, ...] sorted by L2 distance
         """
         if self.bible_db is None:
             print("[WARNING] Bible index belum dibangun!")
@@ -182,8 +174,7 @@ class VectorDBManager:
         if not intents and not user_input:
             return []
 
-        # --- Step 1: Bangun combined query ---
-        # Gabungkan semua intent + kata kunci user + sinonim Alkitab
+        # --- Layer 1: Bangun combined query ---
         keywords = self._get_keyword_list(user_input) if user_input else []
         intent_part = " ".join(intents) if intents else ""
         keyword_part = " ".join(keywords)
@@ -201,13 +192,10 @@ class VectorDBManager:
         if not combined_query:
             return []
 
-        # --- Step 2: Semantic search di FAISS ---
-        # Ambil lebih banyak kandidat untuk re-ranking
-        candidate_count = max(k * 10, 20)
-
+        # --- Layer 2: Semantic search di FAISS ---
         try:
             candidates_with_scores = self.bible_db.similarity_search_with_score(
-                combined_query, k=candidate_count
+                combined_query, k=k
             )
         except Exception as e:
             print(f"[ERROR] FAISS search gagal: {e}")
@@ -216,50 +204,113 @@ class VectorDBManager:
         if not candidates_with_scores:
             return []
 
-        # --- Step 3: Keyword refinement ---
-        
-        scored_candidates = []
-        for doc, faiss_score in candidates_with_scores:
-            verse_text_lower = doc.metadata.get("text", "").lower()
-            
-            # Hitung berapa keyword yang muncul di ayat ini
-            keyword_hits = 0
-            if keywords:
-                for kw in keywords:
-                    if kw.lower() in verse_text_lower:
-                        keyword_hits += 1
-            
-            scored_candidates.append({
-                "doc": doc,
-                "faiss_score": faiss_score,  # Lower = better in FAISS L2
-                "keyword_hits": keyword_hits,
+        # Return sorted by L2 distance (lowest = best)
+        results = []
+        for doc, score in candidates_with_scores:
+            results.append({
                 "reference": doc.metadata.get("reference", ""),
                 "text": doc.metadata.get("text", ""),
+                "faiss_score": score,
             })
+        results.sort(key=lambda x: x["faiss_score"])
+        return results
+
+    # ── LLM Reranker ──────────────────────────────────────────────────
+
+    def retrieve_verse_with_llm(self, intents, user_input, llm, k=5):
+        """
+        Retrieve the most contextually relevant Bible verse using:
+        Layer 1 + 2: FAISS semantic search → top-k candidates
+        LLM Reranker: Gemini picks the best verse based on user context
         
-        # Sort: keyword_hits DESC, faiss_score ASC (lower = closer)
-        scored_candidates.sort(key=lambda x: (-x["keyword_hits"], x["faiss_score"]))
-        
-        # --- Step 4: Random tiebreaker ---
-        # Jika beberapa kandidat punya skor sama di top, random pick
-        if len(scored_candidates) > k:
-            # Ambil grup teratas (skor keyword yang sama)
-            top = scored_candidates[0]
-            top_group = [
-                c for c in scored_candidates
-                if c["keyword_hits"] == top["keyword_hits"]
-                and c["faiss_score"] == top["faiss_score"]
-            ]
+        Args:
+            intents: list of detected intent strings
+            user_input: raw user utterance (conversational context)
+            llm: LangChain LLM instance (reuse from RAGEngine)
+            k: number of FAISS candidates to present to the LLM
             
-            if len(top_group) > k:
-                # Random dari top group
-                selected = random.sample(top_group, k)
-            else:
-                selected = scored_candidates[:k]
-        else:
-            selected = scored_candidates[:k]
-        
-        return [{"reference": s["reference"], "text": s["text"]} for s in selected]
+        Returns:
+            list of dict: [{reference: str, text: str}] — always 1 result
+        """
+        # Step 1+2: Get FAISS candidates
+        candidates = self._faiss_search(intents, user_input, k=k)
+
+        if not candidates:
+            return []
+
+        # If only 1 candidate, skip LLM — return directly
+        if len(candidates) == 1:
+            return [{"reference": candidates[0]["reference"], "text": candidates[0]["text"]}]
+
+        # Build numbered candidate list for the LLM
+        candidate_lines = []
+        for i, c in enumerate(candidates, 1):
+            candidate_lines.append(f"{i}. {c['reference']} — \"{c['text']}\"")
+        candidate_list_str = "\n".join(candidate_lines)
+
+        # Build the reranker prompt
+        prompt = (
+            "Kamu adalah asisten pemilih ayat Alkitab Terjemahan Baru (TB).\n\n"
+            "Konteks percakapan konseling dari pengguna:\n"
+            f'"{user_input}"\n\n'
+            "Berikut adalah daftar ayat kandidat:\n"
+            f"{candidate_list_str}\n\n"
+            "Instruksi:\n"
+            "1. Pilih SATU ayat yang paling sesuai dengan konteks percakapan di atas.\n"
+            "2. ⚠️ PERINGATAN: Kamu sedang berurusan dengan Firman Tuhan. "
+            "JANGAN mengubah, menambahkan, atau menghilangkan satu kata pun dari teks ayat.\n"
+            "3. Format output: REFERENSI|TEKS AYAT\n"
+            "   Contoh: Mazmur 34:18|TUHAN itu dekat kepada orang-orang yang patah hati...\n"
+            "4. Output HANYA satu baris. Tidak ada penjelasan, komentar, atau teks tambahan.\n"
+        )
+
+        try:
+            response = llm.invoke(prompt)
+            raw_output = response.content.strip()
+
+            # Parse pipe-delimited output: REFERENSI|TEKS
+            if "|" in raw_output:
+                parts = raw_output.split("|", 1)
+                ref = parts[0].strip()
+                text = parts[1].strip().strip('"').strip("'")
+
+                # Validate: reference must exist in our candidates
+                for c in candidates:
+                    if c["reference"] == ref:
+                        print(f"[LLM Reranker] Selected: {ref}")
+                        return [{"reference": ref, "text": c["text"]}]
+
+                # LLM returned a valid format but reference not in candidates
+                # Use the text from LLM but log a warning
+                print(f"[LLM Reranker] WARNING: reference '{ref}' not in candidates, using LLM text")
+                return [{"reference": ref, "text": text}]
+
+            # Fallback: try to match LLM output to a candidate reference
+            for c in candidates:
+                if c["reference"] in raw_output:
+                    print(f"[LLM Reranker] Parsed reference from raw output: {c['reference']}")
+                    return [{"reference": c["reference"], "text": c["text"]}]
+
+            # Complete fallback: LLM output unparseable → return top FAISS result
+            print(f"[LLM Reranker] FALLBACK: Could not parse LLM output, using top FAISS result")
+            print(f"[LLM Reranker] Raw output was: {raw_output[:200]}")
+
+        except Exception as e:
+            print(f"[LLM Reranker] ERROR: {e} — falling back to top FAISS result")
+
+        # Fallback: return the top FAISS candidate
+        return [{"reference": candidates[0]["reference"], "text": candidates[0]["text"]}]
+
+    # ── Legacy retrieve_verse (FAISS-only, no LLM) ───────────────────
+
+    def retrieve_verse(self, intents, user_input, k=1):
+        """
+        Simple FAISS-only retrieval (no LLM reranking).
+        Returns the top-k results by L2 distance.
+        Kept for backward compatibility and non-LLM contexts.
+        """
+        candidates = self._faiss_search(intents, user_input, k=k)
+        return [{"reference": c["reference"], "text": c["text"]} for c in candidates]
 
     def _extract_keywords(self, text):
         """Ekstrak kata kunci dari teks (hapus stopwords)."""

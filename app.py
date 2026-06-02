@@ -26,19 +26,20 @@ class BibleTestSession:
 
     def handle(self, user_input: str) -> str:
         """
-        Run LABAN classification + FAISS retrieval.
-        Returns a formatted string with only the verse — no LLM.
+        Run LABAN classification + FAISS retrieval + LLM reranking.
+        Returns a formatted string with only the verse — no counseling LLM.
         """
         # 1. Classify intents via LABAN
         prediction = self.rag_engine.classifier.predict(user_input)
         detected_intents = prediction.get('inten_terdeteksi', [])
         scores = prediction.get('skore', {})
 
-        # 2. Retrieve verse via FAISS
-        verse_results = self.rag_engine.vector_db.retrieve_verse(
+        # 2. Retrieve verse via FAISS + LLM Reranker
+        verse_results = self.rag_engine.vector_db.retrieve_verse_with_llm(
             intents=detected_intents,
             user_input=user_input,
-            k=1
+            llm=self.rag_engine.llm,
+            k=5
         )
 
         # 3. Format output
