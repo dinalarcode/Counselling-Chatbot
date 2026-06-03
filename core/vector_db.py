@@ -257,11 +257,12 @@ class VectorDBManager:
             f"{candidate_list_str}\n\n"
             "Instruksi:\n"
             "1. Pilih SATU ayat yang paling sesuai dengan konteks percakapan di atas.\n"
-            "2. ⚠️ PERINGATAN: Kamu sedang berurusan dengan Firman Tuhan. "
+            "2. Utamakan pilih ayat yang bersifat menguatkan dan memberi penghiburan.\n"
+            "3. ⚠️ PERINGATAN: Kamu sedang berurusan dengan Firman Tuhan. "
             "JANGAN mengubah, menambahkan, atau menghilangkan satu kata pun dari teks ayat.\n"
-            "3. Format output: REFERENSI|TEKS AYAT\n"
+            "4. Format output: REFERENSI|TEKS AYAT\n"
             "   Contoh: Mazmur 34:18|TUHAN itu dekat kepada orang-orang yang patah hati...\n"
-            "4. Output HANYA satu baris. Tidak ada penjelasan, komentar, atau teks tambahan.\n"
+            "5. Output HANYA satu baris. Tidak ada penjelasan, komentar, atau teks tambahan.\n"
         )
 
         try:

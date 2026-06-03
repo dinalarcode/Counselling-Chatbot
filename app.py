@@ -54,16 +54,17 @@ class BibleTestSession:
         verse = verse_results[0]
 
         # Console log for developer to record into Cohen's Kappa sheet
-        print(f"\n--- Bible Test ---")
+        print(f"\n--- Bible Test (FAISS + LLM Reranker) ---")
         print(f"Utterance: {user_input}")
         print(f"Intents:   {intents_str}")
         print(f"Verse:     {verse['reference']} — {verse['text']}")
-        print(f"------------------\n")
+        print(f"------------------------------------------\n")
 
         return (
             f"**Intent Terdeteksi:** {intents_str}\n\n"
             f"**Ayat:** {verse['reference']} (TB)\n\n"
-            f"\"{ verse['text']}\""
+            f"\"{ verse['text']}\"\n\n"
+            f"*(dipilih oleh LLM reranker dari 5 kandidat FAISS)*"
         )
 
 
@@ -108,7 +109,10 @@ def chat():
         return jsonify({"response": (
             "🔬 **Mode Bible Test Aktif**\n\n"
             "Masukkan utterance dari daftar pengujian Anda.\n"
-            "Sistem akan menampilkan ayat yang diambil oleh FAISS (tanpa LLM).\n\n"
+            "Pipeline pengambilan ayat:\n"
+            "1. Klasifikasi intent (LABAN/IndoBERT)\n"
+            "2. FAISS semantic search → 5 kandidat ayat\n"
+            "3. LLM reranker (Gemini) → memilih ayat terbaik\n\n"
             "Ketik `exit test` untuk kembali ke sesi normal."
         )})
 

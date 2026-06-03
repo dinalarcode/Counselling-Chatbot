@@ -25,7 +25,7 @@ The thesis evaluation requires the following empirical results and artifacts:
 2. **Embedding Model Comparison** — Benchmarking the following models as classifiers under the LABAN architecture:
    - `indolem/indobert-base-uncased` (IndoBERT)
    - `indobenchmark/indobert-lite-base-p1` (IndoBERT-Lite)
-   - `indolem/indobertweet-base-uncased` (IndoBERTweet) ← **currently active**
+   - `indolem/indobertweet-base-uncased` (IndoBERTweet)
    - `intfloat/multilingual-e5-small` (mE5)
    - `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`
    - `sentence-transformers/all-MiniLM-L6-v2`
@@ -47,7 +47,9 @@ The thesis evaluation requires the following empirical results and artifacts:
 - [x] Full embedding comparison table (all 6 models benchmarked) → `evaluation/results/backbone_comparison_summary.csv`
 - [x] Seen/Unseen zero-shot evaluation (3 splits) → `evaluation/results/seen_unseen_summary.csv`
 - [x] Cosine similarity heatmap (label-vs-label, centroid-vs-label, per-sample utterance-vs-label)
-- [x] `BibleTestSession` added to `app.py` — sandbox mode for Cohen's Kappa verse retrieval testing
+- [x] `BibleTestSession` added to `app.py` — sandbox mode for Cohen's Kappa verse retrieval testing (uses LLM reranker internally)
+- [x] LLM reranker integrated into Bible verse retrieval (`retrieve_verse_with_llm()`) — FAISS top-5 → Gemini selects best; `BIBLICAL_SYNONYMS` dict added for query expansion
+- [x] `MODEL_NAME` switched to `indobenchmark/indobert-base-p1` (IndoBERT) in `config.py` after backbone comparison confirmed it as top performer
 - [/] RAGAS evaluation — script ready (`eval_ragas.py`), template at `evaluation/data/ragas_testset.csv`, pending manual `reference` column fill + `--evaluate` run
 - [ ] Streaming LLM response (SSE) — pending timing measurement decision
 - [ ] Timing instrumentation cleanup before final submission
@@ -90,6 +92,7 @@ The thesis evaluation requires the following empirical results and artifacts:
 ```
 The_Chatbot/
 ├── app.py                      Flask entry — /chat (POST), /reset (POST), / (GET)
+│                               BibleTestSession uses LLM reranker (retrieve_verse_with_llm) internally
 │                               Also contains BibleTestSession (Cohen's Kappa sandbox — "bible test" mode)
 ├── config.py                   Global config singleton `opt`; MODEL_NAME, hidden_size, thresold, etc.
 ├── CLAUDE.md                   AI coding context (this file)
@@ -144,6 +147,15 @@ The_Chatbot/
 │   │   └── ragas_testset.csv    50-sample test template (user fills 'reference' column)
 │   └── results/                 Auto-created output CSVs and PNGs
 │       ├── backbone_comparison_summary.csv      ✅ DONE — 6-model benchmark results
+│
+├── documentation/
+│   ├── LABAN_DOCUMENTATION.md/.pdf              Thesis write-up: LABAN architecture
+│   ├── RAGAS_DOCUMENTATION.md/.pdf              Thesis write-up: RAGAS evaluation
+│   ├── COSINE_HEATMAP_DOCUMENTATION.md/.pdf     Thesis write-up: cosine heatmap
+│   ├── FAISS_VERSE_RETRIEVAL_DOCUMENTATION.md   LLM reranker design rationale
+│   ├── DOC_DATA_COLLECTION.md                   Data collection methodology
+│   ├── DOC_ENVIRONMENT.md                       Environment setup
+│   └── DOC_PREPROCESSING.md                    Data preprocessing
 │       ├── backbone_comparison_per_intent.csv   ✅ DONE — per-intent breakdown
 │       ├── *_training_curve.png                 ✅ DONE — 6 training curve plots
 │       ├── seen_unseen_summary.csv              ✅ DONE — 3-split ZSL results
@@ -254,15 +266,16 @@ Defined via `MultiLabelBinarizer` fitted on training CSV in `data/data_preparati
 - After this stage, `session_ended = True`.
 
 ### RAG Pipeline
-- Bible verse retrieval: semantic FAISS search → keyword re-rank → random tiebreaker (ensures verse diversity).
-- Verse injection is **only** active in `solusi` and `relaksasi` stages.
-- `VectorDBManager` holds both `faiss_bible_index` and `faiss_qna_index` — both are persisted to disk; first-time build of Bible index can take 10–30 min.
+- **Bible verse retrieval** (updated): `BIBLICAL_SYNONYMS` query expansion → FAISS `similarity_search_with_score` (top-k=5) → Gemini LLM reranker (`retrieve_verse_with_llm()`) picks the best verse. Falls back to top FAISS result if LLM output is unparseable.
+- `BIBLICAL_SYNONYMS` in `vector_db.py`: maps each of the 10 LABAN intents to formal TB biblical vocabulary so informal user slang gets expanded to words that actually appear in the Bible.
+- Verse injection is active in `solusi`, `relaksasi`, **and `bantuan_profesional`** stages (see `BIBLE_VERSE_STAGES`).
+- `VectorDBManager` holds both `faiss_bible_index` and `faiss_qna_index` — both persisted to disk; first-time build of Bible index can take 10–30 min.
 
 ### Config Quick-Reference
 
 | Key | Current Value | Notes |
 |-----|---------------|-------|
-| `MODEL_NAME` | `indolem/indobertweet-base-uncased` | Active backbone |
+| `MODEL_NAME` | `indobenchmark/indobert-base-p1` | Active backbone (switched after comparison — IndoBERT was best) |
 | `hidden_size` | `768` | Must match MODEL_NAME output dim |
 | `thresold` | `0.5` | Intentional typo — do not rename |
 | `max_len` | `50` | Max token length for classifier |
@@ -271,6 +284,7 @@ Defined via `MultiLabelBinarizer` fitted on training CSV in `data/data_preparati
 | `LEARNING_RATE` | `2e-5` | AdamW LR |
 
 **Commented-out MODEL_NAME alternatives in `config.py`:**
+- `indolem/indobertweet-base-uncased` (hidden_size=768) ← previously active
 - `indobenchmark/indobert-lite-base-p1` (hidden_size=768)
 - `sentence-transformers/all-MiniLM-L6-v2` (hidden_size=384)
 - `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` (hidden_size=384)
@@ -301,9 +315,17 @@ Defined via `MultiLabelBinarizer` fitted on training CSV in `data/data_preparati
 
 **Session: 2026-06-02 — Evaluation Completed**
 
-- **Backbone comparison completed** — All 6 transformer variants benchmarked at 50 epochs (identical hyperparams). Results in `evaluation/results/backbone_comparison_summary.csv`. IndoBERT is top performer (F1=0.9318) but IndoBERTweet (F1=0.8991) remains the active model.
+- **Backbone comparison completed** — All 6 transformer variants benchmarked at 50 epochs (identical hyperparams). Results in `evaluation/results/backbone_comparison_summary.csv`. IndoBERT is top performer (F1=0.9318); IndoBERTweet (F1=0.8991) was previously active.
 - **Seen/Unseen ZSL evaluation completed** — 3 splits run. F1-Macro Seen=0.8997, Unseen=0.0 across all splits (model cannot predict truly unseen labels — expected behavior for LABAN without label expansion).
-- **`BibleTestSession` added to `app.py`** — type `bible test` in chat UI to activate sandbox mode that bypasses LLM and shows raw FAISS verse retrieval output + intent scores. Used for Cohen's Kappa inter-rater reliability evaluation of verse relevance.
+- **`BibleTestSession` added to `app.py`** — type `bible test` in chat UI to activate sandbox mode for Cohen's Kappa inter-rater reliability evaluation of verse relevance.
+
+**Session: 2026-06-03 — LLM Reranker for Bible Retrieval**
+
+- **`retrieve_verse_with_llm()` added to `VectorDBManager`** — replaces the old keyword re-rank + random tiebreaker. New pipeline: `BIBLICAL_SYNONYMS` query expansion → FAISS top-5 → Gemini LLM picks best verse from candidates. Falls back to top FAISS result if LLM output is unparseable.
+- **`BIBLICAL_SYNONYMS` dict** added to `vector_db.py` — maps each of the 10 LABAN intents to formal TB biblical vocabulary (e.g., "kesel" → "murka", "capek" → "lelah") for richer FAISS queries.
+- **`MODEL_NAME` switched to `indobenchmark/indobert-base-p1`** in `config.py` — IndoBERT replaces IndoBERTweet as the active backbone after the comparison confirmed it as the best performer.
+- **`documentation/` folder created** — 10 thesis write-up files (LABAN, RAGAS, cosine heatmap, FAISS retrieval, data collection, environment, preprocessing).
+- **`bantuan_profesional` added to `BIBLE_VERSE_STAGES`** in `rag_engine.py` — verse retrieval now also runs in this branch stage.
 
 ---
 
@@ -380,7 +402,7 @@ Defined via `MultiLabelBinarizer` fitted on training CSV in `data/data_preparati
 - [ ] Delete or archive `core/knowledge_base.py` and `core/test_knowledge_base.py`
 - [ ] Audit and trim `requirement.txt` (remove unused: `anthropic`, `openai`, `aiml`, `beautifulsoup4`)
 - [ ] Add "Mulai Sesi Baru" reset button to UI (`static/script.js` + `index.html`)
-- [ ] Improve server error display in `script.js` line 72 — currently shows raw `data.error` string; replace with user-friendly Indonesian message
+- [x] ~~Improve server error display~~ — `app.py` already returns `"Terjadi kesalahan internal. Silakan coba lagi."` for 500 errors ✅
 - [ ] Decide and implement `session_ended` behavior in `session_manager.py` (restart vs. closed-session notice)
 - [x] ~~Add `.env` to `.gitignore`~~ — `.env` is already in `.gitignore` (resolved)
 

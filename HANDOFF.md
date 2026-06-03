@@ -12,7 +12,7 @@ The system conducts structured multi-turn counseling conversations using the **L
 
 **Core Tech Stack:**
 - LLM: Google Gemini 2.5-Flash via LangChain (`langchain-google-genai`)
-- Intent Classifier: Fine-tuned `indolem/indobertweet-base-uncased` with LABAN multi-label architecture
+- Intent Classifier: Fine-tuned `indobenchmark/indobert-base-p1` (IndoBERT) with LABAN multi-label architecture
 - Vector Store: FAISS (via `langchain_community`) for Bible verses + QnA pairs
 - Embeddings: `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`
 - Web Interface: Flask + vanilla JS/CSS (single-page chat UI)
@@ -39,9 +39,9 @@ RAGEngine.generate_response()  [core/rag_engine.py]
     │      SKIPPED in: pembukaan, bantuan_profesional
     ├─ CBT guidance injection (solusi/relaksasi when physical symptoms detected)
     ├─ QnA FAISS search — core/vector_db.py
-    ├─ Bible Verse Retrieval — core/vector_db.py (Sastrawi stopwords for keyword extraction)
+    ├─ Bible Verse Retrieval — core/vector_db.py
     │      ONLY in: relaksasi, solusi, bantuan_profesional
-    │      Algorithm: semantic FAISS search → keyword re-rank → random tiebreaker
+    │      Algorithm: BIBLICAL_SYNONYMS query expansion → FAISS top-5 → Gemini LLM reranker picks best verse
     ├─ Prompt assembly (LangChain PromptTemplate)
     ↓
 Gemini 2.5-Flash API call
@@ -109,6 +109,15 @@ The_Chatbot/
 │   │   └── seeds.json              Seed sentences per intent
 │   └── faiss_bible_index/    Persisted FAISS index for Bible (auto-built on first run)
 │   (faiss_qna_index/ will appear after first run post-optimization)
+│
+├── documentation/
+│   ├── LABAN_DOCUMENTATION.md/.pdf       Full LABAN architecture write-up (thesis chapter)
+│   ├── RAGAS_DOCUMENTATION.md/.pdf       RAGAS evaluation methodology write-up
+│   ├── COSINE_HEATMAP_DOCUMENTATION.md/.pdf  Cosine heatmap analysis write-up
+│   ├── FAISS_VERSE_RETRIEVAL_DOCUMENTATION.md  LLM reranker design write-up
+│   ├── DOC_DATA_COLLECTION.md            Data collection methodology
+│   ├── DOC_ENVIRONMENT.md                Environment setup documentation
+│   └── DOC_PREPROCESSING.md              Data preprocessing documentation
 │
 ├── templates/
 │   └── index.html            Single-page chat UI
@@ -233,9 +242,9 @@ Current intents (from training CSV):
 - [x] Aggregate statistics in `seen_unseen_aggregate.csv`
 
 ### 5.10 BibleTestSession Added to app.py (Session 2026-06-02)
-- [x] `BibleTestSession` class added to `app.py` as a sandbox bypass mode
+- [x] **BibleTestSession** class added to `app.py` as a sandbox bypass mode
 - [x] Activate by typing `bible test` in chat UI; deactivate with `exit test`
-- [x] Bypasses LLM entirely — runs LABAN classification + FAISS retrieval only
+- [x] Runs LABAN classification + FAISS retrieval **with LLM reranker** (Gemini picks best verse from top-5 FAISS candidates)
 - [x] Prints intent scores + retrieved verse to console for manual recording into Cohen's Kappa evaluation sheet
 - [x] Used for inter-rater reliability evaluation of verse relevance quality
 
@@ -318,8 +327,8 @@ The session has no explicit "session ended" flag after `penutupan`. Currently:
 #### 7.7 Add Session Reset Button to UI
 Currently `static/script.js` calls `/reset` on page load only. A visible "Mulai Sesi Baru" button in the UI would allow users to restart without refreshing the page, which is important for user testing (thesis evaluation).
 
-#### 7.8 Improve Error Display in UI
-If the Flask backend returns a 500 error, `script.js` currently shows the raw error string in a chat bubble. Replace with a user-friendly Indonesian message like "Maaf, terjadi kendala. Silakan coba lagi."
+#### 7.8 ~~Improve Error Display in UI~~ — ✅ DONE
+`app.py` already returns `"Terjadi kesalahan internal. Silakan coba lagi."` for 500 errors. No further action needed.
 
 #### 7.9 Write Test Cases for Stage Transitions
 `core/test_rag.py` tests retrieval but not the full conversation flow. For thesis evaluation, add a simple script that runs a simulated conversation end-to-end and asserts:
@@ -389,7 +398,7 @@ All values live in `config.py` and are accessed via the `opt` singleton.
 
 | Key | Current Value | What it controls |
 |-----|---------------|-----------------|
-| `MODEL_NAME` | `indolem/indobertweet-base-uncased` | Transformer backbone for classifier |
+| `MODEL_NAME` | `indobenchmark/indobert-base-p1` | Transformer backbone for classifier (switched to IndoBERT after backbone comparison) |
 | `hidden_size` | `768` | Must match MODEL_NAME output dim |
 | `thresold` | `0.5` | Intent detection cutoff (note typo) |
 | `max_len` | `50` | Max token length for classifier input |
@@ -411,3 +420,4 @@ All values live in `config.py` and are accessed via the `opt` singleton.
 | 2026-05-25 | Cosine similarity heatmap evaluation (eval_cosine_heatmap.py) — 3 heatmaps + metrics CSV; label separation gap = 1.0540, centroid alignment gap = 0.6048 |
 | 2026-05-26 | RAGAS evaluation framework (eval_ragas.py) — two-phase pipeline with Groq judge; template CSV generated (50 samples); pending user `reference` fill |
 | 2026-06-02 | Backbone comparison completed (all 6 models, IndoBERT best @ F1=0.9318); Seen/Unseen ZSL evaluation completed (F1-Seen=0.8997, Unseen=0.0); BibleTestSession added to app.py for Cohen's Kappa verse evaluation |
+| 2026-06-03 | LLM reranker added to Bible verse retrieval (`retrieve_verse_with_llm()` in vector_db.py) — FAISS top-5 candidates → Gemini picks best; BIBLICAL_SYNONYMS query expansion dict added (10 intents → formal biblical vocab); MODEL_NAME switched to IndoBERT (`indobert-base-p1`) in config.py post-comparison; `documentation/` folder created with 10 thesis write-up files |
