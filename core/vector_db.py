@@ -217,7 +217,7 @@ class VectorDBManager:
 
     # ── LLM Reranker ──────────────────────────────────────────────────
 
-    def retrieve_verse_with_llm(self, intents, user_input, llm, k=5):
+    def retrieve_verse_with_llm(self, intents, user_input, llm, k=10):
         """
         Retrieve the most contextually relevant Bible verse using:
         Layer 1 + 2: FAISS semantic search → top-k candidates

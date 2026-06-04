@@ -331,21 +331,23 @@ def run_evaluation():
     eval_dataset = EvaluationDataset(samples=samples)
     print(f"  [OK] EvaluationDataset built with {len(samples)} samples")
 
-    # -- 5. Configure Groq LLM judge ----------------------------------------
-    print(f"\n  Configuring Groq LLM judge...")
+    # -- 5. Configure Gemini LLM judge --------------------------------------
+    print(f"\n  Configuring Gemini LLM judge...")
 
-    groq_api_key = os.getenv("GROQ_API_KEY")
-    if not groq_api_key:
-        print("  [ERROR] GROQ_API_KEY not found in .env")
+    from config import opt
+    from langchain_google_genai import ChatGoogleGenerativeAI
+
+    judge_api_key = os.getenv(opt.RAGAS_JUDGE_API_KEY_ENV)
+    if not judge_api_key:
+        print(f"  [ERROR] {opt.RAGAS_JUDGE_API_KEY_ENV} not found in .env")
         sys.exit(1)
 
-    from langchain_groq import ChatGroq
-    judge_llm = ChatGroq(
-        model="llama-3.1-8b-instant",
-        api_key=groq_api_key,
-        temperature=0.0,  # deterministic judging
+    judge_llm = ChatGoogleGenerativeAI(
+        model=opt.RAGAS_JUDGE_MODEL,
+        google_api_key=judge_api_key,
+        temperature=opt.RAGAS_JUDGE_TEMPERATURE,
     )
-    print(f"  [OK] Groq judge configured (llama-3.1-8b-instant)")
+    print(f"  [OK] Gemini judge configured ({opt.RAGAS_JUDGE_MODEL})")
 
     # -- 6. Define metrics --------------------------------------------------
     metrics = [

@@ -61,10 +61,10 @@ class BibleTestSession:
         print(f"------------------------------------------\n")
 
         return (
-            f"**Intent Terdeteksi:** {intents_str}\n\n"
-            f"**Ayat:** {verse['reference']} (TB)\n\n"
+            f"Intent Terdeteksi: {intents_str}\n\n"
+            f"Ayat: {verse['reference']} (TB)\n\n"
             f"\"{ verse['text']}\"\n\n"
-            f"*(dipilih oleh LLM reranker dari 5 kandidat FAISS)*"
+            f"(dipilih oleh LLM reranker dari 10 kandidat FAISS)"
         )
 
 
@@ -107,11 +107,11 @@ def chat():
         bible_test_session.active = True
         print("\n--- Bible Test Mode ACTIVATED ---\n")
         return jsonify({"response": (
-            "🔬 **Mode Bible Test Aktif**\n\n"
+            "🔬 Mode Bible Test Aktif\n\n"
             "Masukkan utterance dari daftar pengujian Anda.\n"
             "Pipeline pengambilan ayat:\n"
             "1. Klasifikasi intent (LABAN/IndoBERT)\n"
-            "2. FAISS semantic search → 5 kandidat ayat\n"
+            "2. FAISS semantic search → 10 kandidat ayat\n"
             "3. LLM reranker (Gemini) → memilih ayat terbaik\n\n"
             "Ketik `exit test` untuk kembali ke sesi normal."
         )})

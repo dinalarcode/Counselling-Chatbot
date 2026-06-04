@@ -1,16 +1,59 @@
 import os
 import time
 from dotenv import load_dotenv
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 
 # Load the predictor and VectorDBManager
 from models.multilabel.predict import predictor
 from core.vector_db import VectorDBManager
+from config import opt
 
 # Load environment variables
 load_dotenv()
+
+
+def _build_chatbot_llm():
+    """Build LLM instance based on opt.CHATBOT_LLM_PROVIDER."""
+    provider = opt.CHATBOT_LLM_PROVIDER.lower()
+
+    if provider == "groq":
+        from langchain_groq import ChatGroq
+        api_key = os.getenv(opt.GROQ_API_KEY_ENV)
+        if not api_key:
+            raise ValueError(f"{opt.GROQ_API_KEY_ENV} not found in .env")
+        return ChatGroq(
+            model=opt.GROQ_CHATBOT_MODEL,
+            api_key=api_key,
+            temperature=opt.CHATBOT_TEMPERATURE,
+        )
+
+    elif provider == "gemini":
+        from langchain_google_genai import ChatGoogleGenerativeAI
+        api_key = os.getenv(opt.GEMINI_API_KEY_ENV)
+        if not api_key:
+            raise ValueError(f"{opt.GEMINI_API_KEY_ENV} not found in .env")
+        return ChatGoogleGenerativeAI(
+            model=opt.GEMINI_CHATBOT_MODEL,
+            google_api_key=api_key,
+            temperature=opt.CHATBOT_TEMPERATURE,
+        )
+
+    elif provider == "openai":
+        from langchain_openai import ChatOpenAI
+        api_key = os.getenv(opt.OPENAI_API_KEY_ENV)
+        if not api_key:
+            raise ValueError(f"{opt.OPENAI_API_KEY_ENV} not found in .env")
+        return ChatOpenAI(
+            model=opt.OPENAI_CHATBOT_MODEL,
+            api_key=api_key,
+            temperature=opt.CHATBOT_TEMPERATURE,
+        )
+
+    else:
+        raise ValueError(
+            f"Unknown CHATBOT_LLM_PROVIDER: '{provider}'. "
+            f"Pilihan valid: 'groq', 'gemini', 'openai'"
+        )
 
 class RAGEngine:
     # Stage-to-behavioral-instruction mapping
@@ -97,24 +140,9 @@ class RAGEngine:
     # accumulated intents from these stages don't feed primary_intents)
     SKIP_CLASSIFICATION_STAGES = frozenset({'pembukaan', 'bantuan_profesional'})
 
-    def __init__(self, model_name="gemini-2.5-flash", temperature=0.7):
-        # Retrieve the API key from environment variables
-        self.api_key = os.getenv("GEMINI_API_KEY")
-        if not self.api_key:
-            raise ValueError("GEMINI_API_KEY is missing. Please set it in the .env file.")
-
-        # Initialize the LLM (Gemini)
-        self.llm = ChatGoogleGenerativeAI(
-            model=model_name,
-            google_api_key=self.api_key,
-            temperature=temperature
-        )
-        # self.llm = ChatOpenAI(
-        #     api_key=self.api_key,
-        #     model="deepseek-v4-pro",
-        #     base_url="https://api.deepseek.com",
-        #     temperature=temperature
-        # )
+    def __init__(self):
+        # Initialize the LLM (provider set in config.py → opt.CHATBOT_LLM_PROVIDER)
+        self.llm = _build_chatbot_llm()
 
         # Initialize the Multilabel Classifier (Predictor)
         self.classifier = predictor()
