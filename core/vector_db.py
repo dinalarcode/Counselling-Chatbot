@@ -88,9 +88,13 @@ class VectorDBManager:
 
     # ── Bible Index (Full TB Bible) ────────────────────────────────
 
-    def build_bible_index(self, csv_path='data/alkitab_tb.csv', index_dir='data/faiss_bible_index'):
+    def build_bible_index(self, csv_path='data/verse_retrieval/alkitab_tb_enriched.csv', index_dir='data/faiss_bible_index'):
         """
         Membangun atau memuat FAISS index untuk seluruh Alkitab TB.
+        
+        Uses the enriched CSV (with chapter context prepended to each verse)
+        so FAISS embeds both the theological context and the verse text.
+        The raw verse text is preserved in metadata["text"] for display.
         
         Jika index sudah ada di disk, langsung dimuat (cepat).
         Jika belum, membangun dari CSV (lambat, hanya sekali).
@@ -112,11 +116,13 @@ class VectorDBManager:
         # Bangun dari CSV
         if not os.path.exists(csv_path):
             print(f"[ERROR] File {csv_path} tidak ditemukan!")
-            print("Jalankan 'python data/scrape_alkitab.py' terlebih dahulu.")
+            print("Jalankan pipeline AVI terlebih dahulu:")
+            print("  1. python data/verse_retrieval/generate_chapter_summaries.py")
+            print("  2. python data/verse_retrieval/prepare_enriched_bible.py")
             return
 
         print(f"Membangun Bible FAISS index dari {csv_path}...")
-        print("Ini akan memakan waktu ~10-30 menit (hanya sekali)...")
+        print("Ini akan memakan waktu ~15-45 menit (hanya sekali)...")
         
         df = pd.read_csv(csv_path)
         
@@ -131,15 +137,20 @@ class VectorDBManager:
             
             if not text or text == 'nan':
                 continue
+
+            # Use enriched_text (chapter context + verse) for embedding;
+            # fall back to raw text if enriched_text is missing
+            enriched_text = str(row.get('enriched_text', '')).strip()
+            page_content = enriched_text if enriched_text and enriched_text != 'nan' else text
             
             doc = Document(
-                page_content=text,
+                page_content=page_content,
                 metadata={
                     "book_abbr": book_abbr,
                     "book_name": book_name,
                     "chapter": chapter,
                     "verse": verse,
-                    "text": text,
+                    "text": text,       # raw verse — displayed to user
                     "reference": reference,
                 }
             )
@@ -149,7 +160,7 @@ class VectorDBManager:
             print("[ERROR] Tidak ada dokumen valid ditemukan dalam CSV.")
             return
         
-        print(f"Mengindeks {len(documents)} ayat... (sabar ya)")
+        print(f"Mengindeks {len(documents)} ayat (enriched)... (sabar ya)")
         self.bible_db = FAISS.from_documents(documents, self.embeddings)
         
         # Simpan ke disk
@@ -241,6 +252,10 @@ class VectorDBManager:
         # If only 1 candidate, skip LLM — return directly
         if len(candidates) == 1:
             return [{"reference": candidates[0]["reference"], "text": candidates[0]["text"]}]
+
+        # Print all FAISS candidate references to terminal
+        candidate_refs = ", ".join(c["reference"] for c in candidates)
+        print(f"[LLM Reranker] FAISS Candidates ({len(candidates)}): {candidate_refs}")
 
         # Build numbered candidate list for the LLM
         candidate_lines = []

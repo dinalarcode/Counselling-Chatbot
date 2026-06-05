@@ -11,7 +11,8 @@ A Python-based **biblical counseling chatbot** built as a Tugas Akhir (thesis) p
 The system conducts structured multi-turn counseling conversations using the **LABAN method** for intent classification and a **RAG pipeline** to inject contextually relevant Bible verses and Q&A answers into Gemini LLM responses.
 
 **Core Tech Stack:**
-- LLM: Google Gemini 2.5-Flash via LangChain (`langchain-google-genai`)
+- LLM: Multi-provider (Groq / Gemini / OpenAI) — active provider set in `config.py → opt.CHATBOT_LLM_PROVIDER` (currently `openai`)
+- Chatbot Model: `gpt-5.4-mini` (OpenAI); switchable to Gemini 2.5-Flash or Groq llama-3.3-70b via config
 - Intent Classifier: Fine-tuned `indobenchmark/indobert-base-p1` (IndoBERT) with LABAN multi-label architecture
 - Vector Store: FAISS (via `langchain_community`) for Bible verses + QnA pairs
 - Embeddings: `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`
@@ -248,6 +249,13 @@ Current intents (from training CSV):
 - [x] Prints intent scores + retrieved verse to console for manual recording into Cohen's Kappa evaluation sheet
 - [x] Used for inter-rater reliability evaluation of verse relevance quality
 
+### 5.11 LLM Config Centralized (Session 2026-06-04)
+- [x] **Multi-provider LLM support** — `config.py` now has `CHATBOT_LLM_PROVIDER` ("groq" | "gemini" | "openai") + per-provider model/key/temperature settings
+- [x] **`_build_chatbot_llm()` factory** added to `rag_engine.py` — reads `opt.CHATBOT_LLM_PROVIDER` and constructs the appropriate LangChain LLM (ChatGroq / ChatGoogleGenerativeAI / ChatOpenAI). Eliminates hardcoded Gemini usage.
+- [x] **`eval_ragas.py` updated** — RAGAS judge LLM now reads `opt.RAGAS_JUDGE_MODEL`, `opt.RAGAS_JUDGE_API_KEY_ENV`, `opt.RAGAS_JUDGE_TEMPERATURE` from `config.py` (no more hardcoded Groq key). Judge remains Gemini for quality.
+- [x] **Active chatbot LLM switched to OpenAI** — `CHATBOT_LLM_PROVIDER = "openai"`, `OPENAI_CHATBOT_MODEL = "gpt-5.4-mini"` in `config.py`. Gemini and Groq configs are retained as commented-in alternatives.
+- [x] **`augment_engine.py` unchanged** — uses direct `requests` to Groq API (not LangChain); no centralization needed since augmentation is a standalone tool with its own API key argument.
+
 ---
 
 ## 6. What Is Ongoing
@@ -405,6 +413,13 @@ All values live in `config.py` and are accessed via the `opt` singleton.
 | `BATCH_SIZE` | `16` | Training batch size |
 | `epochs` | `50` | Training epochs |
 | `LEARNING_RATE` | `2e-5` | AdamW learning rate |
+| `CHATBOT_LLM_PROVIDER` | `"openai"` | Active chatbot LLM provider: `"groq"` / `"gemini"` / `"openai"` |
+| `OPENAI_CHATBOT_MODEL` | `"gpt-5.4-mini"` | OpenAI model name (active when provider=openai) |
+| `GEMINI_CHATBOT_MODEL` | `"gemini-2.5-flash"` | Gemini model name (active when provider=gemini) |
+| `GROQ_CHATBOT_MODEL` | `"llama-3.3-70b-versatile"` | Groq model name (active when provider=groq) |
+| `CHATBOT_TEMPERATURE` | `0.7` | Shared temperature for chatbot LLM |
+| `RAGAS_JUDGE_MODEL` | `"gemini-2.5-flash"` | Fixed Gemini model for RAGAS judging |
+| `RAGAS_JUDGE_TEMPERATURE` | `0.0` | Deterministic judging |
 
 **Switching models:** Comment out current `MODEL_NAME`, add new one, update `hidden_size` to match, re-run training. Never run inference with a mismatched checkpoint.
 
@@ -421,3 +436,4 @@ All values live in `config.py` and are accessed via the `opt` singleton.
 | 2026-05-26 | RAGAS evaluation framework (eval_ragas.py) — two-phase pipeline with Groq judge; template CSV generated (50 samples); pending user `reference` fill |
 | 2026-06-02 | Backbone comparison completed (all 6 models, IndoBERT best @ F1=0.9318); Seen/Unseen ZSL evaluation completed (F1-Seen=0.8997, Unseen=0.0); BibleTestSession added to app.py for Cohen's Kappa verse evaluation |
 | 2026-06-03 | LLM reranker added to Bible verse retrieval (`retrieve_verse_with_llm()` in vector_db.py) — FAISS top-5 candidates → Gemini picks best; BIBLICAL_SYNONYMS query expansion dict added (10 intents → formal biblical vocab); MODEL_NAME switched to IndoBERT (`indobert-base-p1`) in config.py post-comparison; `documentation/` folder created with 10 thesis write-up files |
+| 2026-06-04 | LLM config centralized into `config.py` — multi-provider support (Groq/Gemini/OpenAI) via `CHATBOT_LLM_PROVIDER`; `_build_chatbot_llm()` factory added to `rag_engine.py`; `eval_ragas.py` updated to use `opt.RAGAS_JUDGE_*`; active chatbot LLM switched to OpenAI (`gpt-5.4-mini`) |

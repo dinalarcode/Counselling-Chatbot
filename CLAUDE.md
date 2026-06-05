@@ -50,6 +50,7 @@ The thesis evaluation requires the following empirical results and artifacts:
 - [x] `BibleTestSession` added to `app.py` — sandbox mode for Cohen's Kappa verse retrieval testing (uses LLM reranker internally)
 - [x] LLM reranker integrated into Bible verse retrieval (`retrieve_verse_with_llm()`) — FAISS top-5 → Gemini selects best; `BIBLICAL_SYNONYMS` dict added for query expansion
 - [x] `MODEL_NAME` switched to `indobenchmark/indobert-base-p1` (IndoBERT) in `config.py` after backbone comparison confirmed it as top performer
+- [x] **LLM config centralized** — `config.py` now has `CHATBOT_LLM_PROVIDER` ("groq"/"gemini"/"openai") + per-provider model/key/temperature; `_build_chatbot_llm()` factory in `rag_engine.py`; `eval_ragas.py` updated to use `opt.RAGAS_JUDGE_*`; active chatbot LLM switched to OpenAI (`gpt-5.4-mini`)
 - [/] RAGAS evaluation — script ready (`eval_ragas.py`), template at `evaluation/data/ragas_testset.csv`, pending manual `reference` column fill + `--evaluate` run
 - [ ] Streaming LLM response (SSE) — pending timing measurement decision
 - [ ] Timing instrumentation cleanup before final submission
@@ -61,7 +62,7 @@ The thesis evaluation requires the following empirical results and artifacts:
 | Component | Package / Tool | Version / Notes |
 |-----------|---------------|----------------|
 | **Language** | Python | 3.10+ (no walrus operator, no 3.12-only features) |
-| **LLM** | Google Gemini 2.5-Flash | via `langchain-google-genai` |
+| **LLM** | Multi-provider: Google Gemini 2.5-Flash / Groq llama-3.3-70b / OpenAI gpt-5.4-mini | via `langchain-google-genai`, `langchain-groq`, `langchain-openai`; active provider set in `opt.CHATBOT_LLM_PROVIDER` (currently `"openai"`) |
 | **Classifier Backbone** | HuggingFace `transformers` | IndoBERTweet (active); see `config.py` for alternatives |
 | **Vector Store** | FAISS | via `langchain_community` (Bible + QnA indexes) |
 | **Embeddings (RAG)** | `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` | used in FAISS retrieval |
@@ -282,6 +283,13 @@ Defined via `MultiLabelBinarizer` fitted on training CSV in `data/data_preparati
 | `BATCH_SIZE` | `16` | Training batch size |
 | `epochs` | `50` | Training epochs |
 | `LEARNING_RATE` | `2e-5` | AdamW LR |
+| `CHATBOT_LLM_PROVIDER` | `"openai"` | Active chatbot LLM: `"groq"` / `"gemini"` / `"openai"` |
+| `OPENAI_CHATBOT_MODEL` | `"gpt-5.4-mini"` | OpenAI model (active) |
+| `GEMINI_CHATBOT_MODEL` | `"gemini-2.5-flash"` | Gemini model (when provider=gemini) |
+| `GROQ_CHATBOT_MODEL` | `"llama-3.3-70b-versatile"` | Groq model (when provider=groq) |
+| `CHATBOT_TEMPERATURE` | `0.7` | Shared chatbot temperature |
+| `RAGAS_JUDGE_MODEL` | `"gemini-2.5-flash"` | Fixed Gemini judge for RAGAS |
+| `RAGAS_JUDGE_TEMPERATURE` | `0.0` | Deterministic judging |
 
 **Commented-out MODEL_NAME alternatives in `config.py`:**
 - `indolem/indobertweet-base-uncased` (hidden_size=768) ← previously active
@@ -326,6 +334,14 @@ Defined via `MultiLabelBinarizer` fitted on training CSV in `data/data_preparati
 - **`MODEL_NAME` switched to `indobenchmark/indobert-base-p1`** in `config.py` — IndoBERT replaces IndoBERTweet as the active backbone after the comparison confirmed it as the best performer.
 - **`documentation/` folder created** — 10 thesis write-up files (LABAN, RAGAS, cosine heatmap, FAISS retrieval, data collection, environment, preprocessing).
 - **`bantuan_profesional` added to `BIBLE_VERSE_STAGES`** in `rag_engine.py` — verse retrieval now also runs in this branch stage.
+
+**Session: 2026-06-04 — LLM Config Centralized (Multi-Provider)**
+
+- **`config.py` expanded** — added `CHATBOT_LLM_PROVIDER` ("groq" | "gemini" | "openai"), per-provider model names (`GROQ_CHATBOT_MODEL`, `GEMINI_CHATBOT_MODEL`, `OPENAI_CHATBOT_MODEL`), API key env var names, shared `CHATBOT_TEMPERATURE`, and separate `RAGAS_JUDGE_*` settings (always Gemini for deterministic judging).
+- **`_build_chatbot_llm()` factory added to `rag_engine.py`** — reads `opt.CHATBOT_LLM_PROVIDER` and instantiates the correct LangChain LLM. Switching providers is now a single config change with no code edits.
+- **`eval_ragas.py` updated** — RAGAS judge block now reads from `opt.RAGAS_JUDGE_MODEL`, `opt.RAGAS_JUDGE_API_KEY_ENV`, `opt.RAGAS_JUDGE_TEMPERATURE`. No more hardcoded Groq key in the script.
+- **Active chatbot LLM set to OpenAI** — `CHATBOT_LLM_PROVIDER = "openai"`, `OPENAI_CHATBOT_MODEL = "gpt-5.4-mini"`. To switch back to Gemini or Groq, change `CHATBOT_LLM_PROVIDER` in `config.py` only.
+- **`augment_engine.py` unchanged** — uses direct HTTP requests to Groq; not affected by LangChain-based centralization.
 
 ---
 
