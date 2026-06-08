@@ -26,6 +26,7 @@ import pandas as pd
 from tqdm import tqdm
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
+from langchain_ollama import ChatOllama
 
 # ---------------------------------------------------------------------------
 # Path setup
@@ -42,12 +43,24 @@ load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
 # ---------------------------------------------------------------------------
 BIBLE_CSV = os.path.join(PROJECT_ROOT, "data", "alkitab_tb.csv")
 OUTPUT_DIR = os.path.join(PROJECT_ROOT, "data", "verse_retrieval")
-CHECKPOINT_CSV = os.path.join(OUTPUT_DIR, "chapter_summaries_checkpoint.csv")
-OUTPUT_CSV = os.path.join(OUTPUT_DIR, "chapter_summaries.csv")
-FAILED_LOG = os.path.join(OUTPUT_DIR, "failed_chapters.txt")
+# ---------------------------------------------------------------------------
+# LLM Provider Toggle: "groq" or "ollama"
+# ---------------------------------------------------------------------------
+LLM_PROVIDER = "ollama"  # ← switch to "groq" to use cloud API
 
 GROQ_MODEL = "llama-3.1-8b-instant"
 SLEEP_SECONDS = 2.1  # ~28 RPM, under Groq free-tier 30 RPM limit
+
+# OLLAMA_MODEL = "gemma:2b" #gemma
+OLLAMA_MODEL = "qwen2.5:3b" #qwen
+OLLAMA_BASE_URL = "http://localhost:11434"  # Default Ollama endpoint
+
+# Output paths: suffix based on active provider
+_SUFFIX = f"_{LLM_PROVIDER}" if LLM_PROVIDER == "ollama" else ""
+CHECKPOINT_CSV = os.path.join(OUTPUT_DIR, f"chapter_summaries_checkpoint_ollamaQwen.csv")
+# OUTPUT_CSV = os.path.join(OUTPUT_DIR, f"chapter_summaries{_SUFFIX}.csv")
+OUTPUT_CSV = os.path.join(OUTPUT_DIR, f"chapter_summaries_ollamaQwen.csv")
+FAILED_LOG = os.path.join(OUTPUT_DIR, f"failed_chapters{_SUFFIX}.txt")
 
 # Indonesian stopwords for language guard
 INDO_STOPWORDS = {"pasal", "ini", "yang", "dan", "adalah", "dalam",
@@ -164,11 +177,6 @@ def main():
         print(f"  [ERROR] Bible CSV not found: {BIBLE_CSV}")
         sys.exit(1)
 
-    groq_key = os.getenv("GROQ_API_KEY")
-    if not groq_key:
-        print("  [ERROR] GROQ_API_KEY not found in .env")
-        sys.exit(1)
-
     # Create output directory
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
@@ -191,13 +199,28 @@ def main():
     if not remaining:
         print("\n  All chapters already processed! Consolidating output...")
     else:
-        # Initialize Groq LLM
-        print(f"\n  Initializing Groq LLM ({GROQ_MODEL})...")
-        llm = ChatGroq(
-            model=GROQ_MODEL,
-            api_key=groq_key,
-            temperature=0.3,  # Low temp for factual summaries
-        )
+        # Initialize LLM based on provider
+        if LLM_PROVIDER == "groq":
+            groq_key = os.getenv("GROQ_API_KEY")
+            if not groq_key:
+                print("  [ERROR] GROQ_API_KEY not found in .env")
+                sys.exit(1)
+            print(f"\n  Initializing Groq LLM ({GROQ_MODEL})...")
+            llm = ChatGroq(
+                model=GROQ_MODEL,
+                api_key=groq_key,
+                temperature=0.3,
+            )
+        elif LLM_PROVIDER == "ollama":
+            print(f"\n  Initializing Ollama LLM ({OLLAMA_MODEL})...")
+            llm = ChatOllama(
+                model=OLLAMA_MODEL,
+                base_url=OLLAMA_BASE_URL,
+                temperature=0.1,
+            )
+        else:
+            print(f"  [ERROR] Unknown LLM_PROVIDER: {LLM_PROVIDER}")
+            sys.exit(1)
         print("  [OK] LLM ready")
 
         # Process remaining chapters
@@ -222,7 +245,8 @@ def main():
                 tqdm.write(f"  [FAIL] {book_name} {chapter}: {error_msg[:80]}")
 
             # Rate limiting (always, even on failure)
-            time.sleep(SLEEP_SECONDS)
+            if LLM_PROVIDER == "groq":
+                time.sleep(SLEEP_SECONDS)
 
         if failed_count > 0:
             print(f"\n  [WARN] {failed_count} chapters failed. See: {FAILED_LOG}")
