@@ -184,6 +184,7 @@ class SessionManager:
         self.session_ended = False
         self.has_physical_symptoms = False  # tracks Mengisyaratkan Gejala Fisik across session
         self.in_professional_stage = False  # True when in bantuan_profesional branch
+        self.used_verse_books = set()  # book_abbr of books already given as verse in this session
 
     def chat(self, user_input):
         """
@@ -221,8 +222,15 @@ class SessionManager:
             user_input,
             current_stage=self.current_stage,
             override_intents=override_intents,
-            has_physical_symptoms=self.has_physical_symptoms
+            has_physical_symptoms=self.has_physical_symptoms,
+            excluded_books=self.used_verse_books
         )
+
+        # Track which book was used for the verse (session-level exclusion)
+        chosen_book = result['context_used'].get('bible_book_abbr', '')
+        if chosen_book:
+            self.used_verse_books.add(chosen_book)
+            print(f"[Session] Verse book '{chosen_book}' added to exclusion set: {self.used_verse_books}")
 
         # Accumulate intents from this turn
         turn_intents = result['context_used']['intents']
@@ -383,8 +391,15 @@ class SessionManager:
             user_input,
             current_stage=self.PROFESSIONAL_STAGE,
             override_intents=override,
-            has_physical_symptoms=self.has_physical_symptoms
+            has_physical_symptoms=self.has_physical_symptoms,
+            excluded_books=self.used_verse_books
         )
+
+        # Track which book was used for the verse (session-level exclusion)
+        chosen_book = result['context_used'].get('bible_book_abbr', '')
+        if chosen_book:
+            self.used_verse_books.add(chosen_book)
+            print(f"[Session] Verse book '{chosen_book}' added to exclusion set: {self.used_verse_books}")
 
         self.session_ended = True
         self.conversation_history.append(("counselor", result['response']))
@@ -446,3 +461,4 @@ class SessionManager:
         self.session_ended = False
         self.has_physical_symptoms = False
         self.in_professional_stage = False
+        self.used_verse_books = set()

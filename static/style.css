@@ -248,3 +248,117 @@ body {
     0%, 100% { box-shadow: 0 4px 14px rgba(61, 107, 86, 0.3); }
     50% { box-shadow: 0 4px 20px rgba(61, 107, 86, 0.5); }
 }
+
+/* Floating Actions */
+#floating-actions {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.float-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.float-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+.float-btn:active {
+    transform: translateY(0);
+}
+
+.float-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+.float-reset {
+    background-color: #FFFFFF;
+    color: #000000;
+}
+
+.float-exit {
+    background-color: #E63946;
+    color: #FFFFFF;
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal-content {
+    background-color: var(--surface-white);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+}
+
+.modal-content p {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-main);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.modal-actions button {
+    padding: 0.5rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-weight: 500;
+}
+
+.btn-iya {
+    background-color: #E63946;
+    color: white;
+}
+
+.btn-iya:hover {
+    background-color: #d62828;
+}
+
+.btn-tidak {
+    background-color: #f1f1f1;
+    color: var(--text-main);
+}
+
+.btn-tidak:hover {
+    background-color: #e0e0e0;
+}
+

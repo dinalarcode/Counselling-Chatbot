@@ -79,6 +79,11 @@ BIBLICAL_SYNONYMS = {
     ),
 }
 
+# ── Book Diversity Constants ─────────────────────────────────────────────
+# Used by _faiss_search to ensure FAISS candidates come from varied books.
+OVERSAMPLE_FACTOR = 3   # fetch 3× more from FAISS before filtering
+MAX_PER_BOOK      = 2   # at most 2 verses per book in the final k candidates
+
 
 class VectorDBManager:
     def __init__(self):
@@ -88,7 +93,7 @@ class VectorDBManager:
 
     # ── Bible Index (Full TB Bible) ────────────────────────────────
 
-    def build_bible_index(self, csv_path='data/verse_retrieval/alkitab_tb_enriched.csv', index_dir='data/faiss_bible_index'):
+    def build_bible_index(self, csv_path='data/verse_retrieval/alkitab_tb_enriched_groq.csv', index_dir='data/faiss_bible_index'):
         """
         Membangun atau memuat FAISS index untuk seluruh Alkitab TB.
         
@@ -170,43 +175,59 @@ class VectorDBManager:
 
     # ── FAISS Semantic Search (Layer 1 + 2) ──────────────────────────────
 
-    def _faiss_search(self, intents, user_input, k=5):
+    def _faiss_search(self, intents, user_input, k=10, excluded_books=None):
         """
-        Layer 1: Build combined query (intent + keywords + biblical synonyms)
-        Layer 2: FAISS semantic search → top-k candidate verses
+        Layer 1: Build combined query (intents + biblical synonyms ONLY)
+        Layer 2: FAISS semantic search → oversampled pool
+        Layer 2.5: Book diversity filter → top-k diverse candidate verses
+        
+        Note: raw user_input is NOT included in the FAISS query to avoid
+        semantic noise dilution. It is used exclusively by the LLM reranker
+        (Layer 3) for contextual verse selection.
+        
+        Args:
+            intents: list of detected intent strings
+            user_input: raw user utterance (kept for API compatibility;
+                        not used in FAISS query — routed to LLM reranker)
+            k: desired number of diverse candidates to return
+            excluded_books: optional set of book_abbr strings to completely
+                            skip (used for session-level book exclusion)
         
         Returns:
-            list of dict: [{reference: str, text: str}, ...] sorted by L2 distance
+            list of dict: [{reference, text, book_abbr, faiss_score}, ...]
+                          sorted by L2 distance, with book diversity applied
         """
         if self.bible_db is None:
             print("[WARNING] Bible index belum dibangun!")
             return []
 
-        if not intents and not user_input:
+        if not intents:
             return []
 
-        # --- Layer 1: Bangun combined query ---
-        keywords = self._get_keyword_list(user_input) if user_input else []
-        intent_part = " ".join(intents) if intents else ""
-        keyword_part = " ".join(keywords)
+        if excluded_books is None:
+            excluded_books = set()
+
+        # --- Layer 1: Build combined query (intents + biblical synonyms only) ---
+        intent_part = " ".join(intents)
 
         # Inject biblical synonyms for each detected intent
         synonym_parts = []
-        for intent in (intents or []):
+        for intent in intents:
             synonyms = BIBLICAL_SYNONYMS.get(intent, "")
             if synonyms:
                 synonym_parts.append(synonyms)
         synonym_part = " ".join(synonym_parts)
 
-        combined_query = f"{intent_part} {keyword_part} {synonym_part}".strip()
+        combined_query = f"{intent_part} {synonym_part}".strip()
 
         if not combined_query:
             return []
 
-        # --- Layer 2: Semantic search di FAISS ---
+        # --- Layer 2: Semantic search di FAISS (oversample) ---
+        oversample_k = k * OVERSAMPLE_FACTOR
         try:
             candidates_with_scores = self.bible_db.similarity_search_with_score(
-                combined_query, k=k
+                combined_query, k=oversample_k
             )
         except Exception as e:
             print(f"[ERROR] FAISS search gagal: {e}")
@@ -215,23 +236,50 @@ class VectorDBManager:
         if not candidates_with_scores:
             return []
 
-        # Return sorted by L2 distance (lowest = best)
+        # Sort by L2 distance (lowest = best)
+        candidates_with_scores.sort(key=lambda x: x[1])
+
+        # --- Layer 2.5: Book diversity filter ---
+        # 1. Skip verses from excluded_books (session-level exclusion)
+        # 2. Cap at MAX_PER_BOOK verses per book (call-level diversity)
         results = []
+        book_count = {}  # book_abbr → count in results so far
+
         for doc, score in candidates_with_scores:
+            book_abbr = doc.metadata.get("book_abbr", "")
+
+            # Session-level exclusion: skip books already used in this session
+            if book_abbr in excluded_books:
+                continue
+
+            # Call-level diversity: cap per-book count
+            current_count = book_count.get(book_abbr, 0)
+            if current_count >= MAX_PER_BOOK:
+                continue
+
+            book_count[book_abbr] = current_count + 1
             results.append({
                 "reference": doc.metadata.get("reference", ""),
                 "text": doc.metadata.get("text", ""),
+                "book_abbr": book_abbr,
                 "faiss_score": score,
             })
-        results.sort(key=lambda x: x["faiss_score"])
+
+            if len(results) >= k:
+                break
+
+        print(f"[Book Diversity] Oversample: {len(candidates_with_scores)}, "
+              f"excluded books: {excluded_books or '{}'}, "
+              f"after filter: {len(results)} (max {MAX_PER_BOOK}/book)")
+
         return results
 
     # ── LLM Reranker ──────────────────────────────────────────────────
 
-    def retrieve_verse_with_llm(self, intents, user_input, llm, k=10):
+    def retrieve_verse_with_llm(self, intents, user_input, llm, k=10, excluded_books=None):
         """
         Retrieve the most contextually relevant Bible verse using:
-        Layer 1 + 2: FAISS semantic search → top-k candidates
+        Layer 1 + 2 + 2.5: FAISS semantic search + book diversity → top-k candidates
         LLM Reranker: Gemini picks the best verse based on user context
         
         Args:
@@ -239,19 +287,20 @@ class VectorDBManager:
             user_input: raw user utterance (conversational context)
             llm: LangChain LLM instance (reuse from RAGEngine)
             k: number of FAISS candidates to present to the LLM
+            excluded_books: optional set of book_abbr to exclude (session-level)
             
         Returns:
-            list of dict: [{reference: str, text: str}] — always 1 result
+            list of dict: [{reference: str, text: str, book_abbr: str}] — always 1 result
         """
-        # Step 1+2: Get FAISS candidates
-        candidates = self._faiss_search(intents, user_input, k=k)
+        # Step 1+2+2.5: Get FAISS candidates (with book diversity)
+        candidates = self._faiss_search(intents, user_input, k=k, excluded_books=excluded_books)
 
         if not candidates:
             return []
 
         # If only 1 candidate, skip LLM — return directly
         if len(candidates) == 1:
-            return [{"reference": candidates[0]["reference"], "text": candidates[0]["text"]}]
+            return [{"reference": candidates[0]["reference"], "text": candidates[0]["text"], "book_abbr": candidates[0].get("book_abbr", "")}]
 
         # Print all FAISS candidate references to terminal
         candidate_refs = ", ".join(c["reference"] for c in candidates)
@@ -265,19 +314,20 @@ class VectorDBManager:
 
         # Build the reranker prompt
         prompt = (
-            "Kamu adalah asisten pemilih ayat Alkitab Terjemahan Baru (TB).\n\n"
-            "Konteks percakapan konseling dari pengguna:\n"
+            "You are the Bible verse selector assistant for the Bible Terjemahan Baru (TB).\n\n"
+            "The context of the user's counseling conversation:\n"
             f'"{user_input}"\n\n'
-            "Berikut adalah daftar ayat kandidat:\n"
+            "Here is the list of candidate verses:\n"
             f"{candidate_list_str}\n\n"
-            "Instruksi:\n"
-            "1. Pilih SATU ayat yang paling sesuai dengan konteks percakapan di atas.\n"
-            "2. Utamakan pilih ayat yang bersifat menguatkan dan memberi penghiburan.\n"
-            "3. ⚠️ PERINGATAN: Kamu sedang berurusan dengan Firman Tuhan. "
-            "JANGAN mengubah, menambahkan, atau menghilangkan satu kata pun dari teks ayat.\n"
-            "4. Format output: REFERENSI|TEKS AYAT\n"
-            "   Contoh: Mazmur 34:18|TUHAN itu dekat kepada orang-orang yang patah hati...\n"
-            "5. Output HANYA satu baris. Tidak ada penjelasan, komentar, atau teks tambahan.\n"
+            "Instructions:\n"
+            "1. Choose ONE verse that best suits the context of the conversation above.\n"
+            "2. DO NOT make up book names and verses.\n"
+            "3. Prioritize choosing verses that are strengthening and comforting.\n"
+            "4. ⚠️ WARNING: You are dealing with the Word of God. "
+            "DO NOT change, add, or remove any words from the verse text.\n"
+            "5. Output format: REFERENCE|VERSE TEXT\n"
+            "   Example: Mazmur 34:18|TUHAN itu dekat kepada orang-orang yang patah hati...\n"
+            "6. Output ONLY one line and DO NOT translate it to english. No explanations, comments, or additional text.\n"
         )
 
         try:
@@ -294,18 +344,18 @@ class VectorDBManager:
                 for c in candidates:
                     if c["reference"] == ref:
                         print(f"[LLM Reranker] Selected: {ref}")
-                        return [{"reference": ref, "text": c["text"]}]
+                        return [{"reference": ref, "text": c["text"], "book_abbr": c.get("book_abbr", "")}]
 
                 # LLM returned a valid format but reference not in candidates
                 # Use the text from LLM but log a warning
                 print(f"[LLM Reranker] WARNING: reference '{ref}' not in candidates, using LLM text")
-                return [{"reference": ref, "text": text}]
+                return [{"reference": ref, "text": text, "book_abbr": ""}]
 
             # Fallback: try to match LLM output to a candidate reference
             for c in candidates:
                 if c["reference"] in raw_output:
                     print(f"[LLM Reranker] Parsed reference from raw output: {c['reference']}")
-                    return [{"reference": c["reference"], "text": c["text"]}]
+                    return [{"reference": c["reference"], "text": c["text"], "book_abbr": c.get("book_abbr", "")}]
 
             # Complete fallback: LLM output unparseable → return top FAISS result
             print(f"[LLM Reranker] FALLBACK: Could not parse LLM output, using top FAISS result")
@@ -315,7 +365,7 @@ class VectorDBManager:
             print(f"[LLM Reranker] ERROR: {e} — falling back to top FAISS result")
 
         # Fallback: return the top FAISS candidate
-        return [{"reference": candidates[0]["reference"], "text": candidates[0]["text"]}]
+        return [{"reference": candidates[0]["reference"], "text": candidates[0]["text"], "book_abbr": candidates[0].get("book_abbr", "")}]
 
     # ── Legacy retrieve_verse (FAISS-only, no LLM) ───────────────────
 

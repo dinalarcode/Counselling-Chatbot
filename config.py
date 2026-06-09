@@ -18,7 +18,7 @@ class config:
 
     # ── Chatbot LLM (RAGEngine: response generation + verse reranker) ────
     # Provider: "groq" | "gemini" | "openai"
-    CHATBOT_LLM_PROVIDER = "openai"
+    CHATBOT_LLM_PROVIDER = "ollama"
 
     # Groq settings (aktif jika CHATBOT_LLM_PROVIDER = "groq")
     GROQ_CHATBOT_MODEL = "llama-3.3-70b-versatile"

@@ -161,5 +161,12 @@ def reset():
         print("\n--- Session Reset ---")
     return jsonify({"status": "success", "message": "Session reset."})
 
+@app.route("/shutdown", methods=["POST"])
+def shutdown():
+    """Shutdown the Flask server."""
+    print("\n--- Shutting down server per user request ---")
+    os._exit(0)  # Forcefully stops the python run
+    return jsonify({"status": "shutting down"})
+
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=5000, debug=True)

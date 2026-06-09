@@ -39,6 +39,7 @@ The thesis evaluation requires the following empirical results and artifacts:
 - [x] Training pipeline complete (`run_trainer.py` — 80/10/10 split, AdamW, BCELoss, per-epoch F1 validation, best-checkpoint saving)
 - [x] IndoBERTweet checkpoint trained post-augmentation → `checkpoint/IndoBERT_multi_label_zsl.pt`
 - [x] Partial embedding comparison: training metrics PNGs exist for `indobertweet`, `indobert-lite`, `distilbert`, `multilingual-e5-small`
+- [x] **AVI (Augmented Vector Indexing) pipeline built** — chapter summary generation (`generate_chapter_summaries.py`) + enriched Bible CSV builder (`prepare_enriched_bible.py`); Bible FAISS index now embeds `[Konteks Pasal: <summary>] <verse>` for richer semantic retrieval
 - [x] Bible FAISS index built from full TB Bible (`alkitab_tb.csv`, ~31 k verses)
 - [x] QnA FAISS index persisted to disk (`data/faiss_qna_index/`)
 - [x] RAGEngine with Gemini 2.5-Flash (LangChain); 6-stage SessionManager
@@ -126,8 +127,15 @@ The_Chatbot/
 │   ├── dataset_ayat.csv        Small curated Bible verse set (legacy)
 │   ├── scrape_alkitab.py       One-time scraper for alkitab.mobi (beautifulsoup4)
 │   ├── data_exploration.ipynb  EDA notebook
-│   ├── faiss_bible_index/      Persisted FAISS index — Bible (auto-built on first run, ~10-30 min)
+│   ├── faiss_bible_index/      Persisted FAISS index — Bible (auto-built on first run, ~15-45 min)
 │   ├── faiss_qna_index/        Persisted FAISS index — QnA (built on first run)
+│   ├── verse_retrieval/        AVI (Augmented Vector Indexing) pipeline
+│   │   ├── generate_chapter_summaries.py  Step 1 — LLM chapter summarizer (Groq/Ollama)
+│   │   ├── prepare_enriched_bible.py      Step 2 — merges summaries + builds enriched CSV
+│   │   ├── alkitab_tb_enriched.csv        Output — enriched Bible (~31 k rows, 36 MB)
+│   │   ├── chapter_summaries_ollamaQwen.csv  Active summary source (qwen3:4b via Ollama)
+│   │   ├── chapter_summaries_checkpoint_ollamaQwen.csv  Checkpoint for resume
+│   │   └── failed_chapters*.txt           Error log for failed chapters
 │   └── augmentation/
 │       ├── augment_engine.py       Groq API wrapper
 │       ├── augment_multilabel.py   LLM augmentation for intent pairs/triples
@@ -267,10 +275,12 @@ Defined via `MultiLabelBinarizer` fitted on training CSV in `data/data_preparati
 - After this stage, `session_ended = True`.
 
 ### RAG Pipeline
-- **Bible verse retrieval** (updated): `BIBLICAL_SYNONYMS` query expansion → FAISS `similarity_search_with_score` (top-k=5) → Gemini LLM reranker (`retrieve_verse_with_llm()`) picks the best verse. Falls back to top FAISS result if LLM output is unparseable.
+- **Bible verse retrieval** (updated): `BIBLICAL_SYNONYMS` query expansion → FAISS `similarity_search_with_score` (top-k=10) → Gemini LLM reranker (`retrieve_verse_with_llm()`) picks the best verse. Falls back to top FAISS result if LLM output is unparseable.
+- **AVI (Augmented Vector Indexing):** FAISS Bible index now built from `data/verse_retrieval/alkitab_tb_enriched.csv` — each verse is embedded as `[Konteks Pasal: <summary>] <verse text>`. The raw verse text is stored in metadata["text"] for display; only enriched text is used for embedding. This improves semantic retrieval by providing chapter-level theological context.
 - `BIBLICAL_SYNONYMS` in `vector_db.py`: maps each of the 10 LABAN intents to formal TB biblical vocabulary so informal user slang gets expanded to words that actually appear in the Bible.
 - Verse injection is active in `solusi`, `relaksasi`, **and `bantuan_profesional`** stages (see `BIBLE_VERSE_STAGES`).
-- `VectorDBManager` holds both `faiss_bible_index` and `faiss_qna_index` — both persisted to disk; first-time build of Bible index can take 10–30 min.
+- `VectorDBManager` holds both `faiss_bible_index` and `faiss_qna_index` — both persisted to disk; first-time build of enriched Bible index can take 15–45 min.
+- **Dependency:** If Bible FAISS index does not exist, `build_bible_index()` requires `data/verse_retrieval/alkitab_tb_enriched.csv`. If that file is absent, run the AVI pipeline first (Step 1 → 2).
 
 ### Config Quick-Reference
 
@@ -343,6 +353,15 @@ Defined via `MultiLabelBinarizer` fitted on training CSV in `data/data_preparati
 - **Active chatbot LLM set to OpenAI** — `CHATBOT_LLM_PROVIDER = "openai"`, `OPENAI_CHATBOT_MODEL = "gpt-5.4-mini"`. To switch back to Gemini or Groq, change `CHATBOT_LLM_PROVIDER` in `config.py` only.
 - **`augment_engine.py` unchanged** — uses direct HTTP requests to Groq; not affected by LangChain-based centralization.
 
+**Session: 2026-06-09 — Augmented Vector Indexing (AVI) for Bible Retrieval**
+
+- **`data/verse_retrieval/` module created** — two-step AVI pipeline for enriching Bible verse embeddings with chapter-level context:
+  - **Step 1** `generate_chapter_summaries.py` — reads `alkitab_tb.csv`, groups by `(book_name, chapter)`, calls Groq (`llama-3.1-8b-instant`) or Ollama (local) to summarize each chapter in 2-3 sentences. Features: checkpoint/resume, rate limiting, Indonesian language guard, error logging. Active model: `qwen3:4b` via Ollama.
+  - **Step 2** `prepare_enriched_bible.py` — merges chapter summaries into Bible CSV via LEFT JOIN on `(book_name, chapter)`, creates `enriched_text` column (`[Konteks Pasal: <summary>] <verse>`). Output: `data/verse_retrieval/alkitab_tb_enriched.csv` (~36 MB).
+- **`VectorDBManager.build_bible_index()` updated** — default source changed from `data/alkitab_tb.csv` → `data/verse_retrieval/alkitab_tb_enriched.csv`. Embeds `enriched_text` for richer semantic search; raw verse `text` stored in metadata for display.
+- **`retrieve_verse_with_llm()` top-k increased** — FAISS candidate pool bumped from 5 → 10 to leverage enriched index quality.
+- **Summary outputs** (Ollama/qwen3:4b run): `chapter_summaries_checkpoint_ollamaQwen.csv`, `chapter_summaries_ollamaQwen.csv`. Groq run artifacts also present for comparison (`chapter_summaries_checkpoint.csv`, `chapter_summaries_ollama.csv`).
+
 ---
 
 ## Known Issues & Guardrails
@@ -353,12 +372,13 @@ Defined via `MultiLabelBinarizer` fitted on training CSV in `data/data_preparati
 | 2 | `hidden_size` hardcoded | Medium | `config.py:14` | Update manually when switching MODEL_NAME |
 | 3 | ~~`.env` not in `.gitignore`~~ | ~~High~~ | ~~`.gitignore`~~ | ✅ RESOLVED — `.env` is already in `.gitignore` |
 | 4 | `session_ended` not set in normal flow | Low | `session_manager.py` | Set to `True` after `bantuan_profesional`; normal penutupan flow remains open-ended |
-| 5 | Bible FAISS first-build: 10–30 min | Medium | `vector_db.py` | Expected; loads fast on subsequent runs |
+| 5 | Bible FAISS first-build: 15–45 min (enriched) | Medium | `vector_db.py` | Expected; loads fast on subsequent runs. Requires AVI pipeline run first if index absent. |
 | 6 | `knowledge_base.py` is dead code | Low | `core/` | Remove or move to `archive/` before submission |
 | 7 | LABAN loads 2 full BERT models | Medium | `bert_model.py` | By design (dual encoder) — doubles VRAM |
 | 8 | Max-turn force-advance | Low | `session_manager.py` | User may be cut off at `pembahasan` max (4 turns) |
 | 9 | Groq key needed for augmentation only | Info | `data/augmentation/` | Not needed for chatbot runtime |
 | 10 | `[TIMING]` prints still in `rag_engine.py` | Medium | `core/rag_engine.py` | Remove all `_t0/_t1/_t2/_t3/_t4` + print lines before final submission |
+| 11 | AVI `alkitab_tb_enriched.csv` must be regenerated if `chapter_summaries_ollamaQwen.csv` changes | Medium | `data/verse_retrieval/` | Run Step 2 (`prepare_enriched_bible.py`) after any summary updates; also rebuild FAISS index (delete `data/faiss_bible_index/`) |
 
 ---
 
@@ -418,6 +438,8 @@ Defined via `MultiLabelBinarizer` fitted on training CSV in `data/data_preparati
 - [ ] Delete or archive `core/knowledge_base.py` and `core/test_knowledge_base.py`
 - [ ] Audit and trim `requirement.txt` (remove unused: `anthropic`, `openai`, `aiml`, `beautifulsoup4`)
 - [ ] Add "Mulai Sesi Baru" reset button to UI (`static/script.js` + `index.html`)
+- [ ] Rebuild Bible FAISS index from enriched CSV (`data/verse_retrieval/alkitab_tb_enriched.csv`) if not yet updated (delete `data/faiss_bible_index/` and restart app)
+- [ ] Verify AVI chapter summary quality — spot-check `chapter_summaries_ollamaQwen.csv` for accuracy vs. Groq version
 - [x] ~~Improve server error display~~ — `app.py` already returns `"Terjadi kesalahan internal. Silakan coba lagi."` for 500 errors ✅
 - [ ] Decide and implement `session_ended` behavior in `session_manager.py` (restart vs. closed-session notice)
 - [x] ~~Add `.env` to `.gitignore`~~ — `.env` is already in `.gitignore` (resolved)

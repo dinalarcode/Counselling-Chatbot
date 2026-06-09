@@ -27,7 +27,7 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(SCRIPT_DIR))
 # ---------------------------------------------------------------------------
 BIBLE_CSV = os.path.join(PROJECT_ROOT, "data", "alkitab_tb.csv")
 SUMMARIES_CSV = os.path.join(SCRIPT_DIR, "chapter_summaries.csv")
-OUTPUT_CSV = os.path.join(SCRIPT_DIR, "alkitab_tb_enriched.csv")
+OUTPUT_CSV = os.path.join(SCRIPT_DIR, "alkitab_tb_enriched_groq.csv")
 
 
 def main():

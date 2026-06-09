@@ -42,7 +42,9 @@ RAGEngine.generate_response()  [core/rag_engine.py]
     ├─ QnA FAISS search — core/vector_db.py
     ├─ Bible Verse Retrieval — core/vector_db.py
     │      ONLY in: relaksasi, solusi, bantuan_profesional
-    │      Algorithm: BIBLICAL_SYNONYMS query expansion → FAISS top-5 → Gemini LLM reranker picks best verse
+    │      Algorithm: Intents + BIBLICAL_SYNONYMS → FAISS top-10 (enriched index, oversampled 30 → diversity-filtered 10) → LLM reranker picks best verse
+    │      Book diversity: max 2 verses/book per call; session-level exclusion via used_verse_books set
+    │      Enriched index embeds [Konteks Pasal: <summary>] <verse> for chapter-aware semantic search
     ├─ Prompt assembly (LangChain PromptTemplate)
     ↓
 Gemini 2.5-Flash API call
@@ -74,7 +76,7 @@ Auto-advances if max turns exceeded or user sends a transition signal phrase.
 
 ```
 The_Chatbot/
-├── app.py                    Flask entry point; /chat, /reset, / endpoints
+├── app.py                    Flask entry point; /chat, /reset, /shutdown, / endpoints
 ├── config.py                 Global config singleton (opt); MODEL_NAME, hidden_size, thresold, etc.
 ├── CLAUDE.md                 Coding standards + stop conditions for AI agents
 ├── HANDOFF.md                This file
@@ -108,8 +110,14 @@ The_Chatbot/
 │   │   ├── merge_to_training.py    Merges augmented CSV into main dataset
 │   │   ├── dataset_multiintent_augmented.csv  Active training dataset (post-augmentation)
 │   │   └── seeds.json              Seed sentences per intent
-│   └── faiss_bible_index/    Persisted FAISS index for Bible (auto-built on first run)
+│   └── faiss_bible_index/    Persisted FAISS index for Bible (auto-built on first run, ~15-45 min)
 │   (faiss_qna_index/ will appear after first run post-optimization)
+│   └── verse_retrieval/      AVI pipeline — chapter summaries + enriched Bible CSV
+│       ├── generate_chapter_summaries.py  Step 1: LLM chapter summarizer (Groq or Ollama)
+│       ├── prepare_enriched_bible.py      Step 2: merge summaries → alkitab_tb_enriched.csv
+│       ├── alkitab_tb_enriched.csv        Active enriched Bible (~31k rows, 36 MB)
+│       ├── chapter_summaries_ollamaQwen.csv  Active summaries (qwen3:4b via Ollama)
+│       └── chapter_summaries_checkpoint_ollamaQwen.csv  Checkpoint for resume
 │
 ├── documentation/
 │   ├── LABAN_DOCUMENTATION.md/.pdf       Full LABAN architecture write-up (thesis chapter)
@@ -123,8 +131,8 @@ The_Chatbot/
 ├── templates/
 │   └── index.html            Single-page chat UI
 ├── static/
-│   ├── style.css             Cream/white theme, responsive layout, professional button
-│   └── script.js             Fetch-based chat, typing indicator, professional button, /reset
+│   ├── style.css             Cream/white theme, responsive layout, professional button, floating action buttons
+│   └── script.js             Fetch-based chat, typing indicator, professional button, /reset, floating Reset/Exit buttons, exit confirmation modal
 ├── evaluation/
 │   ├── compare_embed_models.py  LABAN backbone comparison (6 models, identical hyperparams)
 │   ├── eval_seen_unseen.py      Zero-shot seen/unseen label evaluation (3 splits)
@@ -256,6 +264,37 @@ Current intents (from training CSV):
 - [x] **Active chatbot LLM switched to OpenAI** — `CHATBOT_LLM_PROVIDER = "openai"`, `OPENAI_CHATBOT_MODEL = "gpt-5.4-mini"` in `config.py`. Gemini and Groq configs are retained as commented-in alternatives.
 - [x] **`augment_engine.py` unchanged** — uses direct `requests` to Groq API (not LangChain); no centralization needed since augmentation is a standalone tool with its own API key argument.
 
+### 5.12 Augmented Vector Indexing — AVI (Session 2026-06-09)
+- [x] **`data/verse_retrieval/` module created** — two-step pipeline to enrich Bible verse embeddings with chapter-level context:
+  - **Step 1** `generate_chapter_summaries.py` — reads `alkitab_tb.csv`, groups by (book_name, chapter), uses Groq or Ollama to summarize each chapter in 2-3 Indonesian sentences. Features: checkpoint/resume, rate limiting, language guard (re-prompts if non-Indonesian), error log. Active LLM: `qwen3:4b` via Ollama (local).
+  - **Step 2** `prepare_enriched_bible.py` — LEFT JOIN `alkitab_tb.csv` + `chapter_summaries_ollamaQwen.csv` on (book_name, chapter); creates `enriched_text` column: `[Konteks Pasal: <summary>] <verse>`. Output: `data/verse_retrieval/alkitab_tb_enriched.csv` (~36 MB, ~31k rows).
+- [x] **`VectorDBManager.build_bible_index()` updated** — default CSV path changed from `data/alkitab_tb.csv` → `data/verse_retrieval/alkitab_tb_enriched.csv`. Embeds `enriched_text` for richer semantic search; raw verse `text` stored in metadata for user display.
+- [x] **`retrieve_verse_with_llm()` FAISS top-k bumped 5 → 10** — larger candidate pool compensates for enriched-index specificity and improves LLM reranker's final selection quality.
+- [x] Multiple summary variants generated for comparison:
+  - `chapter_summaries_ollamaQwen.csv` — Ollama qwen3:4b (active)
+  - `chapter_summaries_ollama.csv` — Ollama gemma/qwen earlier runs
+  - `chapter_summaries_checkpoint.csv` — Groq llama-3.1-8b run
+
+### 5.13 RAG Pipeline & UI Improvements (Session 2026-06-09)
+- [x] **FAISS candidate k bumped 5 → 10** in `rag_engine.py` — larger pool for LLM reranker
+- [x] **Book Diversity Filter (Layer 2.5)** added to `_faiss_search()` in `vector_db.py`:
+  - `OVERSAMPLE_FACTOR = 3` — FAISS fetches 30 raw candidates (3×k)
+  - `MAX_PER_BOOK = 2` — max 2 verses from the same book in the final 10 candidates
+  - Results iterated in L2-score order; excess per-book entries skipped
+- [x] **Session-level book exclusion** — `SessionManager` tracks `used_verse_books: set` across the session; books that have already been used for a verse are passed as `excluded_books` to `_faiss_search`, which skips them entirely for subsequent retrievals
+  - `SessionManager.__init__` and `reset()` initialize/clear the set
+  - `chat()` and `_enter_professional_stage()` update the set after each verse retrieval
+  - `RAGEngine.generate_response()` gains `excluded_books` param and returns `bible_book_abbr` in `context_used`
+- [x] **FAISS query refactored** — raw `user_input` removed from FAISS `combined_query`. Query now built strictly from `intents + BIBLICAL_SYNONYMS`. Raw user text routed exclusively to the LLM reranker to prevent semantic noise dilution from informal slang.
+- [x] **Floating Reset/Exit buttons added to UI** (`index.html`, `style.css`, `script.js`):
+  - Appear only when conversation is active (chat-mode)
+  - **Reset button** (white bg, black reset SVG): calls `/reset`, clears chat, returns to landing screen
+  - **Exit button** (red bg, white door SVG): shows custom confirmation modal "Apakah yakin anda mau keluar dari sesi konseling?"
+    - "Tidak" → closes modal, returns to chat
+    - "Iya" → calls `/shutdown`, attempts `window.close()`, shows fallback "Sesi Berakhir" screen
+- [x] **`/shutdown` endpoint** added to `app.py` — `os._exit(0)` forcefully terminates the Python process
+- [x] `FAISS_VERSE_RETRIEVAL_DOCUMENTATION.md` updated to reflect new pipeline (enriched embedding, synonyms-only FAISS query, diversity filter, session exclusion, LLM reranker)
+
 ---
 
 ## 6. What Is Ongoing
@@ -332,8 +371,8 @@ The session has no explicit "session ended" flag after `penutupan`. Currently:
 
 ### P3 — Polish & Thesis Readiness
 
-#### 7.7 Add Session Reset Button to UI
-Currently `static/script.js` calls `/reset` on page load only. A visible "Mulai Sesi Baru" button in the UI would allow users to restart without refreshing the page, which is important for user testing (thesis evaluation).
+#### 7.7 ~~Add Session Reset Button to UI~~ — ✅ DONE
+Floating Reset (white) and Exit (red) buttons added. Reset calls `/reset` and returns to landing screen. Exit shows a custom modal confirmation before calling `/shutdown` to terminate the Python process.
 
 #### 7.8 ~~Improve Error Display in UI~~ — ✅ DONE
 `app.py` already returns `"Terjadi kesalahan internal. Silakan coba lagi."` for 500 errors. No further action needed.
@@ -357,13 +396,14 @@ Several packages may be unused in the final pipeline: `anthropic`, `openai` (Dee
 | 2 | **`hidden_size = 768` hardcoded** | Medium | `config.py:14` | Must manually update if MODEL_NAME is changed. No validation guard. |
 | 3 | ~~**`.env` not in `.gitignore`**~~ | ~~High~~ | ~~`.gitignore`~~ | ✅ RESOLVED — `.env` is already in `.gitignore` |
 | 4 | **`session_ended` behavior** | Low | `session_manager.py` | Set to `True` after bantuan_profesional; normal penutupan flow remains open-ended |
-| 5 | **Bible index first-build: 10-30 min** | Medium | `vector_db.py:63` | Expected behavior, documented. Once built, loads fast from disk. |
+| 5 | **Bible index first-build: 15-45 min (enriched)** | Medium | `vector_db.py:91` | Expected behavior. Requires AVI pipeline (`verse_retrieval/`) to be run first. Once built, loads fast from disk. |
 | 6 | **`knowledge_base.py` is dead code** | Low | `core/knowledge_base.py` | Not referenced in live app; confuses code readers |
 | 7 | **BERT loads two full models** | Medium | `bert_model.py:32-34` | LABAN needs dual encoders by design — label encoder + utterance encoder. This is correct architecture, not a bug, but doubles VRAM/RAM usage. |
 | 8 | **Max-turn force advance** | Low | `session_manager.py:260` | User can be cut off mid-explanation if they exceed pembahasan max (4 turns) |
 | 9 | **Groq API key needed for augmentation** | Low | `data/augmentation/` | Not needed for running the chatbot; only for generating new training data |
 | 10 | **Bible index must match embed model** | High | `data/faiss_bible_index/` | If EMBED_MODEL in config.py changes, delete the index folder and let it rebuild. Dimension mismatch causes silent FAISS failures. |
 | 11 | **`[TIMING]` prints in rag_engine.py** | Medium | `core/rag_engine.py` | Remove all `_t0/_t1/_t2/_t3/_t4` + print statements before final submission |
+| 12 | **AVI enriched CSV must be re-generated if summaries change** | Medium | `data/verse_retrieval/` | Re-run Step 2 (`prepare_enriched_bible.py`) then delete `data/faiss_bible_index/` to force FAISS rebuild |
 
 ---
 
@@ -413,7 +453,7 @@ All values live in `config.py` and are accessed via the `opt` singleton.
 | `BATCH_SIZE` | `16` | Training batch size |
 | `epochs` | `50` | Training epochs |
 | `LEARNING_RATE` | `2e-5` | AdamW learning rate |
-| `CHATBOT_LLM_PROVIDER` | `"openai"` | Active chatbot LLM provider: `"groq"` / `"gemini"` / `"openai"` |
+| `CHATBOT_LLM_PROVIDER` | `"ollama"` | Active chatbot LLM provider: `"groq"` / `"gemini"` / `"openai"` / `"ollama"` |
 | `OPENAI_CHATBOT_MODEL` | `"gpt-5.4-mini"` | OpenAI model name (active when provider=openai) |
 | `GEMINI_CHATBOT_MODEL` | `"gemini-2.5-flash"` | Gemini model name (active when provider=gemini) |
 | `GROQ_CHATBOT_MODEL` | `"llama-3.3-70b-versatile"` | Groq model name (active when provider=groq) |
@@ -437,3 +477,5 @@ All values live in `config.py` and are accessed via the `opt` singleton.
 | 2026-06-02 | Backbone comparison completed (all 6 models, IndoBERT best @ F1=0.9318); Seen/Unseen ZSL evaluation completed (F1-Seen=0.8997, Unseen=0.0); BibleTestSession added to app.py for Cohen's Kappa verse evaluation |
 | 2026-06-03 | LLM reranker added to Bible verse retrieval (`retrieve_verse_with_llm()` in vector_db.py) — FAISS top-5 candidates → Gemini picks best; BIBLICAL_SYNONYMS query expansion dict added (10 intents → formal biblical vocab); MODEL_NAME switched to IndoBERT (`indobert-base-p1`) in config.py post-comparison; `documentation/` folder created with 10 thesis write-up files |
 | 2026-06-04 | LLM config centralized into `config.py` — multi-provider support (Groq/Gemini/OpenAI) via `CHATBOT_LLM_PROVIDER`; `_build_chatbot_llm()` factory added to `rag_engine.py`; `eval_ragas.py` updated to use `opt.RAGAS_JUDGE_*`; active chatbot LLM switched to OpenAI (`gpt-5.4-mini`) |
+| 2026-06-09 | AVI (Augmented Vector Indexing) pipeline built: `data/verse_retrieval/generate_chapter_summaries.py` (Step 1 — Groq/Ollama chapter summarizer with checkpoint/resume) + `prepare_enriched_bible.py` (Step 2 — merges summaries into `alkitab_tb_enriched.csv`); `VectorDBManager.build_bible_index()` updated to embed enriched text; LLM reranker top-k bumped 5 → 10 |
+| 2026-06-09 | FAISS candidate pool expanded to k=10; Book Diversity Filter (Layer 2.5) added — OVERSAMPLE_FACTOR=3 (fetches 30), MAX_PER_BOOK=2 cap; Session-level book exclusion via `used_verse_books` set in SessionManager (prevents re-using the same Bible book across session turns); FAISS query refactored to use intents+synonyms only (raw user_input removed to prevent semantic noise); Floating Reset (white) + Exit (red) buttons added to UI with exit confirmation modal and `/shutdown` Flask endpoint; FAISS documentation updated |

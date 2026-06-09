@@ -3,6 +3,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatForm = document.getElementById('chat-form');
     const userInput = document.getElementById('user-input');
     const chatHistory = document.getElementById('chat-history');
+    
+    // Floating buttons & modal elements
+    const floatingActions = document.getElementById('floating-actions');
+    const btnReset = document.getElementById('btn-reset');
+    const btnExit = document.getElementById('btn-exit');
+    const exitModal = document.getElementById('exit-modal');
+    const btnConfirmExit = document.getElementById('btn-confirm-exit');
+    const btnCancelExit = document.getElementById('btn-cancel-exit');
 
     // Auto-resize textarea
     userInput.addEventListener('input', function() {
@@ -36,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (appContainer.classList.contains('landing-mode')) {
             appContainer.classList.remove('landing-mode');
             appContainer.classList.add('chat-mode');
+            floatingActions.classList.remove('hidden'); // Show floating buttons
         }
 
         // Add User Message to UI
@@ -145,4 +154,50 @@ document.addEventListener('DOMContentLoaded', () => {
     // Call /reset on load just to ensure a fresh session 
     // (useful if user refreshes the page)
     fetch('/reset', { method: 'POST' }).catch(e => console.log('Reset error', e));
+
+    // --- Floating Buttons Logic ---
+    
+    // Reset Chat
+    btnReset.addEventListener('click', async () => {
+        try {
+            await fetch('/reset', { method: 'POST' });
+            chatHistory.innerHTML = ''; // Clear chat
+            appContainer.classList.remove('chat-mode');
+            appContainer.classList.add('landing-mode');
+            floatingActions.classList.add('hidden'); // Hide floating buttons
+        } catch (e) {
+            console.error('Failed to reset:', e);
+        }
+    });
+
+    // Show Exit Modal
+    btnExit.addEventListener('click', () => {
+        exitModal.classList.remove('hidden');
+    });
+
+    // Hide Exit Modal (Cancel)
+    btnCancelExit.addEventListener('click', () => {
+        exitModal.classList.add('hidden');
+    });
+
+    // Confirm Exit (Shutdown)
+    btnConfirmExit.addEventListener('click', async () => {
+        exitModal.classList.add('hidden');
+        try {
+            await fetch('/shutdown', { method: 'POST' });
+            // Attempt to close window (works if opened via script, otherwise browsers block it)
+            window.close();
+            
+            // Fallback if window.close() is blocked
+            document.body.innerHTML = `
+                <div style="display:flex; justify-content:center; align-items:center; height:100vh; flex-direction:column; font-family:sans-serif; text-align:center; padding:20px;">
+                    <h1 style="color:#E63946;">Sesi Berakhir</h1>
+                    <p style="color:#333;">Program Python telah dimatikan. Anda dapat menutup tab ini secara manual.</p>
+                </div>
+            `;
+        } catch (e) {
+            console.error('Failed to shutdown:', e);
+            alert('Gagal menghentikan server.');
+        }
+    });
 });

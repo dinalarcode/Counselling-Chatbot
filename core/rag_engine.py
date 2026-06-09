@@ -49,10 +49,18 @@ def _build_chatbot_llm():
             temperature=opt.CHATBOT_TEMPERATURE,
         )
 
+    elif provider == "ollama":
+        from langchain_ollama import ChatOllama
+        return ChatOllama(
+            model="qwen2.5:3b",
+            base_url="http://localhost:11434",
+            temperature=opt.CHATBOT_TEMPERATURE,
+        )
+
     else:
         raise ValueError(
             f"Unknown CHATBOT_LLM_PROVIDER: '{provider}'. "
-            f"Pilihan valid: 'groq', 'gemini', 'openai'"
+            f"Pilihan valid: 'groq', 'gemini', 'openai', 'ollama'"
         )
 
 class RAGEngine:
@@ -150,7 +158,7 @@ class RAGEngine:
         # Initialize the Vector DB Manager (Knowledge Base)
         self.vector_db = VectorDBManager()
         # Build indices if not built
-        self.vector_db.build_bible_index('data/alkitab_tb.csv')
+        self.vector_db.build_bible_index('data/verse_retrieval/alkitab_tb_enriched_groq.csv')
         self.vector_db.build_qna_index('data/dataset_qna.csv')
 
         # Define the Prompt Template for the LLM
@@ -194,7 +202,7 @@ Respons Anda:
         # Create the LangChain processing chain
         self.chain = self.prompt_template | self.llm
 
-    def generate_response(self, user_input, current_stage="pembahasan", override_intents=None, has_physical_symptoms=False):
+    def generate_response(self, user_input, current_stage="pembahasan", override_intents=None, has_physical_symptoms=False, excluded_books=None):
         """
         Generate a counseling response.
 
@@ -207,6 +215,8 @@ Respons Anda:
                               stages (e.g., pembahasan) for more relevant verse selection.
             has_physical_symptoms: If True, inject CBT-based physical symptom guidance
                                    into solusi/relaksasi stage instructions.
+            excluded_books: Optional set of book_abbr strings to exclude from verse
+                            retrieval (session-level book exclusion).
         """
         # Get stage-specific behavioral instruction
         stage_instruction = self.STAGE_INSTRUCTIONS.get(
@@ -247,20 +257,23 @@ Respons Anda:
         # When override_intents are provided (from SessionManager's accumulated intents),
         # use them instead of the current turn's intents for more relevant verse selection.
         # ALL intents are combined together to determine the 1 best verse.
-        # Uses LLM reranker: FAISS retrieves top-5 candidates, Gemini picks the best one.
+        # Uses LLM reranker: FAISS retrieves top-10 candidates, Gemini picks the best one.
         bible_verses = ""
         bible_reference = ""
+        bible_book_abbr = ""
         intents_for_verse = override_intents if override_intents else detected_intents
         if current_stage in self.BIBLE_VERSE_STAGES and intents_for_verse:
             verse_results = self.vector_db.retrieve_verse_with_llm(
                 intents=intents_for_verse,
                 user_input=user_input,
                 llm=self.llm,
-                k=5
+                k=10,
+                excluded_books=excluded_books
             )
             if verse_results:
                 bible_reference = verse_results[0].get('reference', '')
                 bible_verses = verse_results[0].get('text', '')
+                bible_book_abbr = verse_results[0].get('book_abbr', '')
         _t3 = time.perf_counter()
         if current_stage in self.BIBLE_VERSE_STAGES:
             print(f"[TIMING] retrieve_verse_with_llm: {(_t3 - _t2) * 1000:.1f}ms")
@@ -295,6 +308,7 @@ Respons Anda:
                 "intents": detected_intents,
                 "example_answer": example_answer,
                 "bible_verses": f"{bible_reference} - {bible_verses}" if bible_verses else "",
+                "bible_book_abbr": bible_book_abbr,
                 "stage": current_stage
             }
         }

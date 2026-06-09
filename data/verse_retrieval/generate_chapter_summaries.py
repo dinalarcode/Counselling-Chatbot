@@ -46,7 +46,7 @@ OUTPUT_DIR = os.path.join(PROJECT_ROOT, "data", "verse_retrieval")
 # ---------------------------------------------------------------------------
 # LLM Provider Toggle: "groq" or "ollama"
 # ---------------------------------------------------------------------------
-LLM_PROVIDER = "ollama"  # ← switch to "groq" to use cloud API
+LLM_PROVIDER = "groq"  # ← switch to "ollama" to use local Ollama
 
 GROQ_MODEL = "llama-3.1-8b-instant"
 SLEEP_SECONDS = 2.1  # ~28 RPM, under Groq free-tier 30 RPM limit
@@ -58,9 +58,8 @@ OLLAMA_BASE_URL = "http://localhost:11434"  # Default Ollama endpoint
 
 # Output paths: suffix based on active provider
 _SUFFIX = f"_{LLM_PROVIDER}" if LLM_PROVIDER == "ollama" else ""
-CHECKPOINT_CSV = os.path.join(OUTPUT_DIR, f"chapter_summaries_checkpoint_ollamaQwen.csv")
-# OUTPUT_CSV = os.path.join(OUTPUT_DIR, f"chapter_summaries{_SUFFIX}.csv")
-OUTPUT_CSV = os.path.join(OUTPUT_DIR, f"chapter_summaries_ollamaQwen.csv")
+CHECKPOINT_CSV = os.path.join(OUTPUT_DIR, f"chapter_summaries_checkpoint{_SUFFIX}.csv")
+OUTPUT_CSV = os.path.join(OUTPUT_DIR, f"chapter_summaries{_SUFFIX}.csv")
 FAILED_LOG = os.path.join(OUTPUT_DIR, f"failed_chapters{_SUFFIX}.txt")
 
 # Indonesian stopwords for language guard
