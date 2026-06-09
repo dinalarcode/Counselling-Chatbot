@@ -52,7 +52,8 @@ GROQ_MODEL = "llama-3.1-8b-instant"
 SLEEP_SECONDS = 2.1  # ~28 RPM, under Groq free-tier 30 RPM limit
 
 # OLLAMA_MODEL = "gemma:2b" #gemma
-OLLAMA_MODEL = "qwen2.5:3b" #qwen
+# OLLAMA_MODEL = "qwen2.5:3b" #qwen laptop
+OLLAMA_MODEL = "qwen3:4b" #qwen pc
 OLLAMA_BASE_URL = "http://localhost:11434"  # Default Ollama endpoint
 
 # Output paths: suffix based on active provider
