@@ -79,10 +79,10 @@ BIBLICAL_SYNONYMS = {
     ),
 }
 
-# ── Book Diversity Constants ─────────────────────────────────────────────
-# Used by _faiss_search to ensure FAISS candidates come from varied books.
-OVERSAMPLE_FACTOR = 3   # fetch 3× more from FAISS before filtering
-MAX_PER_BOOK      = 2   # at most 2 verses per book in the final k candidates
+# ── Diversity Constants ───────────────────────────────────────────────────
+# Used by _faiss_search to ensure FAISS candidates come from varied chapters.
+OVERSAMPLE_FACTOR = 3     # fetch 3× more from FAISS before filtering
+MAX_PER_CHAPTER   = 2     # at most 2 verses per chapter in the final k candidates
 
 
 class VectorDBManager:
@@ -175,11 +175,11 @@ class VectorDBManager:
 
     # ── FAISS Semantic Search (Layer 1 + 2) ──────────────────────────────
 
-    def _faiss_search(self, intents, user_input, k=10, excluded_books=None):
+    def _faiss_search(self, intents, user_input, k=10, excluded_books=None, excluded_verses=None):
         """
         Layer 1: Build combined query (intents + biblical synonyms ONLY)
         Layer 2: FAISS semantic search → oversampled pool
-        Layer 2.5: Book diversity filter → top-k diverse candidate verses
+        Layer 2.5: Diversity filter → top-k diverse candidate verses
         
         Note: raw user_input is NOT included in the FAISS query to avoid
         semantic noise dilution. It is used exclusively by the LLM reranker
@@ -192,10 +192,12 @@ class VectorDBManager:
             k: desired number of diverse candidates to return
             excluded_books: optional set of book_abbr strings to completely
                             skip (used for session-level book exclusion)
+            excluded_verses: optional set of exact reference strings to skip
+                             (e.g. {"Mazmur 34:18"}) — session-level verse exclusion
         
         Returns:
             list of dict: [{reference, text, book_abbr, faiss_score}, ...]
-                          sorted by L2 distance, with book diversity applied
+                          sorted by L2 distance, with diversity applied
         """
         if self.bible_db is None:
             print("[WARNING] Bible index belum dibangun!")
@@ -206,6 +208,8 @@ class VectorDBManager:
 
         if excluded_books is None:
             excluded_books = set()
+        if excluded_verses is None:
+            excluded_verses = set()
 
         # --- Layer 1: Build combined query (intents + biblical synonyms only) ---
         intent_part = " ".join(intents)
@@ -239,27 +243,43 @@ class VectorDBManager:
         # Sort by L2 distance (lowest = best)
         candidates_with_scores.sort(key=lambda x: x[1])
 
-        # --- Layer 2.5: Book diversity filter ---
-        # 1. Skip verses from excluded_books (session-level exclusion)
-        # 2. Cap at MAX_PER_BOOK verses per book (call-level diversity)
+        # --- Layer 2.5: Diversity filter ---
+        # 1. Skip exact verses already used in this session (excluded_verses)
+        # 2. Skip verses from excluded_books (session-level exclusion — book level)
+        # 3. Cap at MAX_PER_CHAPTER verses per unique book+chapter key (call-level diversity)
         results = []
-        book_count = {}  # book_abbr → count in results so far
+        chapter_count = {}  # "book_name chapter" → count in results so far
 
         for doc, score in candidates_with_scores:
+            reference = doc.metadata.get("reference", "")
             book_abbr = doc.metadata.get("book_abbr", "")
 
-            # Session-level exclusion: skip books already used in this session
+            # Session-level verse exclusion: skip exact references already chosen
+            if reference in excluded_verses:
+                continue
+
+            # Session-level book exclusion: skip ALL candidates from excluded books
             if book_abbr in excluded_books:
                 continue
 
-            # Call-level diversity: cap per-book count
-            current_count = book_count.get(book_abbr, 0)
-            if current_count >= MAX_PER_BOOK:
+            # Extract the chapter key from the candidate's reference string.
+            # Uses book_name + chapter from metadata when available (most reliable);
+            # falls back to parsing the reference string directly.
+            book_name = doc.metadata.get("book_name", "")
+            chapter   = doc.metadata.get("chapter", None)
+            if book_name and chapter is not None:
+                chapter_key = f"{book_name} {chapter}"
+            else:
+                chapter_key = self._extract_chapter_key(reference)
+
+            # Call-level diversity: cap per-chapter count
+            current_count = chapter_count.get(chapter_key, 0)
+            if current_count >= MAX_PER_CHAPTER:
                 continue
 
-            book_count[book_abbr] = current_count + 1
+            chapter_count[chapter_key] = current_count + 1
             results.append({
-                "reference": doc.metadata.get("reference", ""),
+                "reference": reference,
                 "text": doc.metadata.get("text", ""),
                 "book_abbr": book_abbr,
                 "faiss_score": score,
@@ -268,19 +288,20 @@ class VectorDBManager:
             if len(results) >= k:
                 break
 
-        print(f"[Book Diversity] Oversample: {len(candidates_with_scores)}, "
+        print(f"[Diversity Filter] Oversample: {len(candidates_with_scores)}, "
               f"excluded books: {excluded_books or '{}'}, "
-              f"after filter: {len(results)} (max {MAX_PER_BOOK}/book)")
+              f"excluded verses: {len(excluded_verses)}, "
+              f"after filter: {len(results)} (max {MAX_PER_CHAPTER}/chapter)")
 
         return results
 
     # ── LLM Reranker ──────────────────────────────────────────────────
 
-    def retrieve_verse_with_llm(self, intents, user_input, llm, k=10, excluded_books=None):
+    def retrieve_verse_with_llm(self, intents, user_input, llm, k=10, excluded_books=None, excluded_verses=None):
         """
         Retrieve the most contextually relevant Bible verse using:
-        Layer 1 + 2 + 2.5: FAISS semantic search + book diversity → top-k candidates
-        LLM Reranker: Gemini picks the best verse based on user context
+        Layer 1 + 2 + 2.5: FAISS semantic search + diversity filters → top-k candidates
+        LLM Reranker: LLM picks the best verse based on user context
         
         Args:
             intents: list of detected intent strings
@@ -288,12 +309,14 @@ class VectorDBManager:
             llm: LangChain LLM instance (reuse from RAGEngine)
             k: number of FAISS candidates to present to the LLM
             excluded_books: optional set of book_abbr to exclude (session-level)
+            excluded_verses: optional set of exact reference strings to exclude
+                             (e.g. {"Mazmur 34:18"}) — session-level verse exclusion
             
         Returns:
             list of dict: [{reference: str, text: str, book_abbr: str}] — always 1 result
         """
-        # Step 1+2+2.5: Get FAISS candidates (with book diversity)
-        candidates = self._faiss_search(intents, user_input, k=k, excluded_books=excluded_books)
+        # Step 1+2+2.5: Get FAISS candidates (with diversity filters)
+        candidates = self._faiss_search(intents, user_input, k=k, excluded_books=excluded_books, excluded_verses=excluded_verses)
 
         if not candidates:
             return []
@@ -377,6 +400,24 @@ class VectorDBManager:
         """
         candidates = self._faiss_search(intents, user_input, k=k)
         return [{"reference": c["reference"], "text": c["text"]} for c in candidates]
+
+    @staticmethod
+    def _extract_chapter_key(reference: str) -> str:
+        """
+        Parse a Bible reference string into a unique book+chapter key.
+
+        Handles:
+          - Standard references  : "Mazmur 34:18"    → "Mazmur 34"
+          - Numbered book names  : "1 Yohanes 4:8"   → "1 Yohanes 4"
+                                   "2 Korintus 12:9" → "2 Korintus 12"
+        Strategy:
+          Split on ":" to drop the verse number, then strip trailing whitespace.
+          The result is everything before the colon, which is "<book_name> <chapter>".
+          If no ":" is found, the full reference is returned as-is (safe fallback).
+        """
+        if ":" in reference:
+            return reference.rsplit(":", 1)[0].strip()
+        return reference.strip()
 
     def _extract_keywords(self, text):
         """Ekstrak kata kunci dari teks (hapus stopwords)."""

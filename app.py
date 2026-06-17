@@ -23,6 +23,7 @@ class BibleTestSession:
     def __init__(self, rag_engine):
         self.rag_engine = rag_engine
         self.active = False
+        self.used_verses = set()  # exact reference strings excluded across the test session
 
     def handle(self, user_input: str) -> str:
         """
@@ -39,7 +40,8 @@ class BibleTestSession:
             intents=detected_intents,
             user_input=user_input,
             llm=self.rag_engine.llm,
-            k=5
+            k=5,
+            excluded_verses=self.used_verses
         )
 
         # 3. Format output
@@ -52,6 +54,12 @@ class BibleTestSession:
             )
 
         verse = verse_results[0]
+
+        # Track this verse so it won't be selected again in this test session
+        chosen_ref = verse.get('reference', '')
+        if chosen_ref:
+            self.used_verses.add(chosen_ref)
+            print(f"[BibleTest] Verse '{chosen_ref}' added to exclusion set ({len(self.used_verses)} total)")
 
         # Console log for developer to record into Cohen's Kappa sheet
         print(f"\n--- Bible Test (FAISS + LLM Reranker) ---")
@@ -112,13 +120,14 @@ def chat():
             "Pipeline pengambilan ayat:\n"
             "1. Klasifikasi intent (LABAN/IndoBERT)\n"
             "2. FAISS semantic search → 10 kandidat ayat\n"
-            "3. LLM reranker (Gemini) → memilih ayat terbaik\n\n"
+            "3. LLM reranker → memilih ayat terbaik\n\n"
             "Ketik `exit test` untuk kembali ke sesi normal."
         )})
 
     if user_input.lower() == "exit test" and bible_test_session:
         bible_test_session.active = False
-        print("\n--- Bible Test Mode DEACTIVATED ---\n")
+        bible_test_session.used_verses.clear()
+        print("\n--- Bible Test Mode DEACTIVATED (verse exclusions cleared) ---\n")
         return jsonify({"response": "✅ Mode Bible Test dinonaktifkan. Sesi konseling normal dilanjutkan."})
 
     if bible_test_session and bible_test_session.active:

@@ -202,7 +202,7 @@ Respons Anda:
         # Create the LangChain processing chain
         self.chain = self.prompt_template | self.llm
 
-    def generate_response(self, user_input, current_stage="pembahasan", override_intents=None, has_physical_symptoms=False, excluded_books=None):
+    def generate_response(self, user_input, current_stage="pembahasan", override_intents=None, has_physical_symptoms=False, excluded_books=None, excluded_verses=None):
         """
         Generate a counseling response.
 
@@ -217,6 +217,8 @@ Respons Anda:
                                    into solusi/relaksasi stage instructions.
             excluded_books: Optional set of book_abbr strings to exclude from verse
                             retrieval (session-level book exclusion).
+            excluded_verses: Optional set of exact reference strings to exclude
+                             (e.g. {"Mazmur 34:18"}) — session-level verse exclusion.
         """
         # Get stage-specific behavioral instruction
         stage_instruction = self.STAGE_INSTRUCTIONS.get(
@@ -268,7 +270,8 @@ Respons Anda:
                 user_input=user_input,
                 llm=self.llm,
                 k=10,
-                excluded_books=excluded_books
+                excluded_books=excluded_books,
+                excluded_verses=excluded_verses
             )
             if verse_results:
                 bible_reference = verse_results[0].get('reference', '')
@@ -308,6 +311,7 @@ Respons Anda:
                 "intents": detected_intents,
                 "example_answer": example_answer,
                 "bible_verses": f"{bible_reference} - {bible_verses}" if bible_verses else "",
+                "bible_reference": bible_reference,
                 "bible_book_abbr": bible_book_abbr,
                 "stage": current_stage
             }
