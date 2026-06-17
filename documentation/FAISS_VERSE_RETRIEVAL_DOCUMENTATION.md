@@ -16,8 +16,8 @@ User Utterance & Intents
 │  Layer 2: FAISS Semantic Search (Oversampled)       │
 │    query → embed → L2 search → 30 candidates        │
 │                                                     │
-│  Layer 2.5: Book Diversity & Exclusion Filter       │
-│    skip used session books → cap 2 per book → top 10│
+│  Layer 2.5: Chapter Diversity & Exclusion Filter    │
+│  skip excluded books → cap 2/chapter → top 10       │
 │                                                     │
 │  Layer 3: LLM Reranker                              │
 │    prompt(10 candidates, user context) → top 1 verse│
@@ -54,16 +54,19 @@ Instead of embedding raw, isolated verses, the system embeds an **enriched text*
 
 ---
 
-## Layer 2 & 2.5: FAISS Semantic Search & Book Diversity
+## Layer 2 & 2.5: FAISS Semantic Search & Chapter Diversity
 
-**Goal**: Find the best candidate verses while ensuring theological variety.
+**Goal**: Find the best candidate verses while ensuring theological variety across different chapters.
 
 **Process**:
 1. The `combined_query` is embedded into a vector.
-2. FAISS performs an L2 distance search. Instead of fetching just 10 results, it fetches an **oversample pool** (`k * OVERSAMPLE_FACTOR`, e.g., 30 results).
-3. **Session-Level Exclusion**: The `SessionManager` passes in a set of `excluded_books` (books that have already been used to give verses in the current counseling session). Any candidate from these books is completely skipped to prevent repetitive quoting from the same book.
-4. **Call-Level Diversity**: The results are iterated, and a candidate is only added to the final list if its book has appeared fewer than `MAX_PER_BOOK` (default: 2) times in the list so far.
-5. The filter stops once **10 diverse candidates** are collected.
+2. FAISS performs an L2 distance search. Instead of fetching just 10 results, it fetches an **oversample pool** (`k * OVERSAMPLE_FACTOR`, e.g., 30 results). The results are sorted by L2 distance (lowest = most similar).
+3. **Session-Level Exclusion** (book-level): The `SessionManager` passes in a set of `excluded_books` (abbreviated book names of books already used in the current counseling session). All candidates from an excluded book are completely skipped — this operates strictly at the book level to prevent the same book from being cited more than once per session.
+4. **Call-Level Diversity** (chapter-level): The oversample pool is iterated in score order. A candidate is only admitted to the final list if its **book + chapter** key has appeared fewer than `MAX_PER_CHAPTER` (default: 2) times so far. This prevents the enriched-index embedding clusters (caused by similar chapter summaries) from flooding the candidate list with verses from the same chapter.
+5. **Chapter Key Extraction**: Each candidate's chapter key is built preferentially from FAISS metadata (`book_name` + `chapter` integer fields). If metadata is absent, the static helper `_extract_chapter_key(reference)` parses the reference string by splitting on `:` to drop the verse number — correctly handling both standard names (`"Mazmur 34:18"` → `"Mazmur 34"`) and numbered book names (`"1 Yohanes 4:8"` → `"1 Yohanes 4"`).
+6. The filter stops once **10 diverse candidates** are collected and passed to the LLM reranker.
+
+> **Why chapter-level instead of book-level?** The enriched `alkitab_tb_enriched_groq.csv` index creates dense semantic clusters around chapters with similar theological themes (e.g., all Psalm 119 verses cluster together because they share the same chapter summary). A book-level cap of 2 still allowed 2 verses from Psalm 119 to dominate a slot. A chapter-level cap of 2 distributes candidates more broadly across the Bible, giving the LLM reranker a more diverse pool to reason over.
 
 ---
 
@@ -95,7 +98,7 @@ alkitab_tb_enriched.csv (verses + chapter summaries)
         │
         ├── [Layer 2] Embed Query → FAISS L2 Search → 30 Candidates
         │
-        ├── [Layer 2.5] Filter Out excluded_books → Cap 2/book → 10 Diverse Candidates
+        ├── [Layer 2.5] Filter Out excluded_books (book-level) → Cap 2/chapter → 10 Diverse Candidates
         │
         └── [Layer 3] Prompt LLM Reranker → Select 1 Best Verse
                 │
@@ -113,9 +116,11 @@ alkitab_tb_enriched.csv (verses + chapter summaries)
 | `core/rag_engine.py` | Connects FAISS output to the main counseling LLM chain |
 | `core/session_manager.py` | Tracks `used_verse_books` to prevent intra-session repetition |
 | `config.py` → `EMBED_MODEL` | `paraphrase-multilingual-MiniLM-L12-v2` |
-| `OVERSAMPLE_FACTOR` | `3` (Fetches 30 raw FAISS candidates) |
-| `MAX_PER_BOOK` | `2` (Max 2 verses from the same book in the top 10) |
+| `OVERSAMPLE_FACTOR` | `3` (Fetches 30 raw FAISS candidates before filtering) |
+| `MAX_PER_CHAPTER` | `2` (Max 2 verses from the same book+chapter in the top 10) |
+| `_extract_chapter_key(ref)` | Static helper — parses reference string into `"book chapter"` key (e.g. `"1 Yohanes 4:8"` → `"1 Yohanes 4"`) |
 
 ---
 
-*Document updated for the Biblical Counseling Chatbot (Tugas Akhir) project — 2026-06-09*
+*Document updated for the Biblical Counseling Chatbot (Tugas Akhir) project — 2026-06-10*
+*(Layer 2.5 refactored: book-level → chapter-level diversity filter; `MAX_PER_BOOK` replaced by `MAX_PER_CHAPTER`; `_extract_chapter_key()` helper added)*

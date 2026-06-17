@@ -185,6 +185,7 @@ class SessionManager:
         self.has_physical_symptoms = False  # tracks Mengisyaratkan Gejala Fisik across session
         self.in_professional_stage = False  # True when in bantuan_profesional branch
         self.used_verse_books = set()  # book_abbr of books already given as verse in this session
+        self.used_verses = set()  # exact reference strings (e.g. "Mazmur 34:18") already given in this session
 
     def chat(self, user_input):
         """
@@ -223,14 +224,19 @@ class SessionManager:
             current_stage=self.current_stage,
             override_intents=override_intents,
             has_physical_symptoms=self.has_physical_symptoms,
-            excluded_books=self.used_verse_books
+            excluded_books=self.used_verse_books,
+            excluded_verses=self.used_verses
         )
 
-        # Track which book was used for the verse (session-level exclusion)
+        # Track which book and exact verse were used (session-level exclusion)
         chosen_book = result['context_used'].get('bible_book_abbr', '')
+        chosen_ref = result['context_used'].get('bible_reference', '')
         if chosen_book:
             self.used_verse_books.add(chosen_book)
             print(f"[Session] Verse book '{chosen_book}' added to exclusion set: {self.used_verse_books}")
+        if chosen_ref:
+            self.used_verses.add(chosen_ref)
+            print(f"[Session] Verse '{chosen_ref}' added to verse exclusion set: {self.used_verses}")
 
         # Accumulate intents from this turn
         turn_intents = result['context_used']['intents']
@@ -392,14 +398,19 @@ class SessionManager:
             current_stage=self.PROFESSIONAL_STAGE,
             override_intents=override,
             has_physical_symptoms=self.has_physical_symptoms,
-            excluded_books=self.used_verse_books
+            excluded_books=self.used_verse_books,
+            excluded_verses=self.used_verses
         )
 
-        # Track which book was used for the verse (session-level exclusion)
+        # Track which book and exact verse were used (session-level exclusion)
         chosen_book = result['context_used'].get('bible_book_abbr', '')
+        chosen_ref = result['context_used'].get('bible_reference', '')
         if chosen_book:
             self.used_verse_books.add(chosen_book)
             print(f"[Session] Verse book '{chosen_book}' added to exclusion set: {self.used_verse_books}")
+        if chosen_ref:
+            self.used_verses.add(chosen_ref)
+            print(f"[Session] Verse '{chosen_ref}' added to verse exclusion set: {self.used_verses}")
 
         self.session_ended = True
         self.conversation_history.append(("counselor", result['response']))
@@ -462,3 +473,4 @@ class SessionManager:
         self.has_physical_symptoms = False
         self.in_professional_stage = False
         self.used_verse_books = set()
+        self.used_verses = set()
