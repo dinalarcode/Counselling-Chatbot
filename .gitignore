@@ -4,8 +4,6 @@
 /*.pyo
 /*.pym
 
-.env
-
 checkpoint/
 /*pt
 
@@ -13,3 +11,4 @@ venv/
 __pycache__/config.cpython-313.pyc
 data/augmentation/raw_generated/
 
+.env
