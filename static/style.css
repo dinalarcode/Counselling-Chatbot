@@ -398,3 +398,46 @@ body {
     background-color: #e0e0e0;
 }
 
+/* Consent Modal — visible on load (overrides .hidden default) */
+.consent-modal-visible {
+    display: flex !important;
+}
+
+.consent-modal-content {
+    max-width: 460px;
+    text-align: left;
+}
+
+.consent-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-main);
+}
+
+.consent-body {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+}
+
+.btn-consent {
+    background: linear-gradient(135deg, #5b8a72, #3d6b56);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    padding: 0.65rem 2rem;
+    font-size: 1rem;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    width: 100%;
+}
+
+.btn-consent:hover {
+    background: linear-gradient(135deg, #4a7a62, #2d5b46);
+    box-shadow: 0 4px 14px rgba(61, 107, 86, 0.3);
+}
+

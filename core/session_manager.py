@@ -71,10 +71,37 @@ class SessionManager:
         re.compile(r'\bmakasih\b', re.IGNORECASE),
     ]
 
+    # Spiritual-consent detection patterns (reply to the consent question asked
+    # at the intervensi stage). Decline is checked first so phrases like
+    # "tidak mau" resolve to a refusal rather than matching the affirmative "mau".
+    SPIRITUAL_CONSENT_DECLINE = [
+        re.compile(r'\btidak\b', re.IGNORECASE),
+        re.compile(r'\bnggak\b', re.IGNORECASE),
+        re.compile(r'\benggak\b', re.IGNORECASE),
+        re.compile(r'\bjangan\b', re.IGNORECASE),
+        re.compile(r'\bbelum\b', re.IGNORECASE),
+        re.compile(r'\bnanti\s+(saja|aja|dulu)\b', re.IGNORECASE),
+        re.compile(r'\bga\s+(mau|usah|perlu)\b', re.IGNORECASE),
+        re.compile(r'\bgak\s+(mau|usah|perlu)\b', re.IGNORECASE),
+    ]
+    SPIRITUAL_CONSENT_AFFIRM = [
+        re.compile(r'\b(iya|ya|yah|yaudah|yauda)\b', re.IGNORECASE),
+        re.compile(r'\bmau\b', re.IGNORECASE),
+        re.compile(r'\bboleh\b', re.IGNORECASE),
+        re.compile(r'\bbersedia\b', re.IGNORECASE),
+        re.compile(r'\btentu\b', re.IGNORECASE),
+        re.compile(r'\bsila(h)?kan\b', re.IGNORECASE),
+        re.compile(r'\bsetuju\b', re.IGNORECASE),
+        re.compile(r'\b(oke|ok|okay|oce)\b', re.IGNORECASE),
+        re.compile(r'\b(ayo|mari)\b', re.IGNORECASE),
+        re.compile(r'\bbaik(lah)?\b', re.IGNORECASE),
+        re.compile(r'\b(firman|alkitab|ayat|tuhan|rohani)\b', re.IGNORECASE),
+    ]
+
     # Minimum turns required before a stage can transition
     MIN_TURNS = {
         'pembukaan': 1,
-        'pembahasan': 1,
+        'pembahasan': 3,  # clinical requirement: minimum 3 exploration turns
         'intervensi': 1,
         'solusi': 1,
         'relaksasi': 1,
@@ -84,12 +111,38 @@ class SessionManager:
     # Maximum turns — force transition after this many turns (safety net)
     MAX_TURNS = {
         'pembukaan': 2,
-        'pembahasan': 4,
+        'pembahasan': 5,  # extended ceiling to allow richer exploration
         'intervensi': 3,
         'solusi': 3,
         'relaksasi': 3,
         'penutupan': 99,  # never force-exit penutupan
     }
+
+    # Early-exit signals for pembahasan — when the user explicitly indicates
+    # they have nothing more to share, we bypass the MIN_TURNS requirement
+    # and allow an immediate transition to the intervensi stage.
+    PEMBAHASAN_EARLY_EXIT_SIGNALS = [
+        re.compile(r'\btidak\s+ada\b', re.IGNORECASE),
+        re.compile(r'\benggak\s+ada\b', re.IGNORECASE),
+        re.compile(r'\bnggak\s+ada\b', re.IGNORECASE),
+        re.compile(r'\bgak\s+ada\b', re.IGNORECASE),
+        re.compile(r'\bga\s+ada\b', re.IGNORECASE),
+        re.compile(r'\bsudah\s+cukup\b', re.IGNORECASE),
+        re.compile(r'\bsudah\s+cukup\s+cerita\b', re.IGNORECASE),
+        re.compile(r'\bcuma\s+itu\b', re.IGNORECASE),
+        re.compile(r'\bcuma\s+itu\s+saja\b', re.IGNORECASE),
+        re.compile(r'\bhanya\s+itu\b', re.IGNORECASE),
+        re.compile(r'\bitu\s+saja\b', re.IGNORECASE),
+        re.compile(r'\bitu\s+aja\b', re.IGNORECASE),
+        re.compile(r'\btidak\s+ada\s+lagi\b', re.IGNORECASE),
+        re.compile(r'\bnggak\s+ada\s+lagi\b', re.IGNORECASE),
+        re.compile(r'\bgak\s+ada\s+lagi\b', re.IGNORECASE),
+        re.compile(r'\bga\s+ada\s+lagi\b', re.IGNORECASE),
+        re.compile(r'\bsegitu\s+saja\b', re.IGNORECASE),
+        re.compile(r'\bsegitu\s+aja\b', re.IGNORECASE),
+        re.compile(r'\bselesai\b', re.IGNORECASE),
+        re.compile(r'\bsudah\s+selesai\b', re.IGNORECASE),
+    ]
 
     # Transition signal patterns per stage (Indonesian phrases)
     # After minimum turns, if any of these patterns are found in user's message,
@@ -196,6 +249,7 @@ class SessionManager:
         self.current_stage = 'pembukaan'
         self.stage_index = 0
         self.turn_count = 0
+        self.turn_in_stage = 0  # per-stage turn counter; resets on each stage transition
         self.conversation_history = []  # list of (role, text) tuples
         self.accumulated_intents = Counter()  # intent → frequency
         self.primary_intents = []  # top intents derived from pembahasan
@@ -204,6 +258,18 @@ class SessionManager:
         self.in_professional_stage = False  # True when in bantuan_profesional branch
         self.used_verse_books = set()  # book_abbr of books already given as verse in this session
         self.used_verses = set()  # exact reference strings (e.g. "Mazmur 34:18") already given in this session
+        # Tri-state spiritual consent: None = not yet answered, True = consented,
+        # False = declined. Gates all Bible verse injection in later stages.
+        self.spiritual_consent = None
+        self.spiritual_consent_asked = False  # one-shot: consent question shown once
+        # Ephemeral pembahasan history for background summarization.
+        # Cleared immediately after summary generation at pembahasan→intervensi transition.
+        self.temp_pembahasan_history = []   # list of (user_msg, bot_response) tuples
+        self.complaint_summary = None       # 1-sentence summary injected into later stages
+        # Ephemeral solusi history for relaxation technique extraction.
+        # Cleared immediately after extraction at solusi→relaksasi transition.
+        self.temp_solusi_history = []       # list of (user_msg, bot_response) tuples
+        self.chosen_technique = None        # technique name injected into relaksasi prompt
 
     def chat(self, user_input):
         """
@@ -236,11 +302,30 @@ class SessionManager:
         # Record user message in history
         self.conversation_history.append(("user", user_input))
         self.turn_count += 1
+        self.turn_in_stage += 1
 
-        # Determine which intents to use for bible verse retrieval
-        # In relaksasi/solusi, use accumulated intents from the whole session
+        # Capture the user's reply to the spiritual-consent question (asked at final
+        # solusi turn). Sticky: first clear yes/no wins and is never overwritten.
+        # Checked here so "tidak" replies (not a transition signal) are still honored
+        # even if they don't trigger a stage transition.
+        if self.spiritual_consent_asked and self.spiritual_consent is None:
+            answer = self._detect_spiritual_consent(user_input)
+            if answer is not None:
+                self.spiritual_consent = answer
+
+        # Ask spiritual consent on the FINAL turn of solusi (turn_in_stage == MAX).
+        # Asking at solusi end (not intervensi) avoids mixing the yes/no question
+        # with exploration questions, and consent is resolved before relaksasi begins.
+        ask_consent = (
+            self.current_stage == 'solusi'
+            and self.turn_in_stage >= self.MAX_TURNS.get('solusi', 3)
+            and not self.spiritual_consent_asked
+        )
+
+        # Determine which intents to use for bible verse retrieval.
+        # Only relaksasi now retrieves verses; pass accumulated primary intents for best results.
         override_intents = None
-        if self.current_stage in ['relaksasi', 'solusi'] and self.primary_intents:
+        if self.current_stage == 'relaksasi' and self.primary_intents:
             override_intents = self.primary_intents
 
         # Generate response from RAG engine
@@ -250,8 +335,17 @@ class SessionManager:
             override_intents=override_intents,
             has_physical_symptoms=self.has_physical_symptoms,
             excluded_books=self.used_verse_books,
-            excluded_verses=self.used_verses
+            excluded_verses=self.used_verses,
+            spiritual_consent=self.spiritual_consent,
+            ask_spiritual_consent=ask_consent,
+            turn_in_stage=self.turn_in_stage,
+            complaint_summary=self.complaint_summary,
+            chosen_technique=self.chosen_technique
         )
+
+        # Mark the consent question as shown so it is not repeated.
+        if ask_consent:
+            self.spiritual_consent_asked = True
 
         # Track which book and exact verse were used (session-level exclusion)
         chosen_book = result['context_used'].get('bible_book_abbr', '')
@@ -277,6 +371,14 @@ class SessionManager:
 
         # Record chatbot response in history
         self.conversation_history.append(("counselor", result['response']))
+
+        # Record pembahasan turns for background summarization at stage transition.
+        # Only collected during pembahasan; list is cleared after summary is generated.
+        self._record_pembahasan_turn(user_input, result['response'])
+
+        # Record solusi turns for technique extraction at the solusi→relaksasi transition.
+        # Only collected during solusi; list is cleared after extraction.
+        self._record_solusi_turn(user_input, result['response'])
 
         # --- Emergency skip: keyword-based safety net ---
         # Check for suicidal/hopeless keywords BEFORE relying on the classifier.
@@ -368,6 +470,8 @@ class SessionManager:
         1. Minimum turn count threshold
         2. Transition signal detection in user's message
         3. Maximum turn count safety net
+        4. Pembahasan early-exit: explicit "nothing more to share" phrases bypass
+           the 3-turn minimum so the user is never trapped in the exploration loop.
         """
         # Already at the last stage — no transition
         if self.stage_index >= len(self.STAGE_ORDER) - 1:
@@ -381,6 +485,13 @@ class SessionManager:
 
         # Maximum turns exceeded — force transition
         if self.turn_count >= self.MAX_TURNS.get(stage, 99):
+            return True
+
+        # Pembahasan early-exit: if the user explicitly says they have nothing
+        # more to share, we allow immediate transition regardless of turn count.
+        # This overrides the 3-turn minimum to respect user autonomy.
+        if stage == 'pembahasan' and self._detect_pembahasan_early_exit(user_input):
+            print(f"[Session] pembahasan early-exit triggered at turn_in_stage={self.turn_in_stage}")
             return True
 
         # Below minimum turns — never transition
@@ -413,10 +524,29 @@ class SessionManager:
             self.stage_index += 1
             self.current_stage = self.STAGE_ORDER[self.stage_index]
             self.turn_count = 0
+            self.turn_in_stage = 0  # reset per-stage counter on transition
 
-            # When advancing past pembahasan, snapshot the primary intents
+            # When advancing past pembahasan, snapshot intents and generate
+            # a one-sentence background summary of the client's core complaint.
+            # The summary is injected into intervensi/solusi/relaksasi prompts
+            # so the stateless LLM retains context across turns.
             if self.current_stage == 'intervensi':
                 self._snapshot_primary_intents()
+                if self.temp_pembahasan_history:
+                    self.complaint_summary = self.rag_engine.generate_background_summary(
+                        self.temp_pembahasan_history
+                    )
+                    self.temp_pembahasan_history = []  # immediately free ephemeral data
+
+            # When advancing to relaksasi, extract the chosen relaxation technique from
+            # the solusi conversation history. The technique name is injected into the
+            # relaksasi prompt so the LLM guides only that specific technique.
+            if self.current_stage == 'relaksasi':
+                if self.temp_solusi_history:
+                    self.chosen_technique = self.rag_engine.generate_technique_extraction(
+                        self.temp_solusi_history
+                    )
+                    self.temp_solusi_history = []  # immediately free ephemeral data
 
     def _enter_professional_stage(self, user_input):
         """
@@ -440,7 +570,8 @@ class SessionManager:
             override_intents=override,
             has_physical_symptoms=self.has_physical_symptoms,
             excluded_books=self.used_verse_books,
-            excluded_verses=self.used_verses
+            excluded_verses=self.used_verses,
+            spiritual_consent=self.spiritual_consent
         )
 
         # Track which book and exact verse were used (session-level exclusion)
@@ -488,6 +619,43 @@ class SessionManager:
                 return True
         return False
 
+    def _detect_pembahasan_early_exit(self, user_input):
+        """
+        Check if the user explicitly signals they have nothing more to share
+        during the pembahasan stage. When matched, the 3-turn minimum is
+        bypassed and the session transitions immediately to intervensi.
+
+        Returns:
+            bool: True if an early-exit phrase is detected.
+        """
+        text_lower = user_input.lower().strip()
+        for pattern in self.PEMBAHASAN_EARLY_EXIT_SIGNALS:
+            if pattern.search(text_lower):
+                return True
+        return False
+
+    def _detect_spiritual_consent(self, user_input):
+        """
+        Interpret the user's reply to the spiritual-consent question.
+
+        Returns:
+            True  — user consents to a biblical perspective (affirmative).
+            False — user declines (negative).
+            None  — no clear answer detected; caller keeps consent unset and may
+                    re-check on a later turn (conservative: no verse without consent).
+        """
+        text_lower = user_input.lower().strip()
+
+        for pattern in self.SPIRITUAL_CONSENT_DECLINE:
+            if pattern.search(text_lower):
+                return False
+
+        for pattern in self.SPIRITUAL_CONSENT_AFFIRM:
+            if pattern.search(text_lower):
+                return True
+
+        return None
+
     def _detect_decline_signal(self, user_input):
         """
         Check if the user is declining the professional referral at penutupan.
@@ -516,7 +684,8 @@ class SessionManager:
             override_intents=None,
             has_physical_symptoms=self.has_physical_symptoms,
             excluded_books=self.used_verse_books,
-            excluded_verses=self.used_verses
+            excluded_verses=self.used_verses,
+            spiritual_consent=self.spiritual_consent
         )
 
         self.session_ended = True
@@ -549,6 +718,24 @@ class SessionManager:
             sorted_intents = self.accumulated_intents.most_common(3)
             self.primary_intents = [intent for intent, _ in sorted_intents]
 
+    def _record_pembahasan_turn(self, user_input, bot_response):
+        """
+        Append a turn to the ephemeral pembahasan history buffer.
+        Only records during the pembahasan stage; no-op at all other stages.
+        The buffer is cleared after the background summary is generated.
+        """
+        if self.current_stage == 'pembahasan':
+            self.temp_pembahasan_history.append((user_input, bot_response))
+
+    def _record_solusi_turn(self, user_input, bot_response):
+        """
+        Append a turn to the ephemeral solusi history buffer.
+        Only records during the solusi stage; no-op at all other stages.
+        The buffer is cleared after the technique extraction at the solusi→relaksasi transition.
+        """
+        if self.current_stage == 'solusi':
+            self.temp_solusi_history.append((user_input, bot_response))
+
     def _snapshot_primary_intents(self):
         """
         Take a snapshot of primary intents when transitioning out of pembahasan.
@@ -561,6 +748,7 @@ class SessionManager:
         self.current_stage = 'pembukaan'
         self.stage_index = 0
         self.turn_count = 0
+        self.turn_in_stage = 0
         self.conversation_history = []
         self.accumulated_intents = Counter()
         self.primary_intents = []
@@ -569,3 +757,9 @@ class SessionManager:
         self.in_professional_stage = False
         self.used_verse_books = set()
         self.used_verses = set()
+        self.spiritual_consent = None
+        self.spiritual_consent_asked = False
+        self.temp_pembahasan_history = []
+        self.complaint_summary = None
+        self.temp_solusi_history = []
+        self.chosen_technique = None

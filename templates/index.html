@@ -56,6 +56,17 @@
         </div>
     </div>
 
+    <!-- Consent / Privacy Modal — shown on page load, blocks interaction until acknowledged -->
+    <div id="consent-modal" class="modal consent-modal-visible">
+        <div class="modal-content consent-modal-content">
+            <h2 class="consent-title">Perhatian</h2>
+            <p class="consent-body">Peringatan: Chatbot ini akan menyimpan data percakapan sementara untuk keperluan konteks sesi, dan seluruh data akan dihapus otomatis setelah sesi selesai. Chatbot ini tidak dapat dan tidak akan menggantikan peran konselor profesional.</p>
+            <div class="modal-actions">
+                <button id="btn-consent-ok" class="btn-consent">Saya Mengerti</button>
+            </div>
+        </div>
+    </div>
+
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

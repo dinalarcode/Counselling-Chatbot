@@ -52,6 +52,9 @@ The thesis evaluation requires the following empirical results and artifacts:
 - [x] LLM reranker integrated into Bible verse retrieval (`retrieve_verse_with_llm()`) — FAISS top-5 → Gemini selects best; `BIBLICAL_SYNONYMS` dict added for query expansion
 - [x] `MODEL_NAME` switched to `indobenchmark/indobert-base-p1` (IndoBERT) in `config.py` after backbone comparison confirmed it as top performer
 - [x] **LLM config centralized** — `config.py` now has `CHATBOT_LLM_PROVIDER` ("groq"/"gemini"/"openai") + per-provider model/key/temperature; `_build_chatbot_llm()` factory in `rag_engine.py`; `eval_ragas.py` updated to use `opt.RAGAS_JUDGE_*`; active chatbot LLM switched to OpenAI (`gpt-5.4-mini`)
+- [x] **Counseling psychology constraints (2026-06-23)** — exploration-only `pembahasan`/`intervensi` prompts (no premature solutions/reframing); `spiritual_consent` gating of all Bible verse injection (asks permission once at `intervensi`, sticky capture); concrete relaxation techniques (4-7-8 / 5-4-3-2-1) mandated in `relaksasi`. See "Counseling Psychology Constraints" + 2026-06-23 refactoring entry.
+- [x] **Ephemeral summarization & consent modal (2026-06-24)** — `generate_background_summary()` on RAGEngine generates a 1-sentence complaint summary at `pembahasan→intervensi` transition; stored in `session.complaint_summary`, injected into `intervensi`/`solusi`/`relaksasi` prompts. Blocking privacy/consent modal added to UI. All ephemeral data cleared on `reset()`.
+- [x] **Solusi→Relaksasi refinements (2026-06-24)** — consent question moved to final `solusi` turn; `generate_technique_extraction()` extracts chosen relaxation technique at `solusi→relaksasi` transition; anti-looping rule added to `relaksasi` prompt; `BIBLE_VERSE_STAGES` narrowed to `['relaksasi']` only.
 - [/] RAGAS evaluation — script ready (`eval_ragas.py`), template at `evaluation/data/ragas_testset.csv`, pending manual `reference` column fill + `--evaluate` run
 - [ ] Streaming LLM response (SSE) — pending timing measurement decision
 - [ ] Timing instrumentation cleanup before final submission
@@ -253,16 +256,23 @@ Defined via `MultiLabelBinarizer` fitted on training CSV in `data/data_preparati
 | # | Stage | Min Turns | Max Turns | Bible Verses | Classifier | Special |
 |---|-------|-----------|-----------|:---:|:---:|---|
 | 1 | `pembukaan` | 1 | 2 | ✗ | **Skipped** | |
-| 2 | `pembahasan` | 1 | 4 | ✗ | ✓ (accumulates `primary_intents`) | |
+| 2 | `pembahasan` | 1 | 5 | ✗ | ✓ (accumulates `primary_intents`) | |
 | 3 | `intervensi` | 1 | 3 | ✗ | ✓ | |
-| 4 | `solusi` | 1 | 3 | ✓ | ✓ | CBT guidance if physical symptoms |
-| 5 | `relaksasi` | 1 | 3 | ✓ | ✓ | CBT guidance if physical symptoms |
+| 4 | `solusi` | 1 | 3 | ✗ | ✓ | CBT guidance if physical symptoms; asks spiritual consent on final turn |
+| 5 | `relaksasi` | 1 | 3 | ✓ | ✓ | CBT guidance if physical symptoms; anti-loop rule |
 | 6 | `penutupan` | 1 | ∞ | ✗ | ✓ | Offers professional referral |
-| B | `bantuan_profesional` | — | — | ✓ | **Skipped** | Branch stage (see below) |
+| B | `bantuan_profesional` | — | — | ✗ | **Skipped** | Branch stage (see below) |
 
 - Stage advances automatically if max turns exceeded or user sends a regex-matched transition signal.
 - `primary_intents` are snapshotted at `pembahasan → intervensi` transition; `override_intents` ensures accumulated intents (not just current-turn intents) drive Bible verse selection.
 - **Do not alter stage transition logic** without explicit user confirmation — it affects therapeutic flow.
+
+> **Bible Verses column above is now CONDITIONAL on spiritual consent** — see "Counseling Psychology Constraints" below. The ✓ marks only mean verses *may* be injected in that stage; they are only actually retrieved when `session.spiritual_consent is True`.
+
+#### Counseling Psychology Constraints (psychologist feedback — 2026-06-23; refined 2026-06-24)
+- **Exploration-only early stages:** `pembahasan` and `intervensi` prompts strictly forbid solutions, advice, or positive reframing (`"DILARANG KERAS memberikan solusi, saran, nasihat, atau reframing positif..."`). Their only job is to explore the problem and validate emotions via open questions. **Note:** `intervensi` is no longer a "reframing" stage — its prompt was fully rewritten to exploration/validation-only. Actual guidance/solutions begin in `solusi`.
+- **Spiritual consent gating (`spiritual_consent`):** Tri-state field on `SessionManager` (`None`/`True`/`False`). The chatbot asks once, on the **final `solusi` turn** (`turn_in_stage >= MAX_TURNS['solusi']`), *"Apakah Anda bersedia melihat masalah ini dari sudut pandang firman Tuhan atau Alkitab?"* (one-shot `spiritual_consent_asked` flag). The reply is captured **stickily** at the top of `chat()` (first clear yes/no wins; sticky so "tidak" — not a solusi transition signal — is still honored). Bible verses are retrieved **only when `spiritual_consent is True`**; otherwise RAG is bypassed entirely → pure psychological counseling. **Bible verse injection is now restricted to `relaksasi` only** (`BIBLE_VERSE_STAGES = ['relaksasi']`). If the user transitions early from `solusi` before turn 3, consent is never asked → no verses in `relaksasi` (safe fail).
+- **Concrete relaxation techniques:** `relaksasi` prompt mandates guiding the user through a concrete psychological technique (Pernapasan 4-7-8 or Grounding 5-4-3-2-1) as the **always-on core**. The Bible verse is a conditional add-on integrated into the exercise only when consent was given. **Anti-looping rule:** if the user signals they have finished the exercise ("udah", "selesai", "sudah mendingan"), the LLM must NOT repeat the instructions — it must ask for evaluation instead.
 
 #### Physical Symptom CBT Guidance
 - When `Mengisyaratkan Gejala Fisik` is detected at any point during the session, the `has_physical_symptoms` flag is set.
@@ -271,14 +281,15 @@ Defined via `MultiLabelBinarizer` fitted on training CSV in `data/data_preparati
 #### Bantuan Profesional (Branch Stage)
 - **Emergency skip:** If `Mengisyaratkan Butuh Bantuan Profesional` is detected at ANY stage, the session immediately jumps to `bantuan_profesional`.
 - **Penutupan offer:** At `penutupan`, the chatbot offers professional referral. If the user accepts (detected via transition signals), the session transitions to `bantuan_profesional`.
-- In this stage: a Bible verse about seeking help is retrieved, an empathetic message is generated, and a "Hubungi Konselor Profesional" button is shown in the UI.
+- In this stage: an empathetic message is generated and a "Hubungi Konselor Profesional" button is shown in the UI. Bible verse retrieval is **not active** in this stage (`bantuan_profesional` removed from `BIBLE_VERSE_STAGES` as of 2026-06-24).
+- **⚠️ Verse behavior:** `bantuan_profesional` is no longer in `BIBLE_VERSE_STAGES` (removed 2026-06-24) — no verse is retrieved here regardless of consent. This was intentional: the stage can be reached via emergency skip from very early stages where consent was never asked. To restore a verse in this stage, add `'bantuan_profesional'` back to `BIBLE_VERSE_STAGES` in `rag_engine.py` and guard it with `spiritual_consent is True`.
 - After this stage, `session_ended = True`.
 
 ### RAG Pipeline
 - **Bible verse retrieval** (updated): `BIBLICAL_SYNONYMS` query expansion → FAISS `similarity_search_with_score` (top-k=10) → Gemini LLM reranker (`retrieve_verse_with_llm()`) picks the best verse. Falls back to top FAISS result if LLM output is unparseable.
 - **AVI (Augmented Vector Indexing):** FAISS Bible index now built from `data/verse_retrieval/alkitab_tb_enriched.csv` — each verse is embedded as `[Konteks Pasal: <summary>] <verse text>`. The raw verse text is stored in metadata["text"] for display; only enriched text is used for embedding. This improves semantic retrieval by providing chapter-level theological context.
 - `BIBLICAL_SYNONYMS` in `vector_db.py`: maps each of the 10 LABAN intents to formal TB biblical vocabulary so informal user slang gets expanded to words that actually appear in the Bible.
-- Verse injection is active in `solusi`, `relaksasi`, **and `bantuan_profesional`** stages (see `BIBLE_VERSE_STAGES`).
+- Verse injection is now **restricted to `relaksasi` only** (`BIBLE_VERSE_STAGES = ['relaksasi']`) — removed from `solusi` (final turn is now the consent question, not solution content) and `bantuan_profesional` (removed to avoid spiritual imposition in a crisis branch). Gated on `spiritual_consent is True`. Without explicit consent, RAG is bypassed entirely. Non-session callers that need verses (e.g. `eval_ragas.py`) must pass `spiritual_consent=True` explicitly.
 - `VectorDBManager` holds both `faiss_bible_index` and `faiss_qna_index` — both persisted to disk; first-time build of enriched Bible index can take 15–45 min.
 - **Dependency:** If Bible FAISS index does not exist, `build_bible_index()` requires `data/verse_retrieval/alkitab_tb_enriched.csv`. If that file is absent, run the AVI pipeline first (Step 1 → 2).
 
@@ -321,6 +332,41 @@ Defined via `MultiLabelBinarizer` fitted on training CSV in `data/data_preparati
 ---
 
 ## Latest Refactoring
+
+**Session: 2026-06-24 — Solusi→Relaksasi Transition Refinements**
+
+Refined consent timing, technique extraction, verse scoping, and looping behavior based on UX review.
+
+- **`BIBLE_VERSE_STAGES` narrowed to `['relaksasi']`** — removed `solusi` (final turn is now the consent question, not solution content) and `bantuan_profesional` (verse removed to avoid spiritual imposition in an unplanned crisis branch).
+- **Spiritual consent question moved to final `solusi` turn** — guard changed from `current_stage == 'intervensi'` to `current_stage == 'solusi' and turn_in_stage >= MAX_TURNS['solusi'] and not spiritual_consent_asked`. Reply still captured stickily at the top of `chat()`. If the user exits `solusi` early (auto-advance), the question is never asked → no verses in `relaksasi` (safe fail).
+- **`generate_technique_extraction(history_list)` added to `RAGEngine`** — background LLM call at `solusi → relaksasi` transition. Extracts the relaxation technique name chosen during solusi. Returns `None` if none identified. Result stored in `session.chosen_technique`.
+- **Technique injection in `relaksasi`** — `generate_response()` gained `chosen_technique=None` param. When set and `current_stage == 'relaksasi'`, prefixes `"Klien telah memilih teknik {chosen_technique}. Pandu klien HANYA dengan teknik tersebut."` to the stage instruction.
+- **Anti-looping rule added to `relaksasi` STAGE_INSTRUCTIONS** — if user signals completion ("udah", "selesai", "sudah mendingan", "lebih baik", "lega"), LLM is forbidden from repeating technique instructions and must ask for evaluation.
+- **`solusi` STAGE_INSTRUCTIONS** — removed ayat Alkitab reference. `bantuan_profesional` — changed "Gunakan ayat Alkitab yang diberikan" → "Jika tersedia 'Ayat Alkitab Relevan', gunakan..." (conditional).
+- **`SessionManager`** — added `temp_solusi_history`, `chosen_technique`; `reset()` clears both. `_record_solusi_turn()` private method added. `_advance_stage()` fires technique extraction + clears buffer at `solusi → relaksasi`. `chat()` passes `chosen_technique` to `generate_response()`. `override_intents` narrowed to `relaksasi` only.
+- **Console log to watch:** `[Technique] Chosen technique extracted: Pernapasan 4-7-8` appears at the transition.
+
+**Session: 2026-06-24 — Ephemeral State Summarization & Consent Modal**
+
+Fixed LLM "amnesia" in later stages and added blocking UI privacy consent.
+
+- **`generate_background_summary(history_list)` added to `RAGEngine`** — takes a list of `(user_msg, bot_response)` tuples from `pembahasan`, calls the active LLM to produce a 1-sentence complaint summary in Bahasa Indonesia. Returns empty string on failure.
+- **`complaint_summary` field on `SessionManager`** — set at `pembahasan → intervensi` transition by calling `generate_background_summary()`, then `temp_pembahasan_history` is immediately cleared.
+- **Prompt injection** — `generate_response()` gained `complaint_summary=None` param. When set and `current_stage` is in `('intervensi', 'solusi', 'relaksasi')`, prepends `"Konteks Keluhan Klien: {summary}\n\n"` to the stage instruction.
+- **`temp_pembahasan_history`** — new field on `SessionManager`, appended via `_record_pembahasan_turn()` after each `pembahasan` turn. Cleared immediately after summary generation.
+- **Privacy consent modal** — added to `templates/index.html` (blocking overlay, visible on load via `.consent-modal-visible`). Disables `userInput` and `send-btn` until "Saya Mengerti" is clicked. Styled in `static/style.css` (`.consent-modal-content`, `.btn-consent`). Logic in `static/script.js` `DOMContentLoaded` handler.
+- **Ephemeral data guarantee** — all four new fields (`temp_pembahasan_history`, `complaint_summary`, `temp_solusi_history`, `chosen_technique`) cleared in `reset()`.
+- **Architectural note:** Summary generation is triggered inside `SessionManager._advance_stage()` (not `generate_response()` as originally spec'd — `generate_response()` is stateless and has no session reference).
+
+**Session: 2026-06-23 — Counseling Psychology Constraints (Exploration, Consent, Relaxation)**
+
+Implemented based on psychologist feedback that the chatbot rushed to solutions/reframing and imposed Bible verses without consent. Touched `core/session_manager.py`, `core/rag_engine.py`, and `evaluation/eval_ragas.py`.
+
+- **Exploration-only early stages** — `pembahasan` and `intervensi` `STAGE_INSTRUCTIONS` rewritten to forbid solutions/advice/reframing (`"DILARANG KERAS..."`) and mandate open-question exploration + emotion validation. `intervensi` is **no longer a reframing stage** (its old reframing-centric prompt was fully replaced, not appended, to avoid self-contradiction).
+- **Spiritual consent gating** — new tri-state `SessionManager.spiritual_consent` (`None`/`True`/`False`) + one-shot `spiritual_consent_asked`. Consent question (`SPIRITUAL_CONSENT_PROMPT` in `rag_engine.py`) is appended to the **first** `intervensi` turn via `ask_spiritual_consent=True`. Reply captured stickily in `chat()` via new `_detect_spiritual_consent()` (regex `SPIRITUAL_CONSENT_AFFIRM` / `SPIRITUAL_CONSENT_DECLINE`, decline checked first). `generate_response()` gained `spiritual_consent` + `ask_spiritual_consent` params; verse retrieval now gated on `spiritual_consent is True`. Both fields reset in `reset()`.
+- **Concrete relaxation techniques** — `relaksasi` prompt rewritten: Pernapasan 4-7-8 / Grounding 5-4-3-2-1 is now the always-on core; verse is a conditional add-on.
+- **`eval_ragas.py` fix** — passes `spiritual_consent=True` so the RAGAS retrieval evaluation still gets verses (the new gate would otherwise silently empty all verses — a thesis-deliverable regression).
+- **Deviations from task spec (flagged for testing):** (1) consent asked on *first* intervensi turn, not "final turn" — guarantees offer shown before any verse even on early exit; (2) consent captured stickily, not strictly "at the transition" — needed so declines (not transition signals) are honored; (3) `bantuan_profesional` via emergency-skip now shows no verse (consent=None); (4) bare `\btidak\b`/`\bnggak\b` may flip consent to False on ordinary venting if it is the first reply after the consent question (fails safe).
 
 **Session: 2026-05-15 — Runtime Optimization**
 
@@ -379,6 +425,12 @@ Defined via `MultiLabelBinarizer` fitted on training CSV in `data/data_preparati
 | 9 | Groq key needed for augmentation only | Info | `data/augmentation/` | Not needed for chatbot runtime |
 | 10 | `[TIMING]` prints still in `rag_engine.py` | Medium | `core/rag_engine.py` | Remove all `_t0/_t1/_t2/_t3/_t4` + print lines before final submission |
 | 11 | AVI `alkitab_tb_enriched.csv` must be regenerated if `chapter_summaries_ollamaQwen.csv` changes | Medium | `data/verse_retrieval/` | Run Step 2 (`prepare_enriched_bible.py`) after any summary updates; also rebuild FAISS index (delete `data/faiss_bible_index/`) |
+| 12 | `bantuan_profesional` via emergency-skip shows no verse (`spiritual_consent` is `None`) | Medium | `core/rag_engine.py` | Intentional fail-safe (no imposition in crisis). To force an always-on crisis verse, exempt this stage from the consent gate. |
+| 13 | Consent decline regex (`\btidak\b`/`\bnggak\b`) may misfire on venting | Low | `core/session_manager.py` | If first reply after consent question is e.g. "tidak tahu harus bagaimana", consent → False for the session. Fails safe (no verse). Tighten patterns if false negatives observed. |
+| 14 | Any new caller of `generate_response()` must pass `spiritual_consent` | Medium | `core/rag_engine.py` | Defaults to `None` → no verse in `relaksasi`. Pass `spiritual_consent=True` when verses are required (as `eval_ragas.py` does). |
+| 15 | Early `solusi` exit → consent never asked → no verse in `relaksasi` | Low | `core/session_manager.py` | If user triggers early transition out of `solusi` before turn 3, consent question is skipped. Fails safe (no verse). Expected behavior. |
+| 16 | `complaint_summary` uses active LLM (billed API call) at each transition | Info | `core/rag_engine.py` | One background call per session at `pembahasan → intervensi`. Cost is negligible for thesis use but note if rate-limiting Groq/OpenAI. |
+| 17 | `chosen_technique` may be `None` if solusi history is empty or LLM fails | Low | `core/rag_engine.py` | `generate_technique_extraction()` returns `None` on parse failure. `relaksasi` STAGE_INSTRUCTIONS includes a fallback technique list for this case. |
 
 ---
 

@@ -77,36 +77,46 @@ class RAGEngine:
         ),
         "pembahasan": (
             "Pengguna sedang menceritakan masalahnya. "
-            "Dengarkan dengan empati dan validasi perasaan mereka. "
-            "Jika masih kurang jelas, ajukan pertanyaan terbuka untuk memahami situasi. "
+            "DILARANG KERAS memberikan solusi, saran, nasihat, atau reframing positif. "
+            "Tugas Anda SAAT INI HANYA mengeksplorasi masalah dan memvalidasi emosi klien "
+            "menggunakan pertanyaan terbuka. "
+            "Dengarkan dengan empati, akui dan validasi perasaan mereka tanpa menghakimi. "
+            "Jika masih kurang jelas, ajukan pertanyaan terbuka untuk memahami situasi lebih dalam. "
             "Namun, jika pengguna sudah menceritakan inti masalahnya atau terlihat sudah selesai, "
-            "jangan terus memaksa mereka bercerita. Tanyakan secara halus apakah mereka siap "
-            "untuk mendiskusikan pandangan lain atau melangkah maju. "
-            "Fokus pada mendengarkan, belum memberikan solusi atau ayat Alkitab."
+            "jangan terus memaksa mereka bercerita. "
+            "Jangan menyertakan ayat Alkitab di tahap ini. "
             "Jangan bertele-tele dalam menanggapi."
         ),
         "intervensi": (
-            "Anda sudah memahami masalah pengguna dan sekarang saatnya memberikan perspektif baru. "
-            "Berikan pandangan yang berempati dan bantu pengguna melihat situasi dari sudut pandang berbeda. "
-            "Reframe pemikiran negatif menjadi lebih konstruktif. "
-            "Belum perlu menyertakan ayat Alkitab di sini, fokus pada pendekatan psikologis yang hangat."
+            "Anda masih berada dalam tahap memahami pengguna secara lebih mendalam. "
+            "DILARANG KERAS memberikan solusi, saran, nasihat, atau reframing positif. "
+            "Tugas Anda SAAT INI HANYA mengeksplorasi masalah lebih dalam dan memvalidasi emosi "
+            "klien menggunakan pertanyaan terbuka. "
+            "Gali akar perasaan dan pikiran pengguna dengan lembut, pastikan mereka merasa "
+            "benar-benar didengar dan dipahami sebelum melangkah lebih jauh. "
+            "Jangan menyertakan ayat Alkitab di tahap ini. "
+            "Jangan bertele-tele dalam menanggapi."
         ),
         "solusi": (
             "Bantu pengguna merumuskan langkah-langkah konkret yang bisa mereka ambil. "
             "Berikan saran praktis yang realistis dan dorong mereka untuk bertindak. "
-            "Jika ada ayat Alkitab yang relevan dan mendukung langkah tersebut, "
-            "sebutkan secara lembut sebagai penguat \u2014 bukan menghakimi, "
-            "melainkan sebagai sumber kekuatan dan inspirasi."
-            "Berikan jawaban yang singkat, padat, dan bermakna"
+            "Jangan menyertakan ayat Alkitab di tahap ini. "
+            "Berikan jawaban yang singkat, padat, dan bermakna."
         ),
         "relaksasi": (
-            "Bantu pengguna untuk menenangkan diri setelah diskusi yang panjang. "
-            "Gunakan ayat Alkitab yang relevan untuk menenangkan dan menguatkan hati pengguna. "
-            "Jelaskan makna ayat tersebut dengan lembut dalam konteks perasaan dan masalah pengguna. "
-            "Ajak mereka untuk merenungkan firman Tuhan dan merasakan ketenangan dari-Nya. "
-            "Gunakan nada yang menenangkan, penuh kasih, dan perlahan."
-            "Tanyakan kepada pengguna apakah mereka sudah merasa terberkati atau menunjukan tanda paham dengan firman Tuhan."
-            "Jika sudah jangan diberikan ayat terus menerus."
+            "Bantu pengguna untuk benar-benar menenangkan diri setelah diskusi yang panjang. "
+            "WAJIB pandu pengguna MELAKUKAN teknik relaksasi psikologis yang konkret secara langkah demi langkah. "
+            "Jika teknik spesifik klien tidak disebutkan di atas, pilih salah satu: "
+            "(a) Teknik Pernapasan 4-7-8 — tarik napas 4 detik, tahan 7 detik, hembuskan 8 detik, ulangi; atau "
+            "(b) Teknik Grounding 5-4-3-2-1 — 5 hal dilihat, 4 didengar, 3 disentuh, 2 dicium, 1 dirasakan. "
+            "Bimbing dengan nada yang menenangkan, penuh kasih, dan perlahan. "
+            "Jika tersedia 'Ayat Alkitab Relevan', integrasikan secara halus ke dalam latihan "
+            "sebagai penguat ketenangan — bukan ceramah. "
+            "Jika TIDAK tersedia ayat, fokus pada teknik dan JANGAN menambahkan ayat sendiri. "
+            "PENTING — Aturan Anti-Looping: Jika ucapan klien mengisyaratkan mereka sudah selesai "
+            "melakukan teknik (contoh: 'udah', 'selesai', 'sudah mendingan', 'lebih baik', 'lega'), "
+            "DILARANG mengulangi instruksi teknik. "
+            "Anda HARUS bertanya: 'Bagaimana perasaanmu sekarang setelah melakukannya?'"
         ),
         "penutupan": (
             "Sesi konseling hampir selesai. Ringkas poin-poin penting yang sudah dibahas, "
@@ -121,7 +131,7 @@ class RAGEngine:
             "Pengguna menunjukkan tanda-tanda bahwa mereka membutuhkan bantuan dari konselor profesional. "
             "Sampaikan dengan penuh empati bahwa keputusan mereka untuk mencari bantuan adalah langkah yang sangat berani dan tepat. "
             "Tegaskan bahwa mencari pertolongan bukanlah tanda kelemahan, melainkan tanda kekuatan dan keberanian. "
-            "Gunakan ayat Alkitab yang diberikan untuk menguatkan bahwa Tuhan mendukung mereka dalam langkah ini. "
+            "Jika tersedia 'Ayat Alkitab Relevan', gunakan secara lembut untuk menguatkan bahwa Tuhan mendukung mereka. "
             "Informasikan bahwa mereka dapat melanjutkan untuk berbicara dengan konselor profesional "
             "dengan menekan tombol yang akan muncul di layar. "
             "Gunakan nada yang menenangkan, penuh kasih, dan memberikan harapan."
@@ -150,8 +160,33 @@ class RAGEngine:
         "suasana hati secara keseluruhan."
     )
 
-    # Stages where bible verses should be retrieved and injected
-    BIBLE_VERSE_STAGES = ['relaksasi', 'solusi', 'bantuan_profesional']
+    # Spiritual-consent question injected at the FINAL turn of the solusi stage.
+    # Verse injection is only active in relaksasi, so asking at the last solusi turn
+    # ensures consent is resolved before relaksasi begins. The strict constraint
+    # ("HANYA boleh menanyakan") prevents the LLM from mixing the ask with other content,
+    # reducing misinterpretation of the user's yes/no reply.
+    SPIRITUAL_CONSENT_PROMPT = (
+        "Pada giliran ini, Anda HANYA boleh menanyakan kesediaan klien untuk menggunakan Alkitab. "
+        "DILARANG mengajukan pertanyaan lain agar klien fokus menjawab ya atau tidak. "
+        "Tanyakan dengan lembut dan persis seperti ini: "
+        "'Apakah Anda bersedia melihat masalah ini dari sudut pandang firman Tuhan atau Alkitab?'"
+    )
+
+    # Stages where bible verses should be retrieved and injected.
+    # Restricted to relaksasi only — solusi and bantuan_profesional no longer
+    # receive verse injection (solusi now only asks for consent; bantuan_profesional
+    # removed to avoid spiritual imposition in a crisis branch).
+    BIBLE_VERSE_STAGES = ['relaksasi']
+
+    # Prompt injected at pembahasan turn >= 3 to ask if the user has anything
+    # else to share. Strictly forbids solutions, conclusions, or spiritual topics.
+    # Applied on top of the base pembahasan instruction.
+    PEMBAHASAN_TURN3_PROMPT = (
+        "Anda telah mengeksplorasi masalah klien. Pada giliran ini, Anda HARUS bertanya kembali "
+        "kepada klien apakah masih ada hal lain yang ingin diceritakan. "
+        "DILARANG KERAS memberikan solusi, kesimpulan, atau menyinggung tentang Alkitab dan "
+        "spiritualitas pada tahap ini."
+    )
 
     # Stages where intent classification can be safely skipped (no verse retrieval,
     # accumulated intents from these stages don't feed primary_intents)
@@ -211,7 +246,84 @@ Respons Anda:
         # Create the LangChain processing chain
         self.chain = self.prompt_template | self.llm
 
-    def generate_response(self, user_input, current_stage="pembahasan", override_intents=None, has_physical_symptoms=False, excluded_books=None, excluded_verses=None):
+    def generate_background_summary(self, history_list):
+        """
+        Summarize the pembahasan conversation history into one sentence.
+        Called once at the pembahasan→intervensi transition by SessionManager.
+        The result is stored on the session and injected into later-stage prompts.
+
+        Args:
+            history_list: list of (user_message, bot_response) tuples from pembahasan.
+
+        Returns:
+            str: One-sentence summary of the client's core complaint, or "" on failure.
+        """
+        if not history_list:
+            return ""
+
+        conversation_text = ""
+        for i, (user_msg, bot_resp) in enumerate(history_list, 1):
+            conversation_text += f"[Giliran {i}]\nKlien: {user_msg}\nKonselor: {bot_resp}\n\n"
+
+        prompt = (
+            "Berikut adalah riwayat percakapan antara klien dan konselor pada tahap eksplorasi masalah:\n\n"
+            f"{conversation_text}"
+            "Buat SATU kalimat ringkasan yang menangkap inti keluhan utama klien. "
+            "Fokus pada perasaan dan situasi klien, bukan pada respons konselor. "
+            "Gunakan Bahasa Indonesia. Jawab hanya dengan satu kalimat ringkasan, tanpa penjelasan tambahan."
+        )
+
+        try:
+            from langchain_core.messages import HumanMessage
+            response = self.llm.invoke([HumanMessage(content=prompt)])
+            summary = response.content.strip()
+            print(f"[Summary] Background summary generated: {summary}")
+            return summary
+        except Exception as e:
+            print(f"[Summary] Failed to generate background summary: {e}")
+            return ""
+
+    def generate_technique_extraction(self, history_list):
+        """
+        Extract the relaxation technique the client chose during the solusi stage.
+        Called once at the solusi→relaksasi transition by SessionManager.
+        The result is stored on the session and injected into the relaksasi prompt
+        so the LLM guides the user through their chosen technique without re-listing all options.
+
+        Args:
+            history_list: list of (user_message, bot_response) tuples from solusi.
+
+        Returns:
+            str: Short technique name (e.g. "Pernapasan 4-7-8"), or None if not found.
+        """
+        if not history_list:
+            return None
+
+        conversation_text = ""
+        for i, (user_msg, bot_resp) in enumerate(history_list, 1):
+            conversation_text += f"[Giliran {i}]\nKlien: {user_msg}\nKonselor: {bot_resp}\n\n"
+
+        prompt = (
+            "Berikut adalah riwayat percakapan antara klien dan konselor pada tahap pemberian solusi:\n\n"
+            f"{conversation_text}"
+            "Berdasarkan riwayat singkat ini, teknik relaksasi apa yang dipilih atau disepakati untuk klien? "
+            "Jawab singkat nama tekniknya saja (contoh: 'Pernapasan 4-7-8' atau 'Grounding 5-4-3-2-1'). "
+            "Jika tidak ada teknik yang disebutkan secara eksplisit, jawab dengan tepat: 'tidak ada'."
+        )
+
+        try:
+            from langchain_core.messages import HumanMessage
+            response = self.llm.invoke([HumanMessage(content=prompt)])
+            technique = response.content.strip()
+            if not technique or technique.lower() == 'tidak ada':
+                return None
+            print(f"[Technique] Chosen technique extracted: {technique}")
+            return technique
+        except Exception as e:
+            print(f"[Technique] Failed to extract chosen technique: {e}")
+            return None
+
+    def generate_response(self, user_input, current_stage="pembahasan", override_intents=None, has_physical_symptoms=False, excluded_books=None, excluded_verses=None, spiritual_consent=None, ask_spiritual_consent=False, turn_in_stage=0, complaint_summary=None, chosen_technique=None):
         """
         Generate a counseling response.
 
@@ -228,6 +340,25 @@ Respons Anda:
                             retrieval (session-level book exclusion).
             excluded_verses: Optional set of exact reference strings to exclude
                              (e.g. {"Mazmur 34:18"}) — session-level verse exclusion.
+            spiritual_consent: Tri-state spiritual consent (True/False/None). Bible verses
+                               are only retrieved and injected when this is explicitly True.
+                               None (not yet answered) or False both bypass verse retrieval,
+                               yielding pure psychological counseling (no value imposition).
+            ask_spiritual_consent: If True, append the spiritual-consent question to the
+                                   intervensi prompt so the LLM asks the user's permission
+                                   before any Scripture is introduced.
+            turn_in_stage: How many turns have elapsed in the current stage (1-indexed).
+                           Used to conditionally inject the pembahasan turn-3+ confirmation
+                           prompt that asks if the user has anything else to share.
+            complaint_summary: One-sentence summary of the client's core complaint,
+                               generated at the pembahasan→intervensi transition. Injected
+                               as context prefix in intervensi, solusi, and relaksasi prompts
+                               so the LLM retains awareness of the original issue despite
+                               being stateless across turns.
+            chosen_technique: Relaxation technique the client selected during solusi
+                              (e.g. "Pernapasan 4-7-8"), extracted at the solusi→relaksasi
+                              transition. Injected as a prefix into the relaksasi instruction
+                              so the LLM guides only the chosen technique, not all options.
         """
         # Get stage-specific behavioral instruction
         stage_instruction = self.STAGE_INSTRUCTIONS.get(
@@ -235,9 +366,35 @@ Respons Anda:
             self.STAGE_INSTRUCTIONS["pembahasan"]  # fallback
         )
 
+        # Inject ephemeral complaint summary into later stages so the LLM retains
+        # awareness of the client's core issue across the stateless turn boundary.
+        if complaint_summary and current_stage in ('intervensi', 'solusi', 'relaksasi'):
+            stage_instruction = f"Konteks Keluhan Klien: {complaint_summary}\n\n" + stage_instruction
+
+        # Inject the chosen relaxation technique for the relaksasi stage so the LLM
+        # only guides the agreed technique instead of re-listing all options.
+        if chosen_technique and current_stage == 'relaksasi':
+            stage_instruction = (
+                f"Klien telah memilih teknik {chosen_technique}. "
+                f"Pandu klien HANYA dengan teknik tersebut. "
+            ) + stage_instruction
+
+        # Pembahasan turn-3+ injection: once 3 exploration turns have elapsed,
+        # the LLM must explicitly ask if the user has anything else to share.
+        # Turns 1 and 2 retain the base constraint (no solutions, open questions only).
+        if current_stage == 'pembahasan' and turn_in_stage >= 3:
+            stage_instruction = stage_instruction + " " + self.PEMBAHASAN_TURN3_PROMPT
+
         # Inject CBT physical symptom guidance when applicable
         if has_physical_symptoms and current_stage in ('solusi', 'relaksasi'):
             stage_instruction = stage_instruction + " " + self.PHYSICAL_SYMPTOM_CBT_GUIDANCE
+
+        # Ask for spiritual consent at the FINAL turn of the solusi stage so the
+        # user can give a clean yes/no without it being mixed with exploration questions.
+        # Verse injection only starts in relaksasi, so this timing ensures consent
+        # is resolved before any Scripture is ever introduced.
+        if ask_spiritual_consent and current_stage == 'solusi':
+            stage_instruction = stage_instruction + " " + self.SPIRITUAL_CONSENT_PROMPT
 
         _t0 = time.perf_counter()
 
@@ -272,8 +429,11 @@ Respons Anda:
         bible_verses = ""
         bible_reference = ""
         bible_book_abbr = ""
+        # Conditional RAG: verses are only retrieved when the user has explicitly
+        # given spiritual consent (True). Without it, we bypass RAG entirely and
+        # provide pure psychological counseling — no spiritual value imposition.
         intents_for_verse = override_intents if override_intents else detected_intents
-        if current_stage in self.BIBLE_VERSE_STAGES and intents_for_verse:
+        if current_stage in self.BIBLE_VERSE_STAGES and intents_for_verse and spiritual_consent is True:
             verse_results = self.vector_db.retrieve_verse_with_llm(
                 intents=intents_for_verse,
                 user_input=user_input,

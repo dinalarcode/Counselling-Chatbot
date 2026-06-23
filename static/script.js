@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatForm = document.getElementById('chat-form');
     const userInput = document.getElementById('user-input');
     const chatHistory = document.getElementById('chat-history');
-    
+
     // Floating buttons & modal elements
     const floatingActions = document.getElementById('floating-actions');
     const btnReset = document.getElementById('btn-reset');
@@ -11,6 +11,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const exitModal = document.getElementById('exit-modal');
     const btnConfirmExit = document.getElementById('btn-confirm-exit');
     const btnCancelExit = document.getElementById('btn-cancel-exit');
+
+    // --- Consent Modal ---
+    // Block all chat interaction until the user acknowledges the privacy notice.
+    const consentModal = document.getElementById('consent-modal');
+    const btnConsentOk = document.getElementById('btn-consent-ok');
+
+    userInput.disabled = true;
+    document.getElementById('send-btn').disabled = true;
+
+    btnConsentOk.addEventListener('click', () => {
+        consentModal.classList.remove('consent-modal-visible');
+        consentModal.classList.add('hidden');
+        userInput.disabled = false;
+        document.getElementById('send-btn').disabled = false;
+        userInput.focus();
+    });
+    // --- End Consent Modal ---
 
     // Auto-resize textarea
     userInput.addEventListener('input', function() {

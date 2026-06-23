@@ -261,6 +261,9 @@ def run_evaluation():
                 user_input=question,
                 current_stage=stage,
                 override_intents=override_intents,
+                # RAGAS evaluates the verse-retrieval pipeline itself, so verses
+                # must always be retrieved regardless of the runtime consent gate.
+                spiritual_consent=True,
             )
 
             response = rag_result["response"]
