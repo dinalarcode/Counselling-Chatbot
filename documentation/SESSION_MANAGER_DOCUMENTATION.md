@@ -47,9 +47,12 @@ Fokus analisis pada bagian ini adalah implementasi teknis, arsitektur *state man
 Kelas `SessionManager` bertindak sebagai pengendali *state* dan berinteraksi secara langsung dengan `RAGEngine` (`core/rag_engine.py`) untuk menghasilkan respon chatbot yang dinamis. Beberapa mekanisme utama yang dikelola oleh sistem ini meliputi:
 1. **Urutan Tahap Linier:** Didefinisikan melalui list `STAGE_ORDER` yang bernilai `['pembukaan', 'pembahasan', 'intervensi', 'solusi', 'relaksasi', 'penutupan']`.
 2. **Akumulasi Intensi (Intent Accumulator):** Diimplementasikan menggunakan `collections.Counter` pada variabel `self.accumulated_intents` untuk menghitung frekuensi intensi yang terklasifikasi oleh model pengklasifikasi intensi (model LABAN) pada setiap giliran percakapan.
-3. **Snapshot Intensi Utama (Primary Intents):** Saat bertransisi keluar dari tahap `pembahasan` ke `intervensi`, sistem mengambil snapshot 3 intensi teratas dengan frekuensi tertinggi melalui fungsi `_snapshot_primary_intents()`. Snapshot ini disimpan pada list `self.primary_intents` untuk digunakan sebagai `override_intents` pada tahap `solusi` dan `relaksasi`. Hal ini menjamin pencarian ayat Alkitab oleh sistem FAISS tetap relevan dengan masalah utama konseli, meskipun konseli tidak lagi menyebutkan keluhannya di akhir sesi.
+3. **Snapshot Intensi Utama (Primary Intents):** Saat bertransisi keluar dari tahap `pembahasan` ke `intervensi`, sistem mengambil snapshot 3 intensi teratas dengan frekuensi tertinggi melalui fungsi `_snapshot_primary_intents()`. Snapshot ini disimpan pada list `self.primary_intents` untuk digunakan sebagai `override_intents` pada tahap `relaksasi`. Hal ini menjamin pencarian ayat Alkitab oleh sistem FAISS tetap relevan dengan masalah utama konseli, meskipun konseli tidak lagi menyebutkan keluhannya di akhir sesi.
 4. **Pelacakan Gejala Fisik:** Variabel boolean `self.has_physical_symptoms` bernilai `True` jika intensi `Mengisyaratkan Gejala Fisik` terdeteksi pada giliran mana pun dalam sesi. Variabel ini dipertahankan hingga akhir percakapan untuk memicu logika rujukan pada tahap penutupan.
 5. **Jaring Pengaman Krisis (Emergency Safety Net):** Menggunakan kumpulan ekspresi reguler (`re.compile`) pada `PROFESSIONAL_KEYWORDS` untuk mendeteksi indikasi bunuh diri atau melukai diri sendiri secara langsung dari pesan mentah pengguna. Jika terdeteksi melalui `_detect_professional_keywords()`, sistem langsung melompati alur linier dan beralih ke state `bantuan_profesional`.
+6. **Spiritual Consent Tracker:** Mengelola status `self.spiritual_consent` (None, True, False) dari konseli dan menanyakannya secara eksplisit di akhir tahap `solusi` guna mengontrol pemberian perspektif teologis selanjutnya.
+7. **Pencegahan Pengulangan Ayat:** Melacak kitab (`self.used_verse_books`) dan referensi ayat (`self.used_verses`) yang telah diberikan untuk memastikan RAG engine tidak memberikan kutipan yang sama berulang kali.
+8. **Peringkasan Konteks & Ekstraksi Teknik:** Menghasilkan rangkuman singkat permasalahan (`self.complaint_summary`) saat transisi ke `intervensi` serta mengekstraksi jenis teknik relaksasi (`self.chosen_technique`) saat transisi ke `relaksasi`, sehingga konteks inti tetap terbawa tanpa memberatkan *state memory*.
 
 ---
 
@@ -63,13 +66,14 @@ Kelas `SessionManager` bertindak sebagai pengendali *state* dan berinteraksi sec
   * Transisi terjadi secara otomatis segera setelah `self.turn_count >= 1` dari masukan pertama pengguna. Sistem memanggil `_advance_stage()` untuk menaikkan `stage_index` dan mengubah `current_stage` menjadi `pembahasan`.
 
 #### 2. State: `pembahasan`
-* **Konfigurasi & Logika Teknis:** Chatbot berinteraksi untuk menggali detail masalah. Setiap intensi yang dihasilkan oleh model LABAN pada turn tersebut diakumulasikan ke dalam `self.accumulated_intents` dan dianalisis untuk memperbarui daftar `self.primary_intents` secara *real-time*.
+* **Konfigurasi & Logika Teknis:** Chatbot berinteraksi untuk menggali detail masalah. Setiap intensi yang dihasilkan oleh model LABAN pada turn tersebut diakumulasikan ke dalam `self.accumulated_intents` dan dianalisis untuk memperbarui daftar `self.primary_intents` secara *real-time*. Histori percakapan pada tahap ini juga direkam secara sementara dalam `self.temp_pembahasan_history`.
 * **Batasan & Transisi Detail:**
-  * Batasan giliran minimum (`MIN_TURNS`): 1
-  * Batasan giliran maksimum (`MAX_TURNS`): 4
-  * Transisi linier ke `intervensi` dipicu jika `self.turn_count >= 1` dan masukan pengguna cocok dengan salah satu pola regex dalam konstanta `TRANSITION_SIGNALS['pembahasan']` (seperti *cukup*, *sudah cukup*, *itu saja*, *lanjut*, dsb.).
-  * Jika percakapan mencapai `self.turn_count == 4` tanpa adanya kata kunci transisi, sistem secara paksa (*force transition*) memindahkan state ke `intervensi`.
-  * Saat keluar dari tahap ini, pemanggilan `_snapshot_primary_intents()` dijalankan untuk menyimpan profil masalah konseli.
+  * Batasan giliran minimum (`MIN_TURNS`): 3 (syarat minimum eksplorasi klinis)
+  * Batasan giliran maksimum (`MAX_TURNS`): 5 (memberikan kesempatan eksplorasi yang lebih luas)
+  * Transisi linier ke `intervensi` dipicu jika `self.turn_count >= 3` dan masukan pengguna cocok dengan salah satu pola regex dalam konstanta `TRANSITION_SIGNALS['pembahasan']` (seperti *cukup*, *sudah cukup*, *itu saja*, *lanjut*, dsb.).
+  * **Early-exit:** Transisi ke `intervensi` dapat dipicu seketika meskipun minimum 3 giliran belum tercapai jika pengguna secara eksplisit memberikan kalimat yang cocok dengan `PEMBAHASAN_EARLY_EXIT_SIGNALS` (seperti *sudah tidak ada*, *cuma itu saja*).
+  * Jika percakapan mencapai `self.turn_count == 5` tanpa adanya kata kunci transisi, sistem secara paksa (*force transition*) memindahkan state ke `intervensi`.
+  * Saat keluar dari tahap ini, sistem menjalankan `_snapshot_primary_intents()` untuk menyimpan profil masalah, kemudian menggunakan `temp_pembahasan_history` guna men-generate `complaint_summary`, dan mengosongkan buffer histori tersebut.
 
 #### 3. State: `intervensi`
 * **Konfigurasi & Logika Teknis:** Sistem menghasilkan tanggapan teologis. Ayat Alkitab dicari berdasarkan intensi giliran tersebut.
@@ -80,12 +84,13 @@ Kelas `SessionManager` bertindak sebagai pengendali *state* dan berinteraksi sec
   * Transisi paksa dilakukan jika giliran percakapan mencapai batas maksimal yaitu 3.
 
 #### 4. State: `solusi`
-* **Konfigurasi & Logika Teknis:** RAG engine dijalankan dengan mengirimkan argumen `override_intents=self.primary_intents`. Pencarian FAISS menggunakan intensi utama hasil snapshot untuk menyajikan solusi praktis yang selaras dengan permasalahan awal.
+* **Konfigurasi & Logika Teknis:** Memberikan saran dan solusi praktis untuk konseli. Tahap ini juga mengumpulkan buffer histori pada `self.temp_solusi_history`. Pada giliran terakhir tahap ini (berdasarkan perhitungan `MAX_TURNS`), sistem akan menyisipkan pertanyaan persetujuan rohani (`ask_spiritual_consent`) yang memengaruhi respons berbasis Alkitab selanjutnya.
 * **Batasan & Transisi Detail:**
   * Batasan giliran minimum (`MIN_TURNS`): 1
   * Batasan giliran maksimum (`MAX_TURNS`): 3
   * Transisi linier ke `relaksasi` dipicu jika `self.turn_count >= 1` dan masukan pengguna cocok dengan pola dalam `TRANSITION_SIGNALS['solusi']` (seperti *akan saya coba*, *terima kasih*, *oke*, *baik*, dsb.).
   * Transisi paksa dilakukan jika giliran percakapan mencapai batas maksimal yaitu 3.
+  * Saat berpindah ke `relaksasi`, sistem akan mengekstraksi jenis teknik relaksasi yang disetujui konseli dari `temp_solusi_history` ke variabel `self.chosen_technique` dan mengosongkan buffer tersebut.
 
 #### 5. State: `relaksasi`
 * **Konfigurasi & Logika Teknis:** RAG engine dipanggil dengan mengirimkan `override_intents=self.primary_intents` untuk memformulasikan respon damai sejahtera atau doa penutup rohani yang relevan.
@@ -100,7 +105,8 @@ Kelas `SessionManager` bertindak sebagai pengendali *state* dan berinteraksi sec
 * **Batasan & Transisi Detail:**
   * Batasan giliran minimum (`MIN_TURNS`): 1
   * Batasan giliran maksimum (`MAX_TURNS`): 99 (tidak ada transisi paksa otomatis).
-  * Jika pengguna merespons tawaran rujukan secara positif (cocok dengan regex `TRANSITION_SIGNALS['penutupan']` seperti *iya*, *mau*, *boleh*, *oke*, *siap*), sistem berpindah ke state `bantuan_profesional`. Jika konseli merespons negatif atau percakapan selesai normal, properti `self.session_ended` diubah menjadi `True`.
+  * Jika pengguna merespons tawaran rujukan secara positif (cocok dengan regex `TRANSITION_SIGNALS['penutupan']` seperti *iya*, *mau*, *boleh*, *oke*, *siap*), sistem berpindah ke state `bantuan_profesional`.
+  * Jika pengguna merespons negatif terhadap tawaran (cocok dengan `DECLINE_SIGNALS` seperti *tidak perlu*, *sudah cukup*), sistem secara halus mengakhiri sesi (menggunakan state internal `penutupan_selesai`) dan mengubah properti `self.session_ended` menjadi `True`.
 
 #### 7. State: `bantuan_profesional` (Branch State)
 * **Konfigurasi & Logika Teknis:** State non-linear yang dipicu baik lewat persetujuan rujukan di tahap `penutupan` maupun bypass darurat. Ketika state aktif, sistem melakukan hal berikut:
@@ -133,6 +139,10 @@ Berikut adalah cuplikan kode utama yang mengimplementasikan logika transisi sesi
         if self.turn_count >= self.MAX_TURNS.get(stage, 99):
             return True
 
+        # Pembahasan early-exit: bypass batasan turn_count minimum jika konseli eksplisit
+        if stage == 'pembahasan' and self._detect_pembahasan_early_exit(user_input):
+            return True
+
         # Belum memenuhi batasan giliran minimum — tidak bertransisi
         if self.turn_count < self.MIN_TURNS.get(stage, 1):
             return False
@@ -160,16 +170,31 @@ Berikut adalah cuplikan kode utama yang mengimplementasikan logika transisi sesi
             self.stage_index += 1
             self.current_stage = self.STAGE_ORDER[self.stage_index]
             self.turn_count = 0
+            self.turn_in_stage = 0  # reset per-stage counter on transition
 
             # Ketika beranjak dari tahap pembahasan, ambil snapshot dari intensi utama
+            # dan men-generate satu kalimat latar belakang masalah.
             if self.current_stage == 'intervensi':
                 self._snapshot_primary_intents()
+                if self.temp_pembahasan_history:
+                    self.complaint_summary = self.rag_engine.generate_background_summary(
+                        self.temp_pembahasan_history
+                    )
+                    self.temp_pembahasan_history = []  # segera kosongkan
+
+            # Ketika beranjak ke relaksasi, ekstraksi teknik relaksasi yang terpilih
+            if self.current_stage == 'relaksasi':
+                if self.temp_solusi_history:
+                    self.chosen_technique = self.rag_engine.generate_technique_extraction(
+                        self.temp_solusi_history
+                    )
+                    self.temp_solusi_history = []
 ```
 ```python
         # Menentukan intensi yang dikirimkan untuk pencarian ayat Alkitab
-        # Pada tahap relaksasi dan solusi, gunakan intensi utama hasil snapshot akumulasi pembahasan
+        # Hanya pada tahap relaksasi, gunakan intensi utama hasil snapshot akumulasi pembahasan
         override_intents = None
-        if self.current_stage in ['relaksasi', 'solusi'] and self.primary_intents:
+        if self.current_stage == 'relaksasi' and self.primary_intents:
             override_intents = self.primary_intents
 ```
 ```python

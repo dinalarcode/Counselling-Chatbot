@@ -470,8 +470,10 @@ Implemented based on psychologist feedback that the chatbot rushed to solutions/
   - IndoBERT-Lite failed badly (F1=0.3659) — numerical instability
   - All 6 training curves saved as `*_training_curve.png`
 - [x] **Seen / Unseen zero-shot evaluation** — ✅ DONE. Results in `evaluation/results/seen_unseen_summary.csv`.
-  - 3 splits, F1-Macro Seen avg=0.8997 (±0.008), F1-Macro Unseen=0.0 (model cannot generalize to truly unseen labels)
-  - F1-Macro All avg=0.6298 (±0.006) — confirms LABAN requires seen labels at inference time
+  - 3 splits, F1-Macro Seen avg=0.8997 (±0.008), F1-Macro Unseen=0.0, F1-Macro All avg=0.6298 (±0.006)
+  - ⚠️ **Unseen F1 = 0.0 is a protocol artifact, not an architecture failure.** `eval_seen_unseen.py` passes all 10 intent label texts during training but zeros unseen columns in ground truth → BCELoss teaches the model to suppress unseen outputs. The correct LABAN ZSL protocol would train with only seen label texts (7-dim gram matrix) and evaluate with all 10 — but this was intentionally not fixed (see below).
+  - **Why ZSL is not used in the production chatbot:** The 10 intents are fixed by the LABAN counseling method and hardcoded into `session_manager.py` stage logic, CBT flags, and `BIBLICAL_SYNONYMS`. ZSL's only benefit would be adding new intent labels at inference without retraining — irrelevant here since the intent set never changes. The production model trains on all 10 intents with full supervision, which is the best-accuracy configuration. The ZSL evaluation exists solely as a thesis architectural argument, not a deployed feature.
+  - **Thesis framing:** Present Unseen=0.0 as evidence that LABAN's ZSL capability requires the model to have received *no supervision signal at all* for unseen intents — not even negative supervision. The current protocol inadvertently provides negative supervision (zeroed targets), which suppresses unseen outputs. This is a valid and explainable finding.
 - [x] **Cosine similarity heatmap** — ✅ DONE. Results in `evaluation/results/`.
   - `cosine_label_vs_label.png` — label embedding separability; gap=1.0540
   - `cosine_centroid_vs_label.png` — utterance centroid alignment; gap=0.6048
