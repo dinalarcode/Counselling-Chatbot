@@ -143,12 +143,12 @@ If two label embeddings become too similar (which happens with semantically clos
 
 ### Step 1: Replace the Backbone with an Indonesian Transformer
 
-The English `bert-base-uncased` was replaced with `indolem/indobertweet-base-uncased`, a BERT model pre-trained on Indonesian Twitter data. The backbone is configurable via `config.py`:
+The English `bert-base-uncased` was initially replaced with `indolem/indobertweet-base-uncased` (IndoBERTweet), and subsequently refined to `indobenchmark/indobert-base-p1` (IndoBERT) after a comparative backbone evaluation proved IndoBERT achieves a higher Test F1-Micro (0.9318 vs. 0.8991). The backbone is configurable via `config.py`:
 
 ```python
 # config.py (this project)
 class config:
-    MODEL_NAME = 'indolem/indobertweet-base-uncased'
+    MODEL_NAME = 'indobenchmark/indobert-base-p1'  # Production backbone
     hidden_size = 768
 ```
 
@@ -300,7 +300,7 @@ class predictor:
 
 | Aspect | Original LABAN (GitHub) | This Project |
 |---|---|---|
-| **Language** | English (`bert-base-uncased`) | Indonesian (`indolem/indobertweet-base-uncased`) |
+| **Language** | English (`bert-base-uncased`) | Indonesian (`indobenchmark/indobert-base-p1`) |
 | **Backbone** | Hardcoded BERT | Configurable via `AutoModel` + `config.py` |
 | **Architecture** | 6 surface modes, 6 label modes | Only `normal` + `zero-shot` |
 | **Extra Layers** | Dropout, classifier, mapping, relations | None (pure zero-shot projection) |
@@ -360,7 +360,7 @@ All hyperparameters are centralized in `config.py`:
 
 | Parameter | Value | Description |
 |---|---|---|
-| `MODEL_NAME` | `indolem/indobertweet-base-uncased` | HuggingFace transformer backbone |
+| `MODEL_NAME` | `indobenchmark/indobert-base-p1` | HuggingFace transformer backbone (production) |
 | `hidden_size` | `768` | Embedding dimension (must match backbone) |
 | `max_len` | `50` | Maximum token sequence length |
 | `BATCH_SIZE` | `16` | Training batch size |
@@ -422,10 +422,10 @@ Step 2: Tokenize all 10 intent labels (done once at startup)
     → intent_mask: shape (10, max_label_len)
 
 Step 3: Utterance Encoder (BERT #1)
-    input_ids → IndoBERTweet → pooled_output: shape (1, 768)
+    input_ids → IndoBERT → pooled_output: shape (1, 768)
 
 Step 4: Label Encoder (BERT #2)
-    intent_ids → IndoBERTweet → clusters: shape (10, 768)
+    intent_ids → IndoBERT → clusters: shape (10, 768)
 
 Step 5: Gram Matrix Projection
     gram = clusters @ clusters.T                    → shape (10, 10)
@@ -479,7 +479,7 @@ python evaluation/compare_embed_models.py
 ```
 
 **What It Does**:
-1. Iterates over a list of backbone models (IndoBERTweet, IndoBERT-Lite, IndoBERT, MiniLM, Multilingual-E5-small, DistilBERT-multilingual)
+1. Iterates over a list of backbone paradigms (IndoBERT, IndoBERTweet, mBERT, MiniLM-multi)
 2. For each backbone: instantiates a fresh LABAN model, trains for 50 epochs with identical hyperparameters (same seed, LR, batch size)
 3. Records best-validation-F1 checkpoint per backbone
 4. Evaluates each on the same held-out test set
@@ -490,7 +490,7 @@ python evaluation/compare_embed_models.py
 - `evaluation/results/backbone_comparison_per_intent.csv` -- Per-intent F1 breakdown
 - `evaluation/results/<model_tag>_training_curve.png` -- Loss + F1 curves per backbone
 
-**What to Report in Thesis**: A comparison table showing Test F1-Micro, F1-Macro, Precision, and Recall for each backbone, justifying the selection of `indolem/indobertweet-base-uncased` as the production model.
+**What to Report in Thesis**: A comparison table showing Test F1-Micro, Test Precision-Micro, Test Recall-Micro, and Best Val F1 for each backbone paradigm, justifying the selection of `indobenchmark/indobert-base-p1` (IndoBERT) as the production model. IndoBERT achieved the highest Test F1-Micro (0.9318) and Test Precision (0.9602) across all four candidates.
 
 ### 6.2 Zero-Shot Seen/Unseen Evaluation (`eval_seen_unseen.py`)
 
@@ -552,5 +552,5 @@ python evaluation/eval_cosine_heatmap.py
 ---
 
 *Document generated for the Biblical Counseling Chatbot (Tugas Akhir) project.*
-*Active Backbone: IndoBERTweet (768-dim) | Framework: PyTorch + HuggingFace Transformers | Date: 2026-05-26*
+*Active Backbone: IndoBERT (`indobenchmark/indobert-base-p1`, 768-dim) | Framework: PyTorch + HuggingFace Transformers | Date: 2026-05-26 → Updated 2026-07-06*
 *Original LABAN: https://github.com/waynewu6250/LABAN (EMNLP 2021)*

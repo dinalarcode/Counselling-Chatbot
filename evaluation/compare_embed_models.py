@@ -65,14 +65,17 @@ ORIG_CSV = os.path.join(ROOT, "data", "dataset_multiintent.csv")
 DATASET_CSV = AUG_CSV if os.path.exists(AUG_CSV) else ORIG_CSV
 
 # ── Candidate backbone models ───────────────────────────────────────────────
+# Four paradigms for the academic backbone comparison:
+#   1. IndoBERT       — formal Indonesian corpus (SOTA Bahasa Indonesia)
+#   2. IndoBERTweet   — informal/social-media Indonesian corpus
+#   3. mBERT          — multilingual baseline (standard cross-lingual)
+#   4. MiniLM-multi   — lightweight / distilled baseline (computational efficiency)
 # (tag, huggingface_id, hidden_size)
 CANDIDATE_MODELS = [
-    ("IndoBERTweet",       "indolem/indobertweet-base-uncased",                          768),
-    ("IndoBERT-Lite",      "indobenchmark/indobert-lite-base-p1",                        768),
-    ("IndoBERT",      "indobenchmark/indobert-base-p1",                             768),
-    ("MiniLM-L6-v2",       "sentence-transformers/all-MiniLM-L6-v2",                     384),
-    ("Multilingual-E5",    "intfloat/multilingual-e5-small",                              384),
-    ("DistilBERT-multi",   "distilbert-base-multilingual-cased",                          768),
+    ("IndoBERT",      "indobenchmark/indobert-base-p1",                                  768),
+    ("IndoBERTweet",  "indolem/indobertweet-base-uncased",                               768),
+    ("mBERT",         "bert-base-multilingual-cased",                                    768),
+    ("MiniLM-multi",  "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",     384),
 ]
 
 

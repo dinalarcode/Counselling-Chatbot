@@ -36,7 +36,7 @@ SessionManager.chat()          [core/session_manager.py]
     ├─ Professional help keyword safety net (17 compiled regex patterns)
     ↓
 RAGEngine.generate_response()  [core/rag_engine.py]
-    ├─ Intent Classification — models/multilabel/predict.py (IndoBERTweet + LABAN)
+    ├─ Intent Classification — models/multilabel/predict.py (IndoBERT + LABAN)
     │      SKIPPED in: pembukaan, bantuan_profesional
     ├─ CBT guidance injection (solusi/relaksasi when physical symptoms detected)
     ├─ QnA FAISS search — core/vector_db.py
@@ -171,7 +171,7 @@ Current intents (from training CSV):
 
 ### 5.1 Core Pipeline (Completed)
 - [x] LABAN multi-label intent classifier — architecture (`bert_model.py`), training (`run_trainer.py`), inference (`predict.py`)
-- [x] IndoBERTweet checkpoint trained and saved to `checkpoint/IndoBERT_multi_label_zsl.pt`
+- [x] IndoBERT checkpoint trained and saved to `checkpoint/IndoBERT_multi_label_zsl.pt` (IndoBERT selected as production backbone after comparative evaluation — highest Test F1-Micro 0.9318)
 - [x] Bible FAISS index built from `alkitab_tb.csv` with hybrid semantic+keyword retrieval
 - [x] QnA FAISS index built from `dataset_qna.csv` for example-answer injection
 - [x] RAGEngine with Gemini 2.5-Flash integration via LangChain
@@ -206,7 +206,7 @@ Current intents (from training CSV):
 
 ### 5.5 Evaluation Framework (Session 2026-05-20)
 - [x] `evaluation/` directory created
-- [x] `compare_embed_models.py` — LABAN backbone comparison across 6 transformer models (IndoBERTweet, IndoBERT-Lite, IndoBERT, MiniLM-L6-v2, Multilingual-E5-small, DistilBERT-multilingual)
+- [x] `compare_embed_models.py` — LABAN backbone comparison across 4 paradigms (IndoBERT, IndoBERTweet, mBERT, MiniLM-multi)
 - [x] `eval_seen_unseen.py` — Zero-shot evaluation with 3 seen/unseen splits; computes F1-Macro Seen, F1-Macro Unseen, F1-Macro All
 
 ### 5.6 Cosine Similarity Heatmap Evaluation (Session 2026-05-25)
@@ -232,8 +232,8 @@ Current intents (from training CSV):
 
 | Model | F1-micro | Precision | Recall | Training Time |
 |-------|----------|-----------|--------|---------------|
-| **IndoBERT** | **0.9318** | **0.9602** | **0.9051** | 1284 s |
-| IndoBERTweet (active) | 0.8991 | 0.9356 | 0.8653 | 1232 s |
+| **IndoBERT (active)** | **0.9318** | **0.9602** | **0.9051** | 1284 s |
+| IndoBERTweet | 0.8991 | 0.9356 | 0.8653 | 1232 s |
 | Multilingual-E5 | 0.9234 | 0.9425 | 0.9051 | 1030 s |
 | DistilBERT-multi | 0.8967 | 0.9229 | 0.8720 | 996 s |
 | MiniLM-L6-v2 | 0.8944 | 0.9108 | 0.8786 | 2491 s |

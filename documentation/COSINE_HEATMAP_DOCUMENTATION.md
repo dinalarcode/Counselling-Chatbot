@@ -42,7 +42,7 @@ A **Cosine Heatmap** is a 2D grid visualization where each cell $(i, j)$ represe
 
 ### 2.1 Lack of Dual-Encoder Architecture (LABAN) Awareness
 The chatbot's classifier uses the **LABAN** (Language-to-Label Alignment Network) architecture. Rather than using a single model to encode sentences, LABAN utilizes two distinct models fine-tuned together:
-1. **Utterance Encoder** ($E_{utt}$): Encodes the user's natural language input (e.g., `IndoBERTweet`).
+1. **Utterance Encoder** ($E_{utt}$): Encodes the user's natural language input (e.g., `IndoBERT`).
 2. **Label Encoder** ($E_{label}$): Encodes the raw text of the 10 intent labels (e.g., "Mengisyaratkan Gejala Fisik").
 
 A vanilla text-distance comparison would evaluate raw labels and sentences using a single frozen model. This project requires evaluating the **joint vector space learned by the dual encoders after fine-tuning**.
@@ -161,7 +161,7 @@ Upon successful execution, the script will output the structural summaries and k
 ```
 =================================================================
   LABAN Cosine Similarity Heatmap Evaluation
-  Model: indolem/indobertweet-base-uncased
+  Model: indobenchmark/indobert-base-p1
   Device: cuda
 =================================================================
 
@@ -243,4 +243,4 @@ When reviewing the PNG heatmaps, look for the following visual patterns:
 
 ---
 *Document generated for the Biblical Counseling Chatbot (Tugas Akhir) project.*
-*Active Classifier: IndoBERTweet | Feature Space: 768-dimensions | Date: 2026-05-26*
+*Active Classifier: IndoBERT (`indobenchmark/indobert-base-p1`) | Feature Space: 768-dimensions | Date: 2026-05-26 → Updated 2026-07-06*

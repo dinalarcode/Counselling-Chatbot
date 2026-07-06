@@ -4,7 +4,8 @@ LABAN Cosine Similarity Heatmap Evaluation
 Assesses the consistency of the model's ability to establish semantic
 connections between input (utterance) embeddings and label embeddings.
 
-This evaluation uses the currently active backbone (IndoBERTweet) and the
+This evaluation uses the currently active backbone (IndoBERT — selected as the
+production model after comparative evaluation) and the
 trained checkpoint to produce three visualizations:
 
 1. **Label-vs-Label Heatmap** — Cosine similarity between all pairs of
@@ -55,7 +56,7 @@ RESULTS_DIR = os.path.join(ROOT, "evaluation", "results")
 os.makedirs(RESULTS_DIR, exist_ok=True)
 
 # -- Configuration -----------------------------------------------------------
-MODEL_NAME   = "indolem/indobertweet-base-uncased"
+MODEL_NAME   = "indobenchmark/indobert-base-p1"   # Production backbone — selected over IndoBERTweet, mBERT, and MiniLM-multi based on highest Test F1-Micro in backbone comparison
 HIDDEN_SIZE  = 768
 MAX_LEN      = 50
 BATCH_SIZE   = 16

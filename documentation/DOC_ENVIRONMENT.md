@@ -136,10 +136,10 @@ GROQ_API_KEY=<key>
 
 | Model | HuggingFace ID | Dimension | Purpose |
 |---|---|---|---|
-| **IndoBERTweet** | `indolem/indobertweet-base-uncased` | 768 | LABAN multi-label intent classifier (dual-encoder backbone) |
+| **IndoBERT** | `indobenchmark/indobert-base-p1` | 768 | LABAN multi-label intent classifier (dual-encoder backbone) |
 | **MiniLM Multilingual** | `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` | 384 | FAISS embedding model for Bible verse + QnA retrieval |
 
-> IndoBERTweet was selected as the LABAN backbone after a comparative evaluation of 6 transformer models (see `evaluation/compare_embed_models.py`). MiniLM was chosen for retrieval because it is specifically trained for cross-lingual semantic similarity.
+> IndoBERT was selected as the LABAN backbone after a comparative evaluation of four transformer paradigms (see `evaluation/compare_embed_models.py`). With a Test F1-Micro of **0.9318**, Test Precision of **0.9602**, and Test Recall of **0.9051**, IndoBERT outperformed all other candidates including IndoBERTweet (F1-Micro: 0.8991), mBERT, and MiniLM-multi. MiniLM was chosen for retrieval because it is specifically trained for cross-lingual semantic similarity.
 
 ---
 
