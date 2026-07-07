@@ -37,9 +37,13 @@ class config:
 
     # ── RAGAS Judge LLM ──────────────────────────────────────────────────
     # Fixed: selalu Gemini (biggest context, best Indonesian quality)
-    RAGAS_JUDGE_PROVIDER = "gemini"
-    RAGAS_JUDGE_MODEL = "gemini-2.5-flash"
-    RAGAS_JUDGE_API_KEY_ENV = "GEMINI_API_KEY"
+    # RAGAS_JUDGE_PROVIDER = "gemini"
+    # RAGAS_JUDGE_MODEL = "gemini-2.5-flash"
+    # RAGAS_JUDGE_API_KEY_ENV = "GEMINI_API_KEY"
+    # RAGAS_JUDGE_TEMPERATURE = 0.0   # deterministic judging
+    RAGAS_JUDGE_PROVIDER = "openai"
+    RAGAS_JUDGE_MODEL = "gpt-5.4-mini"
+    RAGAS_JUDGE_API_KEY_ENV = "OPENAI_API_KEY"
     RAGAS_JUDGE_TEMPERATURE = 0.0   # deterministic judging
 
 opt = config()
