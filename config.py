@@ -42,8 +42,9 @@ class config:
     # RAGAS_JUDGE_API_KEY_ENV = "GEMINI_API_KEY"
     # RAGAS_JUDGE_TEMPERATURE = 0.0   # deterministic judging
     RAGAS_JUDGE_PROVIDER = "openai"
-    RAGAS_JUDGE_MODEL = "gpt-5.4-mini"
+    RAGAS_JUDGE_MODEL = "gpt-4o-mini"          # used by llm_factory() in eval_ragas.py
     RAGAS_JUDGE_API_KEY_ENV = "OPENAI_API_KEY"
     RAGAS_JUDGE_TEMPERATURE = 0.0   # deterministic judging
+    RAGAS_TESTSET_SIZE = 30         # Phase 1 sample count + Phase 2 eval cap (eval_ragas.py)
 
 opt = config()

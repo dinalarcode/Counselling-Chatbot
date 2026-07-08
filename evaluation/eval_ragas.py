@@ -2,10 +2,12 @@
 RAGAS Evaluation for Biblical Counseling Chatbot RAG Pipeline.
 
 Two-phase workflow:
-  Phase 1 (--generate): Sample 50 QnA pairs, auto-assign stages,
+  Phase 1 (--generate): Sample 30 QnA pairs (config.opt.RAGAS_TESTSET_SIZE),
+                        auto-assign stages,
                         save template CSV for manual reference authoring.
   Phase 2 (--evaluate): Run RAG pipeline on each sample, evaluate with
-                        RAGAS metrics using Groq LLM judge.
+                        RAGAS metrics using OpenAI gpt-4o-mini as judge
+                        (via ragas.llms.llm_factory). Generator remains Groq.
 
 Usage:
   python evaluation/eval_ragas.py --generate
@@ -34,6 +36,8 @@ PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
+from config import opt
+
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
@@ -42,7 +46,7 @@ TESTSET_DIR = os.path.join(SCRIPT_DIR, "data")
 TESTSET_CSV = os.path.join(TESTSET_DIR, "ragas_testset.csv")
 RESULTS_DIR = os.path.join(SCRIPT_DIR, "results")
 RANDOM_SEED = 42
-SAMPLE_SIZE = 50
+SAMPLE_SIZE = opt.RAGAS_TESTSET_SIZE  # Phase 1 sample count AND Phase 2 eval cap
 
 # Stages where Bible verse retrieval is active
 BIBLE_VERSE_STAGES = frozenset({"solusi", "relaksasi"})
@@ -146,6 +150,7 @@ def generate_testset():
     random.seed(RANDOM_SEED)
     np.random.seed(RANDOM_SEED)
 
+    print(f"  [INFO] Testset size is strictly set to {SAMPLE_SIZE} samples.")
     if len(df) < SAMPLE_SIZE:
         print(f"  [WARN] Only {len(df)} rows available, using all.")
         sample_df = df.copy()
@@ -215,6 +220,9 @@ def run_evaluation():
 
     df = pd.read_csv(TESTSET_CSV)
     print(f"\n  Test set loaded: {len(df)} samples")
+
+    df = df.head(SAMPLE_SIZE)
+    print(f"  [INFO] Testset size is strictly set to {SAMPLE_SIZE} samples.")
 
     # Check for empty references
     empty_refs = df["reference"].isna() | (df["reference"].astype(str).str.strip() == "")
@@ -334,31 +342,41 @@ def run_evaluation():
     eval_dataset = EvaluationDataset(samples=samples)
     print(f"  [OK] EvaluationDataset built with {len(samples)} samples")
 
-    # -- 5. Configure Gemini LLM judge --------------------------------------
-    print(f"\n  Configuring Gemini LLM judge...")
+    # -- 5. Configure OpenAI LLM judge via ragas llm_factory ---------------
+    print(f"\n  Configuring OpenAI LLM judge via ragas llm_factory...")
 
     from config import opt
-    from langchain_google_genai import ChatGoogleGenerativeAI
+    from ragas.llms import llm_factory
 
-    judge_api_key = os.getenv(opt.RAGAS_JUDGE_API_KEY_ENV)
-    if not judge_api_key:
+    # Guard: ensure OPENAI_API_KEY is present before calling llm_factory.
+    # dotenv has already been loaded above; llm_factory reads the env directly.
+    openai_api_key = os.getenv(opt.RAGAS_JUDGE_API_KEY_ENV)
+    if not openai_api_key:
         print(f"  [ERROR] {opt.RAGAS_JUDGE_API_KEY_ENV} not found in .env")
         sys.exit(1)
 
-    judge_llm = ChatGoogleGenerativeAI(
-        model=opt.RAGAS_JUDGE_MODEL,
-        google_api_key=judge_api_key,
-        temperature=opt.RAGAS_JUDGE_TEMPERATURE,
-    )
-    print(f"  [OK] Gemini judge configured ({opt.RAGAS_JUDGE_MODEL})")
+    # llm_factory returns a RAGAS-native LangchainLLMWrapper (InstructorLLM
+    # compatible), which avoids the ValueError thrown by raw LangChain models.
+    ragas_judge_llm = llm_factory(opt.RAGAS_JUDGE_MODEL)
+    print(f"  [OK] OpenAI judge configured ({opt.RAGAS_JUDGE_MODEL}) via llm_factory")
 
     # -- 6. Define metrics --------------------------------------------------
+    # Instantiate metrics first, then assign the judge so each metric shares
+    # the same InstructorLLM-compatible wrapper.
+    faithfulness_metric = Faithfulness()
+    answer_relevancy_metric = AnswerRelevancy()
+    context_precision_metric = ContextPrecisionWithoutReference()
+    context_recall_metric = ContextRecall()
+
     metrics = [
-        Faithfulness(llm=judge_llm),
-        AnswerRelevancy(llm=judge_llm),
-        ContextPrecisionWithoutReference(llm=judge_llm),
-        ContextRecall(llm=judge_llm),
+        faithfulness_metric,
+        answer_relevancy_metric,
+        context_precision_metric,
+        context_recall_metric,
     ]
+    for metric in metrics:
+        metric.llm = ragas_judge_llm
+
     metric_names = [
         "faithfulness",
         "answer_relevancy",
@@ -441,7 +459,7 @@ def run_evaluation():
     print("  RAGAS EVALUATION SUMMARY")
     print(f"{'=' * 65}")
     print(f"  Total samples: {len(results_df)}")
-    print(f"  Judge LLM: Groq llama-3.1-8b-instant")
+    print(f"  Judge LLM: OpenAI {opt.RAGAS_JUDGE_MODEL} (via ragas llm_factory)")
     print(f"\n  Overall Scores:")
 
     for col in metric_names:
@@ -479,7 +497,7 @@ if __name__ == "__main__":
     group.add_argument(
         "--generate",
         action="store_true",
-        help="Phase 1: Generate test template CSV (50 random samples)",
+        help="Phase 1: Generate test template CSV (30 random samples)",
     )
     group.add_argument(
         "--evaluate",
