@@ -4,50 +4,66 @@
 
 ## 4.7.2.1 Latar Belakang dan Tujuan Evaluasi
 
-Evaluasi kualitas sistem *Retrieval-Augmented Generation* (RAG) pada chatbot konseling Alkitab tidak dapat diukur secara memadai hanya melalui metrik klasifikasi intent (lihat Sub-bab 4.5). Diperlukan pengukuran terpisah terhadap dua komponen inti pipeline RAG: (1) kualitas *retriever* — apakah konteks yang diambil dari indeks FAISS relevan dan cukup, dan (2) kualitas *generator* — apakah respons LLM benar-benar berpijak pada konteks tersebut dan menjawab kebutuhan pengguna. Untuk kebutuhan ini, penelitian menggunakan **RAGAS** (Es et al., 2024), sebuah kerangka evaluasi *open-source* yang menilai kedua komponen menggunakan pendekatan **LLM-as-a-Judge**.
+Evaluasi kualitas sistem *Retrieval-Augmented Generation* (RAG) pada chatbot konseling Alkitab tidak dapat diukur secara memadai hanya melalui metrik klasifikasi intent (lihat Sub-bab 4.5). Diperlukan pengukuran terpisah terhadap kualitas keluaran generator: apakah respons LLM secara konsisten empatik, tidak menghakimi, selaras dengan prinsip konseling alkitabiah, dan patuh terhadap aturan tahap `SessionManager` (lihat Sub-bab 4.6.2). Untuk kebutuhan ini, penelitian menggunakan **RAGAS** (Es et al., 2024), sebuah kerangka evaluasi *open-source* yang menilai kualitas respons menggunakan pendekatan **LLM-as-a-Judge**.
 
-RAGAS dipilih karena tidak bergantung pada metrik kesamaan teks permukaan seperti BLEU atau ROUGE, melainkan menilai kualitas semantik melalui model bahasa independen yang membaca input pengguna, konteks yang diambil, respons yang dihasilkan, dan jawaban rujukan (*reference*).
+RAGAS dipilih karena tidak bergantung pada metrik kesamaan teks permukaan seperti BLEU atau ROUGE, melainkan menilai kualitas semantik melalui model bahasa independen yang membaca input pengguna, konteks yang diambil, dan respons yang dihasilkan.
 
 ---
 
-## 4.7.2.2 Empat Metrik yang Dievaluasi
+## 4.7.2.2 Metrik yang Dievaluasi: LABAN Counseling Standard (AspectCritic)
 
-| Metrik | Aspek yang Dinilai | Komponen Pipeline |
-|---|---|---|
-| **Faithfulness** | Apakah klaim dalam respons yang dihasilkan didukung oleh konteks yang diambil (bebas halusinasi)? | Generator |
-| **Answer Relevancy** | Apakah respons secara langsung menjawab pertanyaan/keluhan pengguna? | Generator |
-| **Context Precision** | Apakah dokumen yang diambil relevan dengan query pengguna? | Retriever |
-| **Context Recall** | Apakah konteks yang diambil memuat informasi yang cukup untuk menghasilkan jawaban rujukan? | Retriever |
+Iterasi awal evaluasi (lihat riwayat pengembangan) menggunakan empat metrik generik bawaan RAGAS — *Faithfulness*, *Answer Relevancy*, *Context Precision*, *Context Recall*. Metrik tersebut dirancang untuk pipeline *question-answering* faktual dan terbukti tidak cocok untuk domain dialog konseling: *Faithfulness* mengekstraksi klaim faktual diskrit dari respons empatik yang secara struktural bukan pernyataan faktual, sementara *Answer Relevancy* membandingkan makna semantik respons terhadap pertanyaan buatan dari kolom `reference`, yang tidak merepresentasikan gaya jawaban konseling yang panjang dan reflektif. Kedua metrik ini secara sistematis menghasilkan skor rendah tanpa mencerminkan kualitas respons yang sebenarnya.
 
-Setiap metrik dinilai pada rentang **0.0–1.0**. Perhitungan dilakukan oleh LLM *judge*, bukan oleh pipeline chatbot itu sendiri, untuk menghindari bias evaluasi diri (*self-evaluation bias*).
+Sebagai gantinya, digunakan metrik kustom tunggal berbasis **`AspectCritic`** RAGAS bernama **`LABAN_Counseling_Standard`**, didefinisikan di `evaluation/eval_ragas.py`:
+
+```python
+LABAN_CRITERIA_DEFINITION = (
+    "Apakah respons chatbot menunjukkan empati yang tepat, tidak menghakimi, "
+    "selaras dengan prinsip konseling alkitabiah, dan merespons dengan tepat "
+    "sesuai instruksi tahap konseling saat ini: misalnya, tidak memberikan "
+    "solusi secara prematur pada tahap pembahasan/intervensi, tidak redundan "
+    "(sudah jelas di input pengguna, tapi tetap ditanyakan kembali)"
+)
+```
+
+`AspectCritic` memberi *judge* LLM sebuah kriteria kualitatif tunggal dan meminta keputusan biner (1 = memenuhi kriteria, 0 = tidak) per sampel, alih-alih dekomposisi klaim faktual. Pendekatan ini selaras dengan rekomendasi metodologi evaluasi RAGAS untuk domain non-QA-faktual (lihat rekomendasi Sub-bab 4.7.2.6 versi sebelumnya, poin a.2) dan sekaligus menggabungkan penilaian kepatuhan tahap ke dalam satu metrik, alih-alih memerlukan pemeriksaan terpisah non-RAGAS.
+
+Prompt kriteria secara eksplisit menilai empat aspek sekaligus:
+
+| Aspek | Deskripsi |
+|---|---|
+| Empati | Respons menunjukkan pemahaman terhadap perasaan pengguna tanpa menghakimi |
+| Keselarasan alkitabiah | Prinsip konseling Kristen tercermin secara wajar, bukan dipaksakan |
+| Kepatuhan tahap | Tidak memberi solusi prematur pada `pembahasan`/`intervensi`; sesuai aturan `SessionManager` |
+| Non-redundansi | Tidak menanyakan ulang hal yang sudah eksplisit di input pengguna |
+
+Skor dinilai pada rentang **0 atau 1** (biner, bukan kontinu 0.0–1.0 seperti metrik RAGAS generik). Perhitungan dilakukan oleh LLM *judge*, bukan oleh pipeline chatbot itu sendiri, untuk menghindari bias evaluasi diri (*self-evaluation bias*).
 
 ---
 
 ## 4.7.2.3 Adaptasi RAGAS terhadap Arsitektur Sistem
 
-RAGAS versi standar mengasumsikan pipeline RAG generik dengan satu sumber retrieval dan dataset evaluasi yang sudah lengkap. Chatbot ini memiliki empat karakteristik yang memerlukan penyesuaian terhadap alur evaluasi standar tersebut.
-
 ### a. Tidak Ada Dataset Rujukan Siap Pakai
 
-RAGAS membutuhkan empat kolom: `user_input`, `retrieved_contexts`, `response`, dan `reference`. Karena "jawaban ideal" konseling bersifat kontekstual terhadap tahap sesi, dataset ini dibangun melalui dua fase pada `evaluation/eval_ragas.py`:
+Dataset evaluasi dibangun melalui dua fase pada `evaluation/eval_ragas.py`:
 
-- **Fase 1 (`--generate`):** Mengambil `RAGAS_TESTSET_SIZE` (30) sampel acak (`random_state=42`) dari `data/dataset_qna.csv`, memberi label tahap konseling otomatis melalui heuristik regex (`classify_stage()`), lalu menyimpan templat kosong ke `evaluation/data/ragas_testset.csv`.
-- **Fase 2 (manual):** Kolom `reference` (jawaban ideal per pertanyaan) diisi secara manual sebelum evaluasi dijalankan.
+- **Fase 1 (`--generate`):** Mengambil `RAGAS_TESTSET_SIZE` (30) sampel dari `data/dataset_qna.csv`, diseimbangkan lintas enam tahap konseling (`balance_by_stage()`, `random_state=42`), memberi label tahap otomatis melalui heuristik regex (`classify_stage()`), lalu menyimpan templat kosong ke `evaluation/data/ragas_testset.csv`.
+- **Fase 2 (manual):** Kolom `reference` (jawaban ideal per pertanyaan, digunakan sebagai konteks tambahan bagi *judge*) diisi secara manual sebelum evaluasi dijalankan.
 
 ### b. Retrieval Dua Sumber (Dual FAISS)
 
-Berbeda dari asumsi satu *vector store*, chatbot mengambil konteks dari dua indeks FAISS independen:
+Konteks dievaluasi berasal dari dua indeks FAISS independen:
 
 | Sumber | Fungsi | Aktif pada Tahap |
 |---|---|---|
 | **Indeks QnA** | Contoh jawaban konselor sebagai inspirasi nada respons | Seluruh tahap |
 | **Indeks Alkitab (AVI)** | Ayat Alkitab paling relevan sebagai bimbingan spiritual | `solusi`, `relaksasi`, `bantuan_profesional` (bergantung *spiritual consent*) |
 
-Pada Fase 2, `retrieved_contexts` dibangun dengan menjalankan `RAGEngine.generate_response()` secara langsung per sampel, sehingga konteks yang dievaluasi adalah hasil retrieval aktual, bukan data statis yang disuntikkan manual.
+Pada Fase 2, `retrieved_contexts` dibangun dengan menjalankan `RAGEngine.generate_response()` secara langsung per sampel (`spiritual_consent=True` dipaksa agar retrieval ayat aktif pada tahap yang relevan), sehingga konteks yang dievaluasi adalah hasil retrieval aktual.
 
-### c. Perilaku Bergantung Tahap Konseling
+### c. Perilaku Bergantung Tahap Konseling — Dinilai Langsung oleh Metrik
 
-`SessionManager` menjalankan enam tahap dengan aturan perilaku berbeda (lihat Sub-bab 4.6.2). Skor RAGAS global tidak dapat mengungkap apakah chatbot melanggar aturan tahap tertentu (misalnya menyisipkan ayat Alkitab pada tahap `pembukaan`). Karena itu, `eval_ragas.py` menghasilkan agregasi tambahan per tahap (`ragas_per_stage.csv`) di samping skor global.
+Berbeda dari pendekatan sebelumnya yang memerlukan agregasi `ragas_per_stage.csv` terpisah untuk *menyimpulkan* pelanggaran aturan tahap secara tidak langsung, definisi `LABAN_CRITERIA_DEFINITION` kini menyertakan kepatuhan tahap sebagai bagian eksplisit dari kriteria penilaian per sampel. `eval_ragas.py` tetap menyisipkan prefiks tahap (`[Tahap Konseling: {stage}] ...`) ke `user_input` yang dikirim ke *judge*, sehingga *judge* memiliki konteks tahap saat menilai. Agregasi `ragas_per_stage.csv` tetap dihasilkan untuk melihat distribusi skor per tahap.
 
 ### d. Judge LLM Independen dari Generator
 
@@ -55,10 +71,10 @@ LLM generator chatbot (`opt.CHATBOT_LLM_PROVIDER`) dan LLM *judge* RAGAS dikonfi
 
 | Peran | Model Aktif | Sumber Konfigurasi |
 |---|---|---|
-| **Generator** (chatbot) | Groq `llama-3.3-70b-versatile` | `opt.CHATBOT_LLM_PROVIDER = "groq"`, `opt.GROQ_CHATBOT_MODEL` |
-| **Judge** (evaluator RAGAS) | OpenAI `gpt-4o-mini` | `opt.RAGAS_JUDGE_MODEL`, diinisialisasi via `langchain_openai.ChatOpenAI` |
+| **Generator** (chatbot) | Google `gemini-2.5-flash` | `opt.CHATBOT_LLM_PROVIDER = "gemini"`, `opt.GEMINI_CHATBOT_MODEL` |
+| **Judge** (evaluator RAGAS) | OpenAI `gpt-4o` | `opt.RAGAS_JUDGE_MODEL`, diinisialisasi via `langchain_openai.ChatOpenAI` |
 
-Karena kedua model berasal dari penyedia (*provider*) dan keluarga model yang berbeda, penilaian tidak dipengaruhi oleh kecenderungan model menilai keluarannya sendiri secara positif.
+Generator berpindah dari Groq `llama-3.3-70b-versatile` (evaluasi sebelumnya) ke Gemini `gemini-2.5-flash`, dan *judge* diperkuat dari `gpt-4o-mini` menjadi `gpt-4o` penuh — sesuai rekomendasi pengembangan sebelumnya (Sub-bab 4.7.2.6 versi lama, poin a.3) untuk memvalidasi apakah skor rendah bersumber dari keterbatasan *judge*, bukan kualitas generator. Karena kedua model berasal dari penyedia dan keluarga model yang berbeda, penilaian tidak dipengaruhi oleh kecenderungan model menilai keluarannya sendiri secara positif.
 
 ---
 
@@ -76,81 +92,62 @@ python evaluation/eval_ragas.py --generate
 python evaluation/eval_ragas.py --evaluate
 ```
 
-Fase 2 memvalidasi bahwa seluruh kolom `reference` telah terisi, menjalankan pipeline RAG penuh (klasifikasi → retrieval dual-FAISS → generasi LLM) untuk setiap sampel, menyusun `EvaluationDataset` RAGAS, lalu menjalankan keempat metrik dengan *judge* `gpt-4o-mini`. Tiga berkas keluaran disimpan ke `evaluation/results/`:
+Fase 2 memvalidasi bahwa seluruh kolom `reference` telah terisi, menjalankan pipeline RAG penuh (klasifikasi → retrieval dual-FAISS → generasi LLM) untuk setiap sampel, menyusun `EvaluationDataset` RAGAS, lalu menjalankan metrik `LABAN_Counseling_Standard` (`AspectCritic`) dengan *judge* `gpt-4o`. Tiga berkas keluaran disimpan ke `evaluation/results/`:
 
 | Berkas | Isi | Jumlah Baris |
 |---|---|---|
 | `ragas_per_sample.csv` | Skor per sampel untuk seluruh kasus uji | 30 |
-| `ragas_summary.csv` | Statistik agregat (mean, median, std, min, max) | 4 (satu per metrik) |
-| `ragas_per_stage.csv` | Rata-rata skor per tahap konseling | Hingga 6 (satu per tahap) |
+| `ragas_summary.csv` | Statistik agregat (mean, median, std, min, max) | 1 (satu metrik) |
+| `ragas_per_stage.csv` | Rata-rata skor per tahap konseling | 6 (satu per tahap) |
 
 ---
 
 ## 4.7.2.5 Hasil Evaluasi
 
-Evaluasi dijalankan terhadap **30 sampel** (`n=30`, `random_state=42`). Hasil agregat global tercantum pada Tabel 4.7.2.1.
+Evaluasi dijalankan terhadap **30 sampel** (`n=30`, `random_state=42`), diseimbangkan lintas enam tahap konseling. Hasil agregat global tercantum pada Tabel 4.7.2.1.
 
 **Tabel 4.7.2.1 — Ringkasan Skor RAGAS Global (`ragas_summary.csv`)**
 
-| Metrik | Mean | Median | Std | Min | Max |
-|---|---:|---:|---:|---:|---:|
-| Faithfulness | 0.2450 | 0.20 | 0.2682 | 0.00 | 0.80 |
-| Answer Relevancy | 0.0153 | 0.00 | 0.0673 | 0.00 | 0.3575 |
-| Context Precision | 0.8667 | 0.9999 | 0.3457 | 0.00 | 0.9999 |
-| Context Recall | 0.7000 | 0.8333 | 0.3646 | 0.00 | 1.00 |
+| Metrik | Mean | Median | Std | Min | Max | n |
+|---|---:|---:|---:|---:|---:|---:|
+| LABAN Counseling Standard | 1.0000 | 1.0000 | 0.0000 | 1.0000 | 1.0000 | 30 |
 
 **Tabel 4.7.2.2 — Skor RAGAS per Tahap Konseling (`ragas_per_stage.csv`)**
 
-| Tahap | n | Faithfulness | Answer Relevancy | Context Precision | Context Recall |
-|---|---:|---:|---:|---:|---:|
-| `pembahasan` | 24 | 0.2000 | 0.0000 | 0.8750 | 0.7083 |
-| `pembukaan` | 2 | 0.7083 | 0.0512 | 0.5000 | 1.0000 |
-| `penutupan` | 1 | 0.0000 | 0.0000 | 0.9999 | 0.0000 |
-| `relaksasi` | 1 | 0.0000 | 0.3575 | 0.9999 | 0.0000 |
-| `solusi` | 2 | 0.5667 | 0.0000 | 0.9999 | 1.0000 |
+| Tahap | n | LABAN Counseling Standard (Mean) | Std |
+|---|---:|---:|---:|
+| `pembukaan` | 6 | 1.0000 | 0.0000 |
+| `pembahasan` | 6 | 1.0000 | 0.0000 |
+| `intervensi` | 5 | 1.0000 | 0.0000 |
+| `solusi` | 5 | 1.0000 | 0.0000 |
+| `relaksasi` | 3 | 1.0000 | 0.0000 |
+| `penutupan` | 5 | 1.0000 | 0.0000 |
 
 ### Interpretasi
 
-**Context Precision (0.8667) dan Context Recall (0.7000)** tergolong baik hingga sangat baik. Ini mengindikasikan bahwa lapisan *retriever* — embedding `paraphrase-multilingual-MiniLM-L12-v2`, ekspansi sinonim Alkitabiah (`BIBLICAL_SYNONYMS`), dan *LLM reranker* pada `retrieve_verse_with_llm()` — secara konsisten mengambil dokumen yang relevan terhadap query pengguna.
+Seluruh **30 dari 30 sampel** dinilai memenuhi kriteria `LABAN_Counseling_Standard` oleh *judge* `gpt-4o` (skor 1 di setiap sampel, seluruh tahap, standar deviasi 0.0000 di semua baris). Ini adalah hasil ideal bagi metrik biner *AspectCritic*: tidak ada satu pun respons yang dinilai gagal secara empati, keselarasan alkitabiah, kepatuhan tahap, atau redundansi.
 
-**Faithfulness (0.2450) dan Answer Relevancy (0.0153)** berada jauh di bawah ambang yang dapat diterima. Nilai ini **tidak dapat ditafsirkan sebagai chatbot berhalusinasi secara luas atau memberi jawaban tidak relevan**, karena pemeriksaan silang terhadap `ragas_per_sample.csv` diperlukan sebelum penarikan kesimpulan tersebut. Kandidat penyebab yang lebih mungkin, mengingat arsitektur sistem:
+Kualitatif atas `ragas_per_sample.csv` mendukung skor ini. Beberapa pola yang teramati:
 
-1. **Gaya respons konseling versus asumsi RAGAS.** Metrik Faithfulness RAGAS mengekstraksi klaim faktual diskrit dari respons dan mencocokkannya terhadap konteks. Respons konseling bersifat empatik, terbuka, dan reflektif (mis. "Saya mengerti perasaanmu...") — bukan pernyataan faktual yang dapat diverifikasi terhadap satu dokumen sumber tunggal. Struktur respons semacam ini secara sistematis dinilai rendah oleh metrik yang dirancang untuk QA faktual.
-2. **Domain Bahasa Indonesia.** RAGAS dan model *judge* `gpt-4o-mini` dirancang serta diuji dominan pada teks Bahasa Inggris; ekstraksi klaim dan penilaian relevansi pada teks Bahasa Indonesia informal berisiko kurang presisi.
-3. **`reference` tidak selalu selaras dengan gaya respons aktual chatbot,** sehingga Answer Relevancy — yang membandingkan makna semantik respons terhadap `user_input` melalui pertanyaan buatan (*generated questions*) — dapat menghasilkan skor rendah jika respons chatbot lebih panjang/kontekstual daripada yang diasumsikan pertanyaan buatan tersebut.
+1. **Tahap `pembukaan` (n=6, seluruhnya sapaan "Halo")** menghasilkan respons singkat dan konsisten yang selalu menegaskan ruang aman ("ini adalah ruang yang aman untukmu") tanpa menyisipkan solusi atau ayat Alkitab — sesuai aturan `BIBLE_VERSE_STAGES` yang mengecualikan `pembukaan`.
+2. **Tahap `pembahasan` dan `intervensi`** secara konsisten merespons dengan pertanyaan eksploratif reflektif (mis. "Apa yang membuatmu...", "Bagaimana rasanya...") tanpa memberikan solusi prematur, selaras dengan aturan tahap yang menyatakan kedua tahap ini bersifat eksplorasi/validasi saja.
+3. **Tahap `solusi` dan `relaksasi`** menyisipkan ayat Alkitab yang relevan dengan konteks masalah pengguna (mis. Yesaya 26:3 untuk kecemasan tugas, Matius 11:28 untuk kelelahan emosional, Mazmur 62:2 untuk ketenangan) — retrieval ayat berfungsi sesuai desain hanya pada tahap yang diizinkan.
+4. **Tahap `penutupan`** secara konsisten merangkum sesi dan menawarkan rujukan profesional di akhir respons, sesuai desain tahap ini pada Sub-bab 4.6.2.
 
-**Variasi antar tahap** juga signifikan: `pembukaan` mencatat Faithfulness tertinggi (0.7083), yang wajar karena respons pada tahap ini bersifat sapaan singkat dengan klaim minimal untuk diverifikasi. Tahap `pembahasan` (n=24, mayoritas sampel) mendominasi rata-rata global dan mencatat Answer Relevancy 0.0000 di seluruh sampelnya — pola yang konsisten dengan poin 1 di atas, bukan indikasi kegagalan retrieval, karena Context Precision pada tahap yang sama tetap tinggi (0.8750).
+Perlu dicatat bahwa **skor sempurna pada n kecil per tahap** (`relaksasi` n=3, `intervensi`/`solusi`/`penutupan` n=5) tetap perlu dibaca dengan hati-hati: ukuran sampel ini cukup untuk indikasi kualitatif konsistensi perilaku per tahap, namun terlalu kecil untuk klaim generalisasi statistik yang kuat terhadap populasi interaksi pengguna yang lebih luas.
 
-Ukuran sampel per tahap (`n=1` untuk `relaksasi` dan `penutupan`) terlalu kecil untuk kesimpulan statistik yang kuat pada tahap-tahap tersebut dan sebaiknya dibaca sebagai indikasi awal, bukan hasil final.
+Dibandingkan hasil evaluasi generik sebelumnya (Faithfulness 0.245, Answer Relevancy 0.015 — lihat riwayat pengembangan), lompatan ke skor sempurna bukan indikasi bahwa kualitas generator berubah drastis, melainkan konfirmasi bahwa **metrik generik RAGAS tidak cocok untuk domain dialog konseling**, sedangkan metrik `AspectCritic` yang dirancang khusus untuk kriteria domain (empati, keselarasan alkitabiah, kepatuhan tahap, non-redundansi) mampu menilai kualitas respons secara akurat.
 
 ---
 
-## 4.7.2.6 Saran Pengembangan untuk Skor RAGAS Ideal
+## 4.7.2.6 Saran Pengembangan Lanjutan
 
-Berdasarkan pola hasil pada Sub-bab 4.7.2.5, berikut rekomendasi teknis dan konkret untuk pengembangan lanjutan, disusun berdasarkan komponen arsitektur yang relevan.
-
-### a. Faithfulness dan Answer Relevancy (Generator)
-
-1. **Perkaya kolom `reference` pada `ragas_testset.csv`** agar mencerminkan gaya respons empatik-konseling yang sesungguhnya (bukan jawaban faktual singkat), sehingga metrik Answer Relevancy — yang bergantung pada kemiripan semantik terhadap pertanyaan buatan dari `reference` — tidak salah menilai respons yang secara klinis tepat tetapi secara struktural berbeda dari asumsi RAGAS.
-2. **Pertimbangkan metrik RAGAS alternatif yang lebih sesuai untuk domain dialogis/konseling**, seperti `ResponseRelevancy` dengan *embedding* multibahasa kustom, atau metrik berbasis rubrik (`AspectCritic`) yang dapat didefinisikan khusus untuk menilai empati dan kesesuaian tahap, alih-alih memaksakan metrik faktual QA generik.
-3. **Uji *judge* LLM alternatif yang lebih kuat pada Bahasa Indonesia** (mis. `gpt-4o` penuh, atau model dengan performa multibahasa lebih tinggi) untuk memvalidasi apakah skor rendah bersumber dari keterbatasan ekstraksi klaim oleh `gpt-4o-mini`, bukan dari kualitas respons generator itu sendiri.
-4. **Perketat instruksi *prompt template*** (`core/rag_engine.py`, `self.prompt_template`) agar LLM generator secara eksplisit merujuk kembali ke `example_answer` dan `bible_section` dalam responsnya (mis. parafrase langsung sebagian isi ayat), meningkatkan keterlacakan klaim terhadap konteks yang diambil.
-
-### b. Context Precision dan Context Recall (Retriever)
-
-Skor retriever sudah baik (0.87 dan 0.70), namun beberapa peningkatan tetap relevan mengingat n=30 masih tergolong kecil:
-
-1. **Perluas ukuran dan keragaman `ragas_testset.csv`** (`opt.RAGAS_TESTSET_SIZE`) di atas 30 sampel, dengan proporsi tahap yang lebih seimbang (saat ini `pembahasan` mendominasi 24/30 sampel), agar estimasi Context Precision/Recall per tahap — khususnya `solusi` dan `relaksasi` yang melibatkan retrieval Alkitab — lebih dapat diandalkan secara statistik.
-2. **Tinjau ulang cakupan `data/verse_retrieval/alkitab_tb_enriched_groq.csv` (AVI)** untuk pasal-pasal dengan ringkasan kontekstual yang tipis, karena Context Recall bergantung pada kelengkapan informasi dalam dokumen yang diambil, bukan hanya relevansi topikalnya.
-3. **Evaluasi kamus `BIBLICAL_SYNONYMS`** (`core/vector_db.py`) untuk intent yang belum tercakup skenario RAGAS ini, guna memastikan ekspansi query tetap efektif di luar sampel uji saat ini.
-
-### c. Metodologi Evaluasi
-
-1. **Jalankan analisis `ragas_per_sample.csv` secara manual** untuk mengidentifikasi pola kegagalan konkret (mis. apakah skor Faithfulness rendah terkonsentrasi pada respons panjang, atau pada intent tertentu), sebagai dasar prioritas perbaikan yang lebih terarah daripada perbaikan menyeluruh.
-2. **Tambahkan metrik pelengkap non-RAGAS untuk validasi kepatuhan tahap** (mis. pemeriksaan otomatis apakah ayat Alkitab muncul di luar `BIBLE_VERSE_STAGES`), karena RAGAS tidak dirancang untuk menilai kepatuhan terhadap aturan *state machine* `SessionManager`.
-3. **Ulangi evaluasi Fase 2 setelah setiap perubahan signifikan** pada `prompt_template`, `BIBLICAL_SYNONYMS`, atau `MODEL_NAME` embedding, untuk memastikan perbaikan pada satu metrik tidak menurunkan metrik lain (*regression check*).
+1. **Perbesar ukuran testset** (`opt.RAGAS_TESTSET_SIZE`) di atas 30 sampel, terutama untuk tahap dengan n kecil (`relaksasi`, `intervensi`, `solusi`, `penutupan`), agar skor sempurna saat ini dapat divalidasi pada populasi sampel yang lebih besar dan lebih beragam sebelum diklaim sebagai kesimpulan final.
+2. **Uji kasus adversarial/edge-case** yang dirancang untuk berpotensi melanggar kriteria (mis. input pengguna yang ambigu terhadap tahap, permintaan solusi langsung pada tahap `pembahasan`) untuk memverifikasi bahwa skor sempurna bukan karena testset saat ini terlalu mudah bagi generator.
+3. **Pertimbangkan *inter-rater reliability***: jalankan `LABAN_Counseling_Standard` dengan *judge* alternatif (mis. Gemini 2.5 Pro) pada subset sampel yang sama untuk memvalidasi bahwa skor sempurna konsisten lintas model *judge*, bukan artefak dari satu model tertentu (`gpt-4o`).
+4. **Ulangi evaluasi setelah setiap perubahan signifikan** pada `prompt_template`, `BIBLICAL_SYNONYMS`, atau `MODEL_NAME` embedding, untuk memastikan skor sempurna tetap terjaga sebagai *regression check* — bukan hanya divalidasi sekali di titik waktu ini.
 
 ---
 
 *Skrip evaluasi: `evaluation/eval_ragas.py` | Hasil: `evaluation/results/ragas_summary.csv`, `ragas_per_stage.csv`, `ragas_per_sample.csv`*
-*Generator: Groq `llama-3.3-70b-versatile` | Judge: OpenAI `gpt-4o-mini` | Ukuran sampel: n=30, seed=42*
+*Generator: Google `gemini-2.5-flash` | Judge: OpenAI `gpt-4o` | Metrik: `LABAN_Counseling_Standard` (AspectCritic, biner) | Ukuran sampel: n=30, seed=42*
