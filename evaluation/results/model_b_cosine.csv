@@ -1,0 +1,4 @@
+﻿split,unseen_intents,f1_macro_seen7,precision_seen7,recall_seen7,f1_macro_unseen3,precision_unseen3,recall_unseen3
+Split-A,Mengisyaratkan Butuh Bantuan Profesional; Mengisyaratkan Gejala Fisik; Menyatakan Reaksi Terkejut dan Tidak Terduga,0.1138,0.6131,0.0869,0.3415,0.6463,0.3082
+Split-B,Menyatakan Perasaan Benci dan Jijik; Menyatakan Rasa Syukur dan Apresiasi; Menyatakan Perasaan Sebelum Menghadapi Kejadian,0.1849,0.5532,0.154,0.1754,0.7862,0.1514
+Split-C,Menyatakan Perasaan Marah dan Frustasi; Menyatakan Perasaan Percaya; Menyatakan Perasaan Sedih dan Kehilangan,0.2215,0.614,0.197,0.09,0.6444,0.0513

@@ -6,8 +6,8 @@ Two-phase workflow:
                         auto-assign stages,
                         save template CSV for manual reference authoring.
   Phase 2 (--evaluate): Run RAG pipeline on each sample, evaluate with
-                        RAGAS metrics using OpenAI gpt-4o-mini as judge
-                        (via ragas.llms.llm_factory). Generator remains Groq.
+                        RAGAS metrics using OpenAI as judge
+                        (via langchain_openai.ChatOpenAI). Generator remains Groq.
 
 Usage:
   python evaluation/eval_ragas.py --generate
@@ -50,6 +50,62 @@ SAMPLE_SIZE = opt.RAGAS_TESTSET_SIZE  # Phase 1 sample count AND Phase 2 eval ca
 
 # Stages where Bible verse retrieval is active
 BIBLE_VERSE_STAGES = frozenset({"solusi", "relaksasi"})
+
+# All 6 counseling stages, in pipeline order
+STAGES = ["pembukaan", "pembahasan", "intervensi", "solusi", "relaksasi", "penutupan"]
+
+# LABAN-specific AspectCritic definition (replaces generic RAGAS metrics)
+LABAN_CRITERIA_DEFINITION = (
+    "Apakah respons chatbot menunjukkan empati yang tepat, tidak menghakimi, "
+    "selaras dengan prinsip konseling alkitabiah, dan merespons dengan tepat "
+    "sesuai instruksi tahap konseling saat ini: misalnya, tidak memberikan "
+    "solusi secara prematur pada tahap pembahasan/intervensi, tidak redundan "
+    "(sudah jelas di input pengguna, tapi tetap ditanyakan kembali)"
+)
+
+
+def balance_by_stage(df: pd.DataFrame, total: int, seed: int = RANDOM_SEED) -> pd.DataFrame:
+    """
+    Draw `total` rows from df spread as evenly as possible across the 6
+    counseling stages.
+
+    A strictly equal split is capped by the scarcest stage, which would throw
+    away most of the corpus. Instead: round-robin one row per stage per pass,
+    skipping stages that have run out. Scarce stages max out at their full
+    availability; surplus stages absorb the remainder. Stages absent from df
+    are skipped with a warning rather than crashing.
+    """
+    groups = {s: df[df["stage"] == s] for s in STAGES}
+    present = {s: g for s, g in groups.items() if len(g) > 0}
+    missing = [s for s in STAGES if s not in present]
+    if missing:
+        print(f"  [WARN] No samples for stage(s): {missing} - excluded from balanced set.")
+
+    total = min(total, len(df))
+    quota = dict.fromkeys(present, 0)
+    while sum(quota.values()) < total:
+        spare = [s for s in present if quota[s] < len(present[s])]
+        if not spare:
+            break
+        for stage in spare:
+            if sum(quota.values()) >= total:
+                break
+            quota[stage] += 1
+
+    balanced = (
+        pd.concat([present[s].sample(n=n, random_state=seed) for s, n in quota.items() if n])
+        .sample(frac=1, random_state=seed)
+        .reset_index(drop=True)
+    )
+
+    print(f"\n  Balanced stage distribution:")
+    for stage in STAGES:
+        avail = len(present.get(stage, []))
+        capped = " (all available)" if quota.get(stage, 0) == avail and avail else ""
+        print(f"    {stage}: {quota.get(stage, 0)} / {avail} available{capped}")
+    print(f"  Balanced total: {len(balanced)} samples")
+
+    return balanced
 
 
 # =========================================================================
@@ -146,33 +202,27 @@ def generate_testset():
     df = df[df["question"].str.len() > 0]
     print(f"  After cleanup: {len(df)} valid rows")
 
-    # Random sample
     random.seed(RANDOM_SEED)
     np.random.seed(RANDOM_SEED)
 
-    print(f"  [INFO] Testset size is strictly set to {SAMPLE_SIZE} samples.")
-    if len(df) < SAMPLE_SIZE:
-        print(f"  [WARN] Only {len(df)} rows available, using all.")
-        sample_df = df.copy()
-    else:
-        sample_df = df.sample(n=SAMPLE_SIZE, random_state=RANDOM_SEED)
-
-    print(f"  Sampled: {len(sample_df)} entries")
-
-    # Auto-assign stages
-    stages = sample_df["question"].apply(classify_stage)
-    stage_counts = stages.value_counts()
-    print(f"\n  Auto-assigned stage distribution:")
-    for stage, count in stage_counts.items():
+    # Classify the WHOLE corpus before sampling. Sampling first would inherit
+    # the corpus's natural skew (pembahasan dominates ~80% of the QnA rows).
+    df["stage"] = df["question"].apply(classify_stage)
+    print(f"\n  Corpus stage distribution (all {len(df)} rows):")
+    for stage in STAGES:
+        count = int((df["stage"] == stage).sum())
         marker = " (Bible verse)" if stage in BIBLE_VERSE_STAGES else ""
         print(f"    {stage}: {count}{marker}")
+
+    print(f"\n  [INFO] Testset size is strictly set to {SAMPLE_SIZE} samples.")
+    sample_df = balance_by_stage(df, total=SAMPLE_SIZE)
 
     # Build output DataFrame
     out_df = pd.DataFrame({
         "question": sample_df["question"].values,
-        "stage": stages.values,
-        "reference": "",  # Empty — user fills this
-        "intent_override": "",  # Optional — user can fill for Bible verse stages
+        "stage": sample_df["stage"].values,
+        "reference": "",  # Empty - user fills this
+        "intent_override": "",  # Optional - user can fill for Bible verse stages
     })
 
     # Pre-fill intent_override hint for Bible verse stages
@@ -221,10 +271,11 @@ def run_evaluation():
     df = pd.read_csv(TESTSET_CSV)
     print(f"\n  Test set loaded: {len(df)} samples")
 
-    df = df.head(SAMPLE_SIZE)
-    print(f"  [INFO] Testset size is strictly set to {SAMPLE_SIZE} samples.")
+    # Phase 1 already balances the template; this is a safety net for
+    # hand-edited CSVs and a no-op on an already-balanced one.
+    df = balance_by_stage(df, total=len(df))
 
-    # Check for empty references
+    # Check for empty references (only on the balanced subset actually evaluated)
     empty_refs = df["reference"].isna() | (df["reference"].astype(str).str.strip() == "")
     if empty_refs.any():
         n_empty = empty_refs.sum()
@@ -234,11 +285,6 @@ def run_evaluation():
         empty_indices = df[empty_refs].index.tolist()
         print(f"  Empty rows: {empty_indices[:10]}{'...' if len(empty_indices) > 10 else ''}")
         sys.exit(1)
-
-    stage_counts = df["stage"].value_counts()
-    print(f"  Stage distribution:")
-    for stage, count in stage_counts.items():
-        print(f"    {stage}: {count}")
 
     # -- 2. Initialize RAG Engine -------------------------------------------
     print(f"\n  Initializing RAG Engine...")
@@ -322,17 +368,14 @@ def run_evaluation():
     print(f"\n  Building RAGAS evaluation dataset...")
 
     from ragas import evaluate, EvaluationDataset, SingleTurnSample
-    from ragas.metrics.collections import (
-        Faithfulness,
-        AnswerRelevancy,
-        ContextPrecisionWithoutReference,
-        ContextRecall,
-    )
+    from ragas.metrics import AspectCritic
 
     samples = []
     for r in results:
         sample = SingleTurnSample(
-            user_input=r["question"],
+            # Stage prefix lets the LABAN AspectCritic judge stage-appropriateness
+            # (e.g. no premature solutions during pembahasan/intervensi).
+            user_input=f"[Tahap Konseling: {r['stage']}] {r['question']}",
             response=r["response"],
             retrieved_contexts=r["retrieved_contexts"],
             reference=r["reference"],
@@ -342,66 +385,87 @@ def run_evaluation():
     eval_dataset = EvaluationDataset(samples=samples)
     print(f"  [OK] EvaluationDataset built with {len(samples)} samples")
 
-    # -- 5. Configure OpenAI LLM judge via ragas llm_factory ---------------
-    print(f"\n  Configuring OpenAI LLM judge via ragas llm_factory...")
+    # -- 5. Configure OpenAI LLM judge + embeddings (langchain_openai) ------
+    print(f"\n  Configuring OpenAI LLM judge via langchain_openai...")
 
-    from config import opt
-    from ragas.llms import llm_factory
+    from langchain_openai import ChatOpenAI
 
-    # Guard: ensure OPENAI_API_KEY is present before calling llm_factory.
-    # dotenv has already been loaded above; llm_factory reads the env directly.
+    # Guard: ensure OPENAI_API_KEY is present before constructing the client.
+    # dotenv has already been loaded above.
     openai_api_key = os.getenv(opt.RAGAS_JUDGE_API_KEY_ENV)
     if not openai_api_key:
         print(f"  [ERROR] {opt.RAGAS_JUDGE_API_KEY_ENV} not found in .env")
         sys.exit(1)
 
-    # llm_factory returns a RAGAS-native LangchainLLMWrapper (InstructorLLM
-    # compatible), which avoids the ValueError thrown by raw LangChain models.
-    ragas_judge_llm = llm_factory(opt.RAGAS_JUDGE_MODEL)
-    print(f"  [OK] OpenAI judge configured ({opt.RAGAS_JUDGE_MODEL}) via llm_factory")
+    # evaluate() auto-wraps a raw langchain BaseLanguageModel into its own
+    # LangchainLLMWrapper and binds it to any metric with llm=None — no
+    # manual wrapping needed.
+    ragas_judge_llm = ChatOpenAI(
+        model=opt.RAGAS_JUDGE_MODEL,
+        api_key=openai_api_key,
+        temperature=opt.RAGAS_JUDGE_TEMPERATURE,
+    )
+    print(f"  [OK] OpenAI judge configured ({opt.RAGAS_JUDGE_MODEL})")
 
     # -- 6. Define metrics --------------------------------------------------
-    # Instantiate metrics first, then assign the judge so each metric shares
-    # the same InstructorLLM-compatible wrapper.
-    faithfulness_metric = Faithfulness()
-    answer_relevancy_metric = AnswerRelevancy()
-    context_precision_metric = ContextPrecisionWithoutReference()
-    context_recall_metric = ContextRecall()
-
-    metrics = [
-        faithfulness_metric,
-        answer_relevancy_metric,
-        context_precision_metric,
-        context_recall_metric,
-    ]
-    for metric in metrics:
-        metric.llm = ragas_judge_llm
-
-    metric_names = [
-        "faithfulness",
-        "answer_relevancy",
-        "context_precision",
-        "context_recall",
-    ]
+    # LABAN-specific AspectCritic replaces the generic RAGAS metric stack —
+    # judges empathy, non-judgmental tone, biblical-counseling alignment, and
+    # stage-appropriateness in one binary criterion. llm gets auto-injected
+    # by evaluate() itself via the llm= kwarg below (same mechanism the old
+    # metrics relied on).
+    laban_metric = AspectCritic(
+        name="LABAN_Counseling_Standard",
+        definition=LABAN_CRITERIA_DEFINITION,
+    )
+    metrics = [laban_metric]
+    metric_names = ["LABAN_Counseling_Standard"]
     print(f"  Metrics: {metric_names}")
 
-    # -- 7. Run RAGAS evaluation --------------------------------------------
+    # -- 7. Preflight check (zero API cost) ---------------------------------
+    # Validate metric/LLM/embeddings wiring locally before spending any API
+    # calls — reuses ragas's own internal validators so a broken refactor
+    # fails immediately instead of after N billed judge calls.
+    print(f"\n  Running preflight checks (no API calls)...")
+
+    from langchain_core.language_models import BaseLanguageModel as LangchainLLM
+    from ragas.metrics.base import Metric
+    from ragas.validation import validate_required_columns, validate_supported_metrics
+
+    bad_metrics = [m for m in metrics if not isinstance(m, Metric)]
+    if bad_metrics:
+        print(f"  [PREFLIGHT FAIL] Not valid ragas Metric objects: {bad_metrics}")
+        sys.exit(1)
+    if not isinstance(ragas_judge_llm, LangchainLLM):
+        print(f"  [PREFLIGHT FAIL] judge llm is not a Langchain BaseLanguageModel: {type(ragas_judge_llm)}")
+        sys.exit(1)
+    try:
+        validate_required_columns(eval_dataset, metrics)
+        validate_supported_metrics(eval_dataset, metrics)
+    except ValueError as e:
+        print(f"  [PREFLIGHT FAIL] {e}")
+        sys.exit(1)
+
+    print("  [OK] Preflight checks passed (no API calls made)")
+
+    # -- 8. Run RAGAS evaluation --------------------------------------------
     print(f"\n  Running RAGAS evaluation (this may take a few minutes)...")
+
+    import traceback
 
     try:
         ragas_results = evaluate(
             dataset=eval_dataset,
             metrics=metrics,
+            llm=ragas_judge_llm,
         )
     except Exception as e:
         print(f"  [ERROR] RAGAS evaluation failed: {e}")
-        print("  This may be due to API rate limits or model compatibility.")
-        print("  Try again or reduce sample size.")
+        traceback.print_exc()
         sys.exit(1)
 
     print(f"  [OK] RAGAS evaluation completed")
 
-    # -- 8. Save results ----------------------------------------------------
+    # -- 9. Save results ----------------------------------------------------
     os.makedirs(RESULTS_DIR, exist_ok=True)
 
     # Convert to DataFrame
@@ -454,7 +518,7 @@ def run_evaluation():
     stage_df.to_csv(stage_path, index=False, encoding="utf-8-sig")
     print(f"  [OK] Saved: {stage_path}")
 
-    # -- 9. Console summary -------------------------------------------------
+    # -- 10. Console summary -------------------------------------------------
     print(f"\n{'=' * 65}")
     print("  RAGAS EVALUATION SUMMARY")
     print(f"{'=' * 65}")

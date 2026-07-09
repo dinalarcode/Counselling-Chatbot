@@ -1,0 +1,11 @@
+﻿intent,group,f1,precision,recall,support
+Mengisyaratkan Butuh Bantuan Profesional,seen,0.9667,0.9775,0.956,91
+Mengisyaratkan Gejala Fisik,seen,0.9718,0.9885,0.9556,90
+Menyatakan Perasaan Benci dan Jijik,seen,0.8986,0.9208,0.8774,106
+Menyatakan Perasaan Marah dan Frustasi,seen,0.8472,0.8714,0.8243,74
+Menyatakan Perasaan Percaya,seen,0.879,0.9079,0.8519,81
+Menyatakan Perasaan Sebelum Menghadapi Kejadian,seen,0.8,0.8571,0.75,64
+Menyatakan Perasaan Sedih dan Kehilangan,seen,0.8923,0.9062,0.8788,99
+Menyatakan Perasaan Takut dan Kecemasan,seen,0.8871,0.9167,0.8594,128
+Menyatakan Rasa Syukur dan Apresiasi,seen,0.9364,0.9759,0.9,90
+Menyatakan Reaksi Terkejut dan Tidak Terduga,seen,0.8302,0.9167,0.7586,58

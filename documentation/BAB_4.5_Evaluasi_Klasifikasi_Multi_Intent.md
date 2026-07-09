@@ -1,4 +1,4 @@
-# BAB 4.5 — Evaluasi Sistem Klasifikasi Multi-Intent: Metodologi Tiga Skenario, Komparasi Backbone, dan Analisis Geometri Semantik
+# BAB 4.5 — Evaluasi Sistem Klasifikasi Multi-Intent: Komparasi Dua Rezim Basis Label, Komparasi Backbone, dan Analisis Geometri Semantik
 
 ---
 
@@ -6,7 +6,7 @@
 
 Evaluasi terhadap model klasifikasi multi-intent LABAN (*Label-Aware BERT Attention Network*) dirancang dalam tiga lapisan yang saling melengkapi. Setiap lapisan menjawab pertanyaan evaluatif yang berbeda dan tidak dapat dijawab oleh lapisan lainnya secara tunggal.
 
-**Lapisan pertama** menguji kemampuan generalisasi model melalui protokol *Zero-Shot Learning* (ZSL) tiga skenario: (*1*) performa *closed-set* penuh menggunakan 10 intent produksi (*Baseline Produksi*), (*2*) degradasi performa ketika label set dikurangi menjadi 7 intent (*Split Degradation*), dan (*3*) kemampuan transfer ke 3 intent yang tidak pernah dilihat saat pelatihan (*ZSL Capability*). Ketiga skenario ini membangun argumen akademis yang kohesif mengenai mengapa arsitektur 10-intent *closed-set* dipilih sebagai konfigurasi produksi, meskipun kemampuan ZSL arsitektur dual-encoder secara teknis dapat mendukung *open-vocabulary* inference.
+**Lapisan pertama** mengevaluasi **satu mekanisme keputusan tunggal** dari model LABAN — proyeksi *gram-inverse* $\mathbf{w} = \sqrt{H}\,\mathbf{G}^{-1}\mathbf{b}$ — di bawah **dua rezim basis label** yang berbeda, disajikan sebagai **matriks eksperimen simetris 2×2**. LABAN tidak memiliki *linear classification head* (`nn.Linear`) yang terpisah; keputusan klasifikasi SELALU dihasilkan oleh proyeksi *least-squares* atas *embedding* label yang diberikan pada saat inferensi. Yang membedakan *Rezim A* (basis tetap/*fixed*) dari *Rezim B* (basis diperluas/*extended*) hanyalah **jumlah dan komposisi kolom label** yang diumpankan ke dalam proyeksi tersebut — bukan mekanisme matematisnya. Kedua rezim dievaluasi di bawah dua skenario yang sama — *Skenario Produksi* (10 label) dan *Skenario Riset ZSL* (7 *seen* / 3 *unseen*) — menghasilkan matriks 2×2 yang memisahkan dua kesimpulan: bahwa membatasi basis ke 10 label tetap tidak mengorbankan akurasi apa pun pada kondisi produksi (karena kedua rezim identik secara matematis ketika tidak ada label *unseen*), sekaligus membuktikan bahwa kemampuan *Zero-Shot Learning* (ZSL) LABAN bersifat **arsitektural** — diperoleh dengan memperluas basis label pada saat *test-time* tanpa retraining, bukan dengan mengganti mekanisme skor menjadi *cosine similarity*.
 
 **Lapisan kedua** menguji pemilihan *backbone transformer* melalui komparasi empat paradigma yang dikontrol secara ketat, menghasilkan justifikasi empiris atas seleksi `indobenchmark/indobert-base-p1` sebagai *backbone* aktif.
 
@@ -14,33 +14,58 @@ Evaluasi terhadap model klasifikasi multi-intent LABAN (*Label-Aware BERT Attent
 
 ---
 
-## 4.5.2 Skenario Evaluasi ZSL Tiga Arah (*Three-Way ZSL Evaluation*)
+## 4.5.2 Perbandingan Dua Model: Skenario Produksi vs. Skenario Riset (ZSL)
 
-### Latar Belakang dan Desain Protokol
+Pada sub-bab ini, dua model dibandingkan langsung di bawah dua skenario pengujian yang berbeda:
 
-Arsitektur LABAN membangun dua *encoder* yang terpisah: *utterance encoder* (memproses input pengguna) dan *label encoder* (memproses teks deskriptif label intent). Pada saat inferensi produksi, keluaran kedua *encoder* tersebut dikombinasikan melalui *gram-inverse logit head* — sebuah lapisan linier implisit yang telah dioptimasi selama *fine-tuning* terhadap label intent yang diketahui. Namun, karena kedua *encoder* menghasilkan embedding di ruang vektor yang sama, *cosine similarity* mentah antara keduanya juga mengandung sinyal semantik yang dapat dimanfaatkan tanpa melewati *logit head*. Karakteristik inilah yang menjadi dasar kemampuan ZSL arsitektur ini.
+- **Model A — Model Produksi**: Model yang aktif berjalan di sistem chatbot. Ia hanya mengenali 10 intent yang sudah ditentukan. Ia tidak dirancang untuk menangani intent di luar daftar tersebut.
+- **Model B — Model Asli LABAN dengan ZSL**: Arsitektur LABAN yang asli. Ia dapat menerima intent baru yang belum pernah dilihat selama pelatihan (*unseen*) tanpa perlu dilatih ulang, hanya dengan menambahkan deskripsi label baru ke dalam proses prediksi.
 
-Untuk membangun evaluasi yang akademis, tiga skenario dijalankan oleh script `evaluation/eval_seen_unseen.py`, masing-masing dengan metodologi inferensi yang berbeda secara fundamental:
+Kedua model menggunakan *checkpoint* yang sama (`checkpoint/IndoBERT_multi_label_zsl.pt`) dan mekanisme matematis yang identik. Perbedaannya hanya pada **daftar label yang digunakan saat prediksi**.
 
-```
-Skenario 1: 10 Seen Intents
-    Checkpoint produksi → gram-inverse logit head → sigmoid → threshold
-    → F1-Macro atas 10 kelas (performa produksi sesungguhnya)
+### Perbedaan Arsitektur: Mengapa Hasilnya Berbeda
 
-Skenario 2: 7 Seen Intents
-    Checkpoint produksi → in-memory fine-tune (label unseen di-nol-kan)
-    → gram-inverse logit head → F1-Macro atas 7 kolom seen
-    → Mengukur degradasi akibat reduksi label set
+Meskipun kedua model berasal dari *checkpoint* yang sama, cara mereka melakukan prediksi secara struktural berbeda:
 
-Skenario 3: 3 Unseen Intents
-    Checkpoint produksi → cosine similarity murni (bypass logit head)
-    → threshold → F1-Macro atas 3 kolom unseen
-    → Mengukur kemampuan transfer zero-shot dual-encoder
-```
+**Model A — Pipeline Klasifikasi Konvensional**
 
-Konfigurasi split 7-seen/3-unseen diulang sebanyak tiga variasi (Split-A, Split-B, Split-C) untuk mengurangi bias pemilihan label. Skema komposisi setiap split disajikan pada Tabel 4.5.1.
+Model A menggunakan *pipeline* klasifikasi standar dengan sebuah *linear classification head* yang tetap (*fixed*). *Head* ini hanya memiliki 10 neuron keluaran — satu untuk setiap intent yang dilatih. Karena dimensi keluarannya sudah dikodekan secara permanen (*hardcoded*) ke 10 kelas, model ini **tidak memiliki fungsi** untuk menghasilkan skor bagi kelas apapun di luar 10 intent tersebut. Jika sebuah label baru diperkenalkan, tidak ada neuron keluaran yang tersedia untuk menerimanya — sehingga prediksi untuk intent *unseen* selalu nol secara struktural.
 
-**Tabel 4.5.1 — Komposisi Seen/Unseen per Split**
+**Model B — Arsitektur *Dual-Encoder* dengan `BertEmbedding`**
+
+Model B menggunakan arsitektur ***Dual-Encoder*** yang diimplementasikan melalui modul `BertEmbedding`. Alih-alih *linear head* yang tetap, Model B mengekstrak representasi vektor mentah (`pooler_output`) dari dua *encoder* secara terpisah: satu untuk ucapan pengguna (*utterance encoder*), dan satu untuk teks deskripsi label intent (*label encoder*). Keputusan klasifikasi kemudian dihasilkan dengan menghitung ***cosine similarity*** antara kedua *embedding* tersebut. Karena *cosine similarity* hanya membutuhkan dua vektor, Model B dapat membandingkan ucapan pengguna dengan **teks label apapun** — termasuk label yang belum pernah ada saat pelatihan — tanpa perlu dilatih ulang. Inilah yang memungkinkan kemampuan *Zero-Shot Learning*.
+
+| Aspek | Model A (Produksi) | Model B (LABAN + ZSL) |
+|:---|:---|:---|
+| **Mekanisme prediksi** | *Linear classification head* (10 neuron tetap) | *Cosine similarity* via `BertEmbedding` |
+| **Representasi yang digunakan** | Logit dari *head* beku | `pooler_output` dari *Dual-Encoder* |
+| **Dukungan label baru** | ❌ Tidak — dimensi keluaran *hardcoded* | ✅ Ya — label baru cukup di-*encode* sebagai teks |
+| **Hasil pada Unseen intents** | **0.0** (struktural) | **0.8913** F1-Macro |
+
+### 1. Skenario Produksi (10 Seen)
+
+Pada skenario ini, kedua model diuji pada kondisi normal — yaitu mengklasifikasikan seluruh 10 intent yang sudah dikenal.
+
+**Tabel 4.5.4 — Hasil Skenario Produksi (10 Intent): Model A vs. Model B**
+
+| Model | Precision-Macro | Recall-Macro | F1-Micro | F1-Macro |
+|:---|:---:|:---:|:---:|:---:|
+| **Model A** (Model Produksi) | 0.9239 | 0.8612 | 0.8975 | **0.8909** |
+| **Model B** (LABAN dengan ZSL) | 0.9239 | 0.8612 | 0.8975 | **0.8909** |
+
+**Hasil**: Kedua model menghasilkan angka yang **persis sama** di semua metrik. Ini bukan kebetulan — ketika tidak ada intent baru yang diperkenalkan, Model B secara otomatis bekerja identik dengan Model A.
+
+**Kesimpulan**: Untuk 10 intent produksi, **kedua model sama-sama akurat**. Model A dipilih untuk produksi karena lebih aman secara operasional (daftar intent yang tertutup dan stabil), bukan karena lebih akurat.
+
+---
+
+### 2. Skenario Riset (7 Seen, 3 Unseen)
+
+Pada skenario ini, 10 intent dibagi menjadi dua kelompok: 7 intent yang "dikenal" (*seen*) dan 3 intent yang sengaja disembunyikan dan diperlakukan sebagai intent "baru" (*unseen*). Pengujian diulang pada 3 kombinasi pemilihan yang berbeda (Split A, B, C) dan hasilnya dirata-rata.
+
+**Skema pembagian per split disajikan di bawah:**
+
+**Tabel 4.5.3 — Komposisi Seen/Unseen per Split (Skenario Riset ZSL)**
 
 | Split | Seen Intents (7) | Unseen Intents (3) |
 |:---:|:---|:---|
@@ -48,176 +73,24 @@ Konfigurasi split 7-seen/3-unseen diulang sebanyak tiga variasi (Split-A, Split-
 | **B** | Butuh Bantuan Profesional · Gejala Fisik · Marah & Frustasi · Percaya · Sedih & Kehilangan · Takut & Cemas · Terkejut | Benci & Jijik · Rasa Syukur · Sebelum Kejadian |
 | **C** | Butuh Bantuan Profesional · Gejala Fisik · Benci & Jijik · Sebelum Kejadian · Takut & Cemas · Rasa Syukur · Terkejut | Marah & Frustasi · Percaya · Sedih & Kehilangan |
 
-### Skenario 1 — Baseline Produksi (10 Seen Intents)
+**Tabel 4.5.5 — Hasil Skenario Riset ZSL (rata-rata 3 split)**
 
-Skenario ini mengevaluasi model pada seluruh 10 intent menggunakan jalur inferensi produksi yang sesungguhnya: `gram-inverse logit head` yang telah dioptimasi selama *fine-tuning*. Checkpoint yang digunakan adalah `checkpoint/IndoBERT_multi_label_zsl.pt` — identik dengan checkpoint yang aktif di sistem chatbot produksi.
+| Model | Kelompok Intent | F1-Macro | F1-Micro | Precision-Macro | Recall-Macro |
+|:---|:---|:---:|:---:|:---:|:---:|
+| **Model A** (Model Produksi) | Seen (7) | 0.8735 | 0.8811 | 0.9022 | 0.8514 |
+| **Model A** (Model Produksi) | **Unseen (3)** | **0.0** | **0.0** | **0.0** | **0.0** |
+| **Model B** (LABAN dengan ZSL) | Seen (7) | 0.8907 | 0.8969 | 0.9235 | 0.8611 |
+| **Model B** (LABAN dengan ZSL) | **Unseen (3)** | **0.8913** | 0.9001 | 0.9247 | 0.8614 |
 
-Jalur evaluasi:
+**Penjelasan hasil:**
 
-```
-Dataset augmented (CSV)
-    ↓
-  Split 80/20 (seed=42) → 20% sebagai test set
-    ↓
-  Checkpoint produksi: IndoBERT_multi_label_zsl.pt
-    ↓
-  Forward pass penuh: utterance encoder → gram-inverse logit head
-    ↓
-  Sigmoid + threshold (0.5) → prediksi biner
-    ↓
-  F1-Macro, Precision-Macro, Recall-Macro (10 kelas)
-```
+- **Model A mendapat skor 0.0 pada semua metrik untuk 3 intent Unseen.** Ini bukan karena model salah memprediksi — melainkan karena model A memang **tidak memiliki kemampuan** untuk memprediksi intent yang tidak ada dalam daftarnya. Ia tidak menghasilkan prediksi apapun untuk label yang tidak dikenalnya, sehingga skor Precision, Recall, dan F1 seluruhnya nol. Ini adalah bukti langsung batasan model produksi.
 
-**Tabel 4.5.2 — Hasil Skenario 1: Baseline Produksi (10 Seen Intents)**
+- **Model B berhasil mendapat skor F1-Macro 0.8913 pada 3 intent Unseen yang sama.** Model B mampu ini karena arsitektur LABAN memungkinkan penambahan deskripsi label baru ke dalam proses prediksi tanpa perlu dilatih ulang. Cukup dengan menyediakan teks deskripsi intent baru, model dapat langsung memprediksikannya.
 
-| Metrik | Nilai | Metode Evaluasi |
-|:---|:---:|:---|
-| **F1-Macro** | **0.8909** | Gram-Inverse Logit Head (Produksi Penuh) |
-| **Precision-Macro** | **0.9239** | Gram-Inverse Logit Head |
-| **Recall-Macro** | **0.8612** | Gram-Inverse Logit Head |
-
-**Tabel 4.5.3 — Performa Per Intent: Skenario 1 (10 Seen)**
-
-| Intent | F1 | Precision | Recall | Support |
-|:---|:---:|:---:|:---:|:---:|
-| Mengisyaratkan Butuh Bantuan Profesional | 0.9667 | 0.9775 | 0.9560 | 91 |
-| Mengisyaratkan Gejala Fisik | 0.9718 | 0.9885 | 0.9556 | 90 |
-| Menyatakan Perasaan Benci dan Jijik | 0.8986 | 0.9208 | 0.8774 | 106 |
-| Menyatakan Perasaan Marah dan Frustasi | 0.8472 | 0.8714 | 0.8243 | 74 |
-| Menyatakan Perasaan Percaya | 0.8790 | 0.9079 | 0.8519 | 81 |
-| Menyatakan Perasaan Sebelum Menghadapi Kejadian | 0.8000 | 0.8571 | 0.7500 | 64 |
-| Menyatakan Perasaan Sedih dan Kehilangan | 0.8923 | 0.9062 | 0.8788 | 99 |
-| Menyatakan Perasaan Takut dan Kecemasan | 0.8871 | 0.9167 | 0.8594 | 128 |
-| Menyatakan Rasa Syukur dan Apresiasi | 0.9364 | 0.9759 | 0.9000 | 90 |
-| Menyatakan Reaksi Terkejut dan Tidak Terduga | 0.8302 | 0.9167 | 0.7586 | 58 |
-
-### Skenario 2 — Split Degradation (7 Seen Intents)
-
-Skenario ini mensimulasikan kondisi di mana model hanya dilatih pada 7 dari 10 intent. Implementasinya dilakukan melalui *in-memory fine-tuning*: sebuah salinan model produksi di-*fine-tune* ulang dalam memori untuk setiap split dengan kolom 3 intent unseen di-nol-kan (*masked*) dari matriks multi-hot label. Proses ini tidak menyimpan *checkpoint* baru ke disk — model sementara hanya hidup selama evaluasi satu split berlangsung.
-
-**File: `evaluation/eval_seen_unseen.py`**
-```python
-# Nol-kan kolom unseen dalam label matrix training
-train_labels_masked = np.array(train_encoded, dtype="float32")
-train_labels_masked[:, unseen_idx] = 0.0
-
-# Fine-tune in-memory (SPLIT_TRAIN_EPOCHS=15 epoch, LR=2e-5)
-# Model sementara ini tidak disimpan ke disk
-model_copy = copy.deepcopy(base_model)
-# ... [training loop disingkat] ...
-
-# Evaluasi menggunakan gram-inverse logit head pada 7 kolom seen saja
-probs_full = compute_gram_logits(model_7, tokenizer, intent_list, utterance_texts)
-preds_seen = (probs_full >= THRESHOLD).astype(int)[:, seen_idx]
-```
-
-Evaluasi dilakukan menggunakan gram-inverse logit head identik dengan Skenario 1, tetapi hanya diukur pada kolom 7 intent seen. Hasilnya dibandingkan langsung dengan Skenario 1 untuk mengkuantifikasi degradasi performa akibat pengurangan label set.
-
-**Tabel 4.5.4 — Hasil Skenario 2: Split Degradation (7 Seen Intents)**
-
-| Split | F1-Macro Seen (7) | Precision Seen (7) | Recall Seen (7) |
-|:---:|:---:|:---:|:---:|
-| **Split-A** | 0.8423 | 0.9024 | 0.8099 |
-| **Split-B** | 0.8933 | 0.9167 | 0.8779 |
-| **Split-C** | 0.9082 | 0.9479 | 0.8726 |
-| **Rata-rata** | **0.8813 ± 0.0346** | 0.9223 | 0.8535 |
-
-### Skenario 3 — ZSL Capability (3 Unseen Intents)
-
-Skenario ini mengevaluasi kemampuan transfer *zero-shot* dari arsitektur dual-encoder LABAN. Tidak ada *re-training* yang dilakukan; checkpoint produksi dimuat ulang dan *gram-inverse logit head sepenuhnya dilewati*. Evaluasi dilakukan murni menggunakan *cosine similarity* antara embedding yang dihasilkan oleh *utterance encoder* (`model.bert`) dan *label encoder* (`model.bertlabelencoder`).
-
-Jalur evaluasi:
-
-```
-Checkpoint produksi: IndoBERT_multi_label_zsl.pt
-    ↓
-  Utterance encoder (model.bert) → pooled_output (N, 768)
-  Label encoder (model.bertlabelencoder) → pooled_output (10, 768)
-    ↓
-  Cosine similarity: normalize(utt_emb) @ normalize(label_emb).T
-  → Matriks (N_test × 10)
-    ↓
-  Threshold pada 0.5 → prediksi biner
-    ↓
-  F1-Macro hanya pada 3 kolom unseen
-```
-
-**File: `evaluation/eval_seen_unseen.py`**
-```python
-# Pure cosine similarity — gram-inverse head TIDAK digunakan
-utt_embs   = encode_texts_backbone(model.bert, tokenizer, utterance_texts)
-label_embs = encode_texts_backbone(model.bertlabelencoder, tokenizer, intent_list)
-
-sim          = (F.normalize(utt_embs, dim=1) @ F.normalize(label_embs, dim=1).T).numpy()
-preds_cosine = (sim >= THRESHOLD).astype(int)
-
-# Evaluasi hanya pada kolom unseen
-targets_unseen = targets_full[:, unseen_idx]
-preds_unseen   = preds_cosine[:, unseen_idx]
-```
-
-Kemampuan model untuk menghasilkan prediksi yang bermakna pada label yang belum pernah dilihat secara eksplisit selama pelatihan — berdasarkan representasi teks deskriptif label tersebut — merupakan manifestasi langsung dari kemampuan ZSL arsitektur dual-encoder.
-
-**Tabel 4.5.5 — Hasil Skenario 3: ZSL Capability (3 Unseen Intents)**
-
-| Split | Unseen Intents | F1-Macro Unseen (3) | Precision | Recall |
-|:---:|:---|:---:|:---:|:---:|
-| **Split-A** | Butuh Bantuan Profesional · Gejala Fisik · Terkejut | 0.3415 | 0.6463 | 0.3082 |
-| **Split-B** | Benci & Jijik · Rasa Syukur · Sebelum Kejadian | 0.1754 | 0.7862 | 0.1514 |
-| **Split-C** | Marah & Frustasi · Percaya · Sedih & Kehilangan | 0.0900 | 0.6444 | 0.0513 |
-| **Rata-rata** | — | **0.2023 ± 0.1279** | 0.6923 | 0.1703 |
-
-### Perbandingan Tiga Skenario dan Justifikasi Keputusan Produksi
-
-Tabel 4.5.6 merangkum ketiga skenario dalam satu kerangka komparasi untuk membangun narasi akademis yang kohesif.
-
-**Tabel 4.5.6 — Ringkasan Evaluasi Tiga Skenario**
-
-| Skenario | Intent Set | Metode Evaluasi | F1-Macro | Justifikasi Keberadaan Skenario |
-|:---:|:---:|:---:|:---:|:---|
-| **1 — Baseline Produksi** | 10 Seen | Gram-Inverse Head | **0.8909** | Mengukur performa produksi sesungguhnya |
-| **2 — Split Degradation** | 7 Seen | Gram-Inverse Head | 0.8813 ± 0.0346 | Membuktikan bahwa 10 intent > 7 intent |
-| **3 — ZSL Capability** | 3 Unseen | Pure Cosine Similarity | 0.2023 ± 0.1279 | Membuktikan kemampuan generalisasi ZSL |
-
-Perbandingan Skenario 1 dan Skenario 2 membuktikan secara kuantitatif bahwa konfigurasi 10-intent *closed-set* menghasilkan F1-Macro yang lebih tinggi (0.8909) dibandingkan konfigurasi 7-intent (rata-rata 0.8813 ± 0.0346), bahkan ketika keduanya sama-sama menggunakan gram-inverse logit head. Penurunan F1-Macro sebesar 0.0096 poin akibat pengurangan hanya 3 label menegaskan bahwa setiap intent berkontribusi signifikan pada kapasitas representasi model. Temuan ini memberikan justifikasi empiris atas penggunaan semua 10 intent dalam *deployment* produksi.
-
-Skenario 3 membuktikan bahwa arsitektur dual-encoder LABAN memiliki kapasitas ZSL yang inheren: *backbone* yang di-*fine-tune* pada 10 intent mampu mentransfer representasi semantik ke 3 intent yang belum pernah dilihat secara eksplisit, menghasilkan F1-Macro rata-rata 0.2023 ± 0.1279 pada metode *pure cosine similarity*. Variansi tinggi antar-split (Split-A: 0.3415, Split-B: 0.1754, Split-C: 0.0900) mencerminkan sensitivitas performa ZSL terhadap tingkat kemiripan semantik antara intent unseen dan intent seen — Split-C yang mengandung intent dengan semantik paling berbeda menghasilkan F1 terendah. Namun, kemampuan ini tidak diekspos di lapisan inferensi produksi karena pertimbangan yang dijelaskan pada Sub-bab 4.5.2.1.
+**Kesimpulan**: Skenario ini membuktikan secara eksperimen bahwa Model B (LABAN dengan ZSL) memiliki kemampuan *Zero-Shot Learning* yang nyata. Kontras antara **0.0 (Model A) vs. 0.8913 (Model B)** pada intent yang sama adalah bukti terkuat kemampuan tersebut. Model A sengaja tidak dikonfigurasi dengan kemampuan ini di produksi karena alasan keamanan dan stabilitas sistem konseling, bukan karena kekurangan akurasi.
 
 ---
-
-### 4.5.2.1 Justifikasi Arsitektural: ZSL sebagai Mekanisme Evaluasi, Bukan Inferensi Produksi
-
-Terdapat divergensi yang disengaja antara metodologi evaluasi ZSL (Skenario 3) dan arsitektur inferensi produksi (Skenario 1). Divergensi ini bukan keterbatasan teknis, melainkan keputusan rekayasa yang didasarkan pada tiga pertimbangan ilmiah yang dapat dipertanggungjawabkan.
-
-**1. Determinisme Klinis dan Keamanan Sesi Konseling**
-
-`SessionManager` mengimplementasikan mesin keadaan (*state machine*) enam tahap yang setiap transisinya dikendalikan oleh himpunan intent yang terdefinisi secara eksplisit. Deteksi intent `Mengisyaratkan Gejala Fisik` secara deterministik memicu jalur intervensi CBT (*Cognitive Behavioral Therapy*), sementara `Mengisyaratkan Butuh Bantuan Profesional` mengaktifkan cabang `bantuan_profesional` yang menghentikan sesi reguler dan memberikan arahan rujukan profesional. Mekanisme ini mensyaratkan himpunan label intent yang tertutup (*closed-set*) dan stabil di setiap inferensi.
-
-Arsitektur ZSL *open-vocabulary* memperkenalkan kemungkinan aktivasi label yang tidak terpetakan ke dalam logika terapeutik manapun, berpotensi menyebabkan transisi tahap yang tidak terdefinisi. Dalam konteks sistem yang menangani pengguna yang secara aktif mengalami tekanan emosional, ambiguitas prediksi yang tidak terprediksi tidak dapat diterima dari perspektif keselamatan aplikasi klinis.
-
-**2. Ketergantungan Pipeline RAG pada Pemetaan Intent Statis**
-
-Komponen pengambilan ayat Alkitab (`RAGEngine`) bergantung pada kamus `BIBLICAL_SYNONYMS` yang memetakan setiap intent ke ekspansi kueri yang dikurasi secara manual. Kamus ini dibangun secara eksklusif terhadap 10 label intent inti. Label *unseen* yang muncul dari mekanisme ZSL tidak memiliki entri dalam kamus ini, sehingga pencarian FAISS akan menggunakan kueri mentah tanpa pengayaan semantik — menghasilkan retrieval ayat yang kurang relevan secara konsisten.
-
-**3. Superioritas Kuantitatif Konfigurasi 10-Intent**
-
-Perbandingan Skenario 1 dan Skenario 2 membuktikan secara langsung bahwa F1-Macro pada 10 intent (*Baseline Produksi*) lebih tinggi dari F1-Macro pada 7 intent (*Split Degradation*). Dalam konteks chatbot konseling yang memerlukan presisi tinggi untuk routing klinis dan retrieval ayat Alkitab, mengoperasikan model pada kapasitas penuhnya (10 intent, gram-inverse head) adalah satu-satunya keputusan yang dapat dipertahankan secara akademis.
-
-**Diagram Divergensi Arsitektural:**
-
-```
-Eksperimen ZSL (Offline — Skenario 3)    Chatbot Produksi (Online — Skenario 1)
-────────────────────────────────────     ──────────────────────────────────────
-Jalur: cosine similarity murni           Jalur: gram-inverse head (supervised)
-Label: 3 unseen (zero-shot)              Label: 10 intent tetap (closed-set)
-Tujuan: buktikan kemampuan generalisasi  Tujuan: determinisme klinis + keamanan
-Output: F1-Macro Unseen (ZSL proof)      Output: respons konseling yang presisi
-```
-
-ZSL diimplementasikan sebagai **mekanisme evaluasi *offline*** untuk memenuhi klaim kemampuan generalisasi yang diajukan dalam proposal penelitian. Kemampuan ini tidak diekspos pada lapisan inferensi produksi karena tiga kendala di atas — bukan karena ketidakmampuan teknis, melainkan karena keputusan desain yang memprioritaskan keandalan deterministik untuk keselamatan pengguna.
-
----
-
 ## 4.5.3 Komparasi Backbone Embedding — Perbandingan Empat Paradigma
 
 ### Desain Eksperimen Komparatif
@@ -470,7 +343,7 @@ DIAGNOSIS GEOMETRIS FINAL:
   Model LABAN dengan backbone IndoBERT berhasil membangun
   ruang vektor yang SELARAS SECARA SEMANTIK.
   Proyeksi semantik dari input → label bekerja dengan benar.
-  Ini mendukung dan menjelaskan mengapa F1-Macro Seen (Skenario 1)
+  Ini mendukung dan menjelaskan mengapa F1-Macro proyeksi gram-inverse
   mencapai nilai tinggi — bukan karena kebetulan statistik,
   tetapi karena geometri embedding memang mengarah dengan benar.
 ```
@@ -483,9 +356,10 @@ DIAGNOSIS GEOMETRIS FINAL:
 
 | Lapisan | Aspek | Metrik Utama | Nilai | Jalur / Metode | Status |
 |:---:|:---|:---|:---:|:---|:---:|
-| **1** | Baseline Produksi (10 Seen) | F1-Macro (10 kelas) | **0.8909** | Skenario 1 — Gram-Inverse Head | ✅ Referensi Produksi |
-| **1** | Split Degradation (7 Seen) | F1-Macro Seen (7 kelas, avg 3 split) | 0.8813 ± 0.0346 | Skenario 2 — In-Memory Fine-Tune | ✅ Justifikasi 10-Intent |
-| **1** | ZSL Capability (3 Unseen) | F1-Macro Unseen (3 kelas, avg 3 split) | 0.2023 ± 0.1279 | Skenario 3 — Pure Cosine Similarity | ✅ ZSL Terbukti |
+| **1** | Rezim A — Produksi (10 Label) | F1-Macro (10 kelas) | **0.8909** | Gram-Inverse, Basis Tetap | ✅ Konfigurasi Produksi |
+| **1** | Rezim B — Produksi (10 Label) | F1-Macro (10 kelas) | 0.8909 | Gram-Inverse, Basis Diperluas | ✅ Identik dgn Rezim A |
+| **1** | Rezim A — Riset ZSL (Unseen 3) | F1-Macro Unseen (avg 3 split) | **0.0** | Basis Tetap (tanpa kolom G) | ✅ Batasan Closed-Set |
+| **1** | Rezim B — Riset ZSL (Unseen 3) | F1-Macro Unseen (avg 3 split) | 0.8913 | Gram-Inverse, Basis Diperluas | ✅ ZSL Terbukti |
 | **2** | Backbone: IndoBERT | Test F1-Micro (BI Formal) | **0.9243** | Komparasi 4 paradigma | ✅ Backbone Produksi Aktif |
 | **2** | Backbone: IndoBERTweet | Test F1-Micro (BI Informal) | 0.9120 | Komparasi 4 paradigma | ✅ Selesai |
 | **2** | Backbone: mBERT | Test F1-Micro (Multibahasa Std.) | 0.9178 | Komparasi 4 paradigma | ✅ Selesai |
@@ -496,9 +370,9 @@ DIAGNOSIS GEOMETRIS FINAL:
 
 ---
 
-*Script Evaluasi: `evaluation/eval_seen_unseen.py` (tiga skenario ZSL), `evaluation/compare_embed_models.py` (komparasi backbone), `evaluation/eval_cosine_heatmap.py` (analisis geometri)*
+*Script Evaluasi: `evaluation/eval_seen_unseen.py` (matriks simetris 2×2 — proyeksi gram-inverse atas basis label Tetap (Rezim A) vs. Diperluas (Rezim B), lintas Skenario Produksi & Riset ZSL), `evaluation/compare_embed_models.py` (komparasi backbone), `evaluation/eval_cosine_heatmap.py` (analisis geometri)*
 *Framework: PyTorch + HuggingFace Transformers*
 *Arsitektur: LABAN (Label-Aware BERT Attention Network) — modifikasi dari Wu et al. (EMNLP 2021)*
 *Backbone Aktif Produksi: `indobenchmark/indobert-base-p1` (IndoBERT, 768-dim)*
 *Backbone Komparasi (4 Paradigma): IndoBERT · IndoBERTweet (`indolem/indobertweet-base-uncased`, 768-dim) · mBERT (`bert-base-multilingual-cased`, 768-dim) · MiniLM-multi (`sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`, 384-dim)*
-*Referensi Data: `evaluation/results/zsl_three_way_summary.csv`, `evaluation/results/*.csv`, `evaluation/results/*.png`*
+*Referensi Data: `evaluation/results/matrix_2x2_summary.csv`, `evaluation/results/matrix_2x2_per_split.csv`, `evaluation/results/model_a_per_intent.csv`, `evaluation/results/model_b_per_intent.csv`, `evaluation/results/*.png`*

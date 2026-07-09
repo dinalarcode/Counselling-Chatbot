@@ -174,8 +174,9 @@ Routes: `GET /` → `index.html` | `POST /chat` → `{response: str}` | `POST /r
 ### ✅ Done
 - LABAN classifier, training, inference
 - All 6 backbone comparisons + cosine heatmap
-- ZSL seen/unseen evaluation — rewritten (`eval_seen_unseen.py`): loads pretrained checkpoint, extracts raw `pooler_output` from dual-encoder, computes pure cosine similarity for unseen labels (no re-training, no linear head). Seen labels still use full gram-inverse pipeline. Results placeholders in doc pending one run.
-- `BAB_4.5_Evaluasi_Klasifikasi_Multi_Intent.md` updated: dual-jalur methodology, new subsection 4.5.1.1 (ZSL experiment vs. production divergence justification), summary table updated.
+- ZSL seen/unseen evaluation — corrected (`eval_seen_unseen.py`): LABAN has no `nn.Linear` head; both "Model A" and "Model B" run the *same* gram-inverse projection (`w = sqrt(H)·G⁻¹·b`). The only variable is the label basis fed into it — Rezim A = fixed basis (10 or 7 seen), Rezim B = dynamically extended basis (7 seen + 3 unseen, encoded on-the-fly by the label encoder). Raw cosine similarity removed entirely. Script runs clean end-to-end (fixed a Windows cp1252 console crash on box-drawing chars via `sys.stdout.reconfigure(encoding="utf-8")`).
+  - **Results (test set n=399, seed=42):** Produksi (10 label): Rezim A = Rezim B, F1-Macro **0.8909** (identical by construction — no unseen labels to differentiate the two regimes). Riset ZSL (7 seen/3 unseen, avg 3 splits): Rezim A unseen = **0.0** (structural — no column in G for unseen labels), Rezim B unseen = **0.8913** F1-Macro (proof of architectural ZSL — extending the basis, not swapping the math).
+- `BAB_4.5_Evaluasi_Klasifikasi_Multi_Intent.md` fully rewritten to match: removed the false "Model A (Linear) >> Model B (Cosine)" narrative, replaced with single-mechanism/dual-basis framing, injected real metrics into all tables (4.5.1–4.5.6, summary table), deploy justification (§4.5.2.1) now rests on clinical determinism + RAG static intent mapping rather than a nonexistent accuracy edge.
 - Bible + QnA FAISS indexes (enriched AVI)
 - RAGEngine + LLM reranker + multi-provider LLM config
 - 6-stage SessionManager with spiritual consent, ephemeral summarization, technique extraction

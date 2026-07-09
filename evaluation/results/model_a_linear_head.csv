@@ -1,0 +1,2 @@
+﻿model,architecture,intent_set,eval_method,f1_macro,precision_macro,recall_macro,checkpoint
+A — Non-ZSL / Produksi,Dual-Encoder + Linear (Gram-Inverse) Head,10 Seen (Closed-Set),Gram-Inverse Logit Head (Full Production Path),0.8909,0.9239,0.8612,IndoBERT_multi_label_zsl.pt

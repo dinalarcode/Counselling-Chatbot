@@ -4,11 +4,8 @@ class config:
     epochs = 50
     LEARNING_RATE = 2e-5
     MODEL_NAME = 'indobenchmark/indobert-base-p1'  # Production backbone — highest Test F1-Micro (0.9318) in backbone comparison
-    # MODEL_NAME = 'indobenchmark/indobert-lite-base-p1'
-    # MODEL_NAME = 'sentence-transformers/all-MiniLM-L6-v2'
     # MODEL_NAME = 'indolem/indobertweet-base-uncased'  # Previous model — superseded by IndoBERT
     # MODEL_NAME = 'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2'
-    # MODEL_NAME = 'intfloat/multilingual-e5-small'
     # MODEL_NAME = 'distilbert-base-multilingual-cased'
     thresold = 0.5
     device = 'cuda'
@@ -18,10 +15,11 @@ class config:
 
     # ── Chatbot LLM (RAGEngine: response generation + verse reranker) ────
     # Provider: "groq" | "gemini" | "openai"
-    CHATBOT_LLM_PROVIDER = "groq"
+    CHATBOT_LLM_PROVIDER = "gemini"
 
     # Groq settings (aktif jika CHATBOT_LLM_PROVIDER = "groq")
     GROQ_CHATBOT_MODEL = "llama-3.3-70b-versatile"
+    # GROQ_CHATBOT_MODEL = "llama-3.1-8b-instant"
     GROQ_API_KEY_ENV = "GROQ_API_KEY"
 
     # Gemini settings (aktif jika CHATBOT_LLM_PROVIDER = "gemini")
@@ -42,7 +40,7 @@ class config:
     # RAGAS_JUDGE_API_KEY_ENV = "GEMINI_API_KEY"
     # RAGAS_JUDGE_TEMPERATURE = 0.0   # deterministic judging
     RAGAS_JUDGE_PROVIDER = "openai"
-    RAGAS_JUDGE_MODEL = "gpt-4o-mini"          # used by llm_factory() in eval_ragas.py
+    RAGAS_JUDGE_MODEL = "gpt-4o"          # passed to langchain_openai.ChatOpenAI in eval_ragas.py
     RAGAS_JUDGE_API_KEY_ENV = "OPENAI_API_KEY"
     RAGAS_JUDGE_TEMPERATURE = 0.0   # deterministic judging
     RAGAS_TESTSET_SIZE = 30         # Phase 1 sample count + Phase 2 eval cap (eval_ragas.py)
