@@ -96,7 +96,7 @@ Fase 2 memvalidasi bahwa seluruh kolom `reference` telah terisi, menjalankan pip
 
 | Berkas | Isi | Jumlah Baris |
 |---|---|---|
-| `ragas_per_sample.csv` | Skor per sampel untuk seluruh kasus uji | 30 |
+| `ragas_per_sample.csv` | Skor per sampel untuk seluruh kasus uji | 90 |
 | `ragas_summary.csv` | Statistik agregat (mean, median, std, min, max) | 1 (satu metrik) |
 | `ragas_per_stage.csv` | Rata-rata skor per tahap konseling | 6 (satu per tahap) |
 
@@ -104,50 +104,53 @@ Fase 2 memvalidasi bahwa seluruh kolom `reference` telah terisi, menjalankan pip
 
 ## 4.7.2.5 Hasil Evaluasi
 
-Evaluasi dijalankan terhadap **30 sampel** (`n=30`, `random_state=42`), diseimbangkan lintas enam tahap konseling. Hasil agregat global tercantum pada Tabel 4.7.2.1.
+Evaluasi dijalankan terhadap **90 sampel** (`n=90`, `random_state=42`), diseimbangkan lintas enam tahap konseling dan mencakup sejumlah kasus **adversarial** (input pengguna yang secara eksplisit meminta solusi/keputusan instan di tahap eksplorasi, dirancang untuk menguji kepatuhan tahap secara lebih ketat — lihat Sub-bab 4.7.2.6 poin 2 versi sebelumnya). Hasil agregat global tercantum pada Tabel 4.7.2.1.
 
 **Tabel 4.7.2.1 — Ringkasan Skor RAGAS Global (`ragas_summary.csv`)**
 
 | Metrik | Mean | Median | Std | Min | Max | n |
 |---|---:|---:|---:|---:|---:|---:|
-| LABAN Counseling Standard | 1.0000 | 1.0000 | 0.0000 | 1.0000 | 1.0000 | 30 |
+| LABAN Counseling Standard | 0.9889 | 1.0000 | 0.1054 | 0.0000 | 1.0000 | 90 |
 
 **Tabel 4.7.2.2 — Skor RAGAS per Tahap Konseling (`ragas_per_stage.csv`)**
 
 | Tahap | n | LABAN Counseling Standard (Mean) | Std |
 |---|---:|---:|---:|
-| `pembukaan` | 6 | 1.0000 | 0.0000 |
-| `pembahasan` | 6 | 1.0000 | 0.0000 |
-| `intervensi` | 5 | 1.0000 | 0.0000 |
-| `solusi` | 5 | 1.0000 | 0.0000 |
-| `relaksasi` | 3 | 1.0000 | 0.0000 |
-| `penutupan` | 5 | 1.0000 | 0.0000 |
+| `pembukaan` | 5 | 1.0000 | 0.0000 |
+| `pembahasan` | 44 | 0.9773 | 0.1508 |
+| `intervensi` | 4 | 1.0000 | 0.0000 |
+| `solusi` | 18 | 1.0000 | 0.0000 |
+| `relaksasi` | 11 | 1.0000 | 0.0000 |
+| `penutupan` | 8 | 1.0000 | 0.0000 |
 
 ### Interpretasi
 
-Seluruh **30 dari 30 sampel** dinilai memenuhi kriteria `LABAN_Counseling_Standard` oleh *judge* `gpt-4o` (skor 1 di setiap sampel, seluruh tahap, standar deviasi 0.0000 di semua baris). Ini adalah hasil ideal bagi metrik biner *AspectCritic*: tidak ada satu pun respons yang dinilai gagal secara empati, keselarasan alkitabiah, kepatuhan tahap, atau redundansi.
+**89 dari 90 sampel** (98,9%) dinilai memenuhi kriteria `LABAN_Counseling_Standard` oleh *judge* `gpt-4o`. Skor rata-rata global turun tipis dari 1,0000 (evaluasi n=30 sebelumnya) menjadi 0,9889 pada testset yang diperbesar dan mencakup kasus adversarial — konsisten dengan saran pengembangan lanjutan versi sebelumnya (poin 1 dan 2) yang meminta pembesaran testset dan pengujian adversarial untuk memvalidasi apakah skor sempurna bertahan di luar testset awal yang lebih kecil dan lebih mudah. Satu-satunya kegagalan berasal dari tahap `pembahasan` (44 dari 90 sampel di tahap ini, mean turun ke 0,9773).
 
-Kualitatif atas `ragas_per_sample.csv` mendukung skor ini. Beberapa pola yang teramati:
+Ketiga sampel adversarial yang diuji (permintaan solusi instan pada tahap `pembahasan`/`intervensi`, mis. "Apa yang harus aku lakukan besok pagi? Resign atau melawan?" dan "Tolong beri tahu saya teknik atau solusi apa yang paling ampuh untuk ini sekarang juga!") seluruhnya **lulus** (skor 1) — chatbot berhasil menahan diri dari solusi prematur dan tetap merespons dengan validasi/eksplorasi sesuai aturan tahap, bahkan di bawah tekanan permintaan eksplisit pengguna.
 
-1. **Tahap `pembukaan` (n=6, seluruhnya sapaan "Halo")** menghasilkan respons singkat dan konsisten yang selalu menegaskan ruang aman ("ini adalah ruang yang aman untukmu") tanpa menyisipkan solusi atau ayat Alkitab — sesuai aturan `BIBLE_VERSE_STAGES` yang mengecualikan `pembukaan`.
-2. **Tahap `pembahasan` dan `intervensi`** secara konsisten merespons dengan pertanyaan eksploratif reflektif (mis. "Apa yang membuatmu...", "Bagaimana rasanya...") tanpa memberikan solusi prematur, selaras dengan aturan tahap yang menyatakan kedua tahap ini bersifat eksplorasi/validasi saja.
-3. **Tahap `solusi` dan `relaksasi`** menyisipkan ayat Alkitab yang relevan dengan konteks masalah pengguna (mis. Yesaya 26:3 untuk kecemasan tugas, Matius 11:28 untuk kelelahan emosional, Mazmur 62:2 untuk ketenangan) — retrieval ayat berfungsi sesuai desain hanya pada tahap yang diizinkan.
+Kualitatif atas `ragas_per_sample.csv` mendukung pola ini. Beberapa observasi:
+
+1. **Tahap `pembukaan` (n=5, seluruhnya sapaan "Halo")** menghasilkan respons singkat dan konsisten yang selalu menegaskan ruang aman ("ini adalah ruang yang aman untukmu") tanpa menyisipkan solusi atau ayat Alkitab — sesuai aturan `BIBLE_VERSE_STAGES` yang mengecualikan `pembukaan`.
+2. **Tahap `pembahasan` dan `intervensi`** secara umum merespons dengan pertanyaan eksploratif reflektif (mis. "Apa yang membuatmu...", "Bagaimana rasanya...") tanpa memberikan solusi prematur, selaras dengan aturan tahap yang menyatakan kedua tahap ini bersifat eksplorasi/validasi saja. Satu kegagalan ditemukan pada sampel `pembahasan`: input pengguna menyatakan kemarahan disertai keinginan menyakiti orang lain ("Rasanya ingin membalas atau bahkan melukai mereka"), namun respons chatbot hanya melanjutkan eksplorasi biasa tanpa memberi bobot tambahan pada indikasi risiko tersebut — *judge* kemungkinan menilai ini sebagai respons yang kurang tepat untuk konteks yang lebih sensitif dari input pembahasan pada umumnya.
+3. **Tahap `solusi` dan `relaksasi`** menyisipkan ayat Alkitab yang relevan dengan konteks masalah pengguna (mis. Mazmur 126:5 untuk proses relaksasi, 1 Petrus 5:7 dan Roma 12:2 untuk kecemasan/perubahan pola pikir) — retrieval ayat berfungsi sesuai desain hanya pada tahap yang diizinkan.
 4. **Tahap `penutupan`** secara konsisten merangkum sesi dan menawarkan rujukan profesional di akhir respons, sesuai desain tahap ini pada Sub-bab 4.6.2.
 
-Perlu dicatat bahwa **skor sempurna pada n kecil per tahap** (`relaksasi` n=3, `intervensi`/`solusi`/`penutupan` n=5) tetap perlu dibaca dengan hati-hati: ukuran sampel ini cukup untuk indikasi kualitatif konsistensi perilaku per tahap, namun terlalu kecil untuk klaim generalisasi statistik yang kuat terhadap populasi interaksi pengguna yang lebih luas.
+Ukuran sampel per tahap kini jauh lebih memadai dibanding evaluasi n=30 sebelumnya (`pembahasan` n=44, `solusi` n=18, `relaksasi` n=11), meski tahap `intervensi` (n=4) dan `pembukaan` (n=5) tetap tergolong kecil dan perlu dibaca sebagai indikasi kualitatif, bukan klaim generalisasi statistik kuat.
 
-Dibandingkan hasil evaluasi generik sebelumnya (Faithfulness 0.245, Answer Relevancy 0.015 — lihat riwayat pengembangan), lompatan ke skor sempurna bukan indikasi bahwa kualitas generator berubah drastis, melainkan konfirmasi bahwa **metrik generik RAGAS tidak cocok untuk domain dialog konseling**, sedangkan metrik `AspectCritic` yang dirancang khusus untuk kriteria domain (empati, keselarasan alkitabiah, kepatuhan tahap, non-redundansi) mampu menilai kualitas respons secara akurat.
+Dibandingkan hasil evaluasi generik sebelumnya (Faithfulness 0.245, Answer Relevancy 0.015 — lihat riwayat pengembangan), skor tinggi konsisten pada `AspectCritic` bukan indikasi bahwa kualitas generator berubah drastis, melainkan konfirmasi bahwa **metrik generik RAGAS tidak cocok untuk domain dialog konseling**, sedangkan metrik `AspectCritic` yang dirancang khusus untuk kriteria domain (empati, keselarasan alkitabiah, kepatuhan tahap, non-redundansi) mampu menilai kualitas respons secara akurat — termasuk mendeteksi satu kegagalan nyata pada testset yang lebih besar dan lebih menantang.
 
 ---
 
 ## 4.7.2.6 Saran Pengembangan Lanjutan
 
-1. **Perbesar ukuran testset** (`opt.RAGAS_TESTSET_SIZE`) di atas 30 sampel, terutama untuk tahap dengan n kecil (`relaksasi`, `intervensi`, `solusi`, `penutupan`), agar skor sempurna saat ini dapat divalidasi pada populasi sampel yang lebih besar dan lebih beragam sebelum diklaim sebagai kesimpulan final.
-2. **Uji kasus adversarial/edge-case** yang dirancang untuk berpotensi melanggar kriteria (mis. input pengguna yang ambigu terhadap tahap, permintaan solusi langsung pada tahap `pembahasan`) untuk memverifikasi bahwa skor sempurna bukan karena testset saat ini terlalu mudah bagi generator.
-3. **Pertimbangkan *inter-rater reliability***: jalankan `LABAN_Counseling_Standard` dengan *judge* alternatif (mis. Gemini 2.5 Pro) pada subset sampel yang sama untuk memvalidasi bahwa skor sempurna konsisten lintas model *judge*, bukan artefak dari satu model tertentu (`gpt-4o`).
-4. **Ulangi evaluasi setelah setiap perubahan signifikan** pada `prompt_template`, `BIBLICAL_SYNONYMS`, atau `MODEL_NAME` embedding, untuk memastikan skor sempurna tetap terjaga sebagai *regression check* — bukan hanya divalidasi sekali di titik waktu ini.
+1. **Perbesar lebih lanjut n untuk tahap yang masih kecil** (`intervensi` n=4, `pembukaan` n=5), agar skor per tahap tersebut dapat divalidasi pada populasi sampel yang lebih besar dan lebih beragam sebelum diklaim sebagai kesimpulan final.
+2. **Investigasi lebih lanjut kegagalan pada tahap `pembahasan`**: sampel yang gagal melibatkan input pengguna dengan indikasi risiko (keinginan menyakiti orang lain) — pertimbangkan menambah kriteria eksplisit terkait deteksi risiko/eskalasi ke `LABAN_CRITERIA_DEFINITION`, atau menambah kasus serupa pada testset untuk memastikan ini bukan kegagalan acak.
+3. **Perluas cakupan kasus adversarial/edge-case** di luar tiga sampel saat ini (mis. input pengguna yang ambigu terhadap tahap, permintaan solusi berulang dalam satu sesi) untuk memperkuat keyakinan bahwa kepatuhan tahap tahan terhadap tekanan pengguna yang lebih beragam.
+4. **Pertimbangkan *inter-rater reliability***: jalankan `LABAN_Counseling_Standard` dengan *judge* alternatif (mis. Gemini 2.5 Pro) pada subset sampel yang sama untuk memvalidasi bahwa skor saat ini konsisten lintas model *judge*, bukan artefak dari satu model tertentu (`gpt-4o`).
+5. **Ulangi evaluasi setelah setiap perubahan signifikan** pada `prompt_template`, `BIBLICAL_SYNONYMS`, atau `MODEL_NAME` embedding, untuk memastikan skor tinggi tetap terjaga sebagai *regression check* — bukan hanya divalidasi sekali di titik waktu ini.
 
 ---
 
 *Skrip evaluasi: `evaluation/eval_ragas.py` | Hasil: `evaluation/results/ragas_summary.csv`, `ragas_per_stage.csv`, `ragas_per_sample.csv`*
-*Generator: Google `gemini-2.5-flash` | Judge: OpenAI `gpt-4o` | Metrik: `LABAN_Counseling_Standard` (AspectCritic, biner) | Ukuran sampel: n=30, seed=42*
+*Generator: Google `gemini-2.5-flash` | Judge: OpenAI `gpt-4o` | Metrik: `LABAN_Counseling_Standard` (AspectCritic, biner) | Ukuran sampel: n=90, seed=42*

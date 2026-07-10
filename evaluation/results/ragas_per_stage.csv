@@ -1,7 +1,7 @@
 ﻿stage,sample_count,LABAN_Counseling_Standard_mean,LABAN_Counseling_Standard_std
-intervensi,5,1.0,0.0
-pembahasan,6,1.0,0.0
-pembukaan,6,1.0,0.0
-penutupan,5,1.0,0.0
-relaksasi,3,1.0,0.0
-solusi,5,1.0,0.0
+intervensi,4,1.0,0.0
+pembahasan,44,0.9772727272727273,0.15075567228888181
+pembukaan,5,1.0,0.0
+penutupan,8,1.0,0.0
+relaksasi,11,1.0,0.0
+solusi,18,1.0,0.0
