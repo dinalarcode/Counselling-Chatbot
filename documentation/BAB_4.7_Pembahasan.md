@@ -58,7 +58,31 @@ Integrasi menyatukan klasifikasi, retrieval, dan generasi dalam satu *turn*. Beb
 
 ---
 
-## 4.7.6 Posisi terhadap Kesenjangan Penelitian
+## 4.7.6 Validasi Ilmiah Metrik Evaluasi Sistem (Sub-bab 4.7.2 dan Evaluasi Eksternal)
+
+Selain metrik klasifikasi pada Sub-bab 4.5, kualitas keluaran sistem diukur melalui tiga jalur evaluasi yang saling melengkapi. Ketiganya memerlukan justifikasi metodologis, baik dari sisi *mengapa* metriknya dipilih maupun *apa* makna angka yang diperoleh.
+
+### Evaluasi RAGAS: Otomasi Penilaian Teks Generatif
+
+Kualitas respons LLM dinilai memakai kerangka RAGAS dengan metrik kustom `LABAN_Counseling_Standard` (berbasis `AspectCritic`), menghasilkan skor rata-rata **0,9889** atas 90 sampel (89 dari 90 memenuhi kriteria). Pemilihan pendekatan otomatis berbasis *LLM-as-a-Judge* ini — bukan penilaian manual penuh — divalidasi langsung oleh Es et al. [2024], pencipta RAGAS, yang menegaskan bahwa evaluasi RAG bersifat multidimensi (kualitas retrieval, kesetiaan generasi, dan mutu jawaban) dan dapat dinilai secara *reference-free* tanpa anotasi manusia, sehingga mempercepat siklus evaluasi arsitektur RAG. Justifikasi arsitektural yang lebih luas datang dari Gao et al. [2024], yang menempatkan kerangka evaluasi otomatis sebagai komponen matang dalam ekosistem RAG modern.
+
+Namun, temuan penelitian ini juga mengonfirmasi peringatan metodologis penting: metrik generik RAGAS (*Faithfulness* 0,245; *Answer Relevancy* 0,015 pada iterasi awal) terbukti tidak sesuai untuk dialog konseling yang bersifat empatik dan reflektif, karena metrik tersebut dirancang untuk *question-answering* faktual. Penggantian ke `AspectCritic` — yang menilai empati, keselarasan alkitabiah, kepatuhan tahap, dan non-redundansi dalam satu kriteria biner — merupakan adaptasi domain yang justru sejalan dengan sifat modular RAGAS sebagaimana dijelaskan Es et al. [2024]. Skor tinggi yang konsisten, termasuk kelulusan seluruh kasus *adversarial*, menunjukkan bahwa metrik yang selaras-domain mampu menilai kualitas respons secara lebih sahih dibanding metrik generik.
+
+### Evaluasi Retrieval Ayat: Cohen's Kappa dan Subjektivitas Interpretasi
+
+Relevansi ayat hasil retrieval dievaluasi oleh **3 responden** atas **30 kasus uji** (pasangan input pengguna–ayat) dengan penilaian biner, menghasilkan rata-rata **Cohen's Kappa 0,5346443353**. Merujuk pada kriteria baku Landis & Koch [1977] — yang membagi kekuatan kesepakatan menjadi *slight* (0,00–0,20), *fair* (0,21–0,40), *moderate* (0,41–0,60), *substantial* (0,61–0,80), dan *almost perfect* (0,81–1,00) — nilai ini tergolong **persetujuan moderat** (*moderate agreement*). Artinya, sistem retrieval telah berfungsi jauh di atas kesepakatan acak, namun belum mencapai ambang reliabilitas kuat ($\kappa \ge 0{,}60$).
+
+Nilai moderat ini dapat dijelaskan secara substantif, bukan sekadar sebagai kelemahan teknis. Penilaian relevansi ayat Alkitab terhadap keluhan konseling melibatkan **subjektivitas interpretasi teologis**: satu ayat yang dianggap sangat relevan oleh seorang responden dapat dinilai kurang tepat oleh responden lain karena perbedaan penafsiran dan pemaknaan spiritual. Hal ini tercermin pada variasi penilaian antar-responden (17, 22, dan 17 dari 30 kasus dinilai relevan), yang menandakan sumber varians utama adalah subjektivitas manusia dalam menafsirkan makna ayat, bukan semata kegagalan mesin retrieval. Temuan ini konsisten dengan sifat Kappa yang dijelaskan Landis & Koch [1977] sebagai ukuran kesepakatan terkoreksi-kebetulan yang sensitif terhadap perbedaan penilaian antar-pengamat.
+
+### Evaluasi Validitas Konseling: Content Validity Index (CVI)
+
+Validitas fungsi konseling secara medis/psikologis diukur oleh **1 pakar (psikolog)** yang menelaah satu sesi utuh berisi **18 pasangan** pertukaran pengguna–chatbot lintas seluruh tahap, memakai skala relevansi 1–4. Pakar menyatakan setuju (skor 3 atau 4) pada **14 dari 18 item**, menghasilkan **CVI 0,7777777778**. Menurut Polit & Beck [2006], nilai *Item-level Content Validity Index* (I-CVI) $\ge 0{,}78$ mengindikasikan validitas isi yang baik, sehingga skor **0,78** ini berada tepat pada ambang **validitas yang dapat diterima** (*acceptable validity*).
+
+Meskipun demikian, angka ini juga menyingkap ruang perbaikan yang konkret. Empat item yang tidak disetujui pakar menandakan adanya aspek respons yang belum sepenuhnya selaras dengan standar praktik klinis. Polit & Beck [2006] menekankan bahwa untuk instrumen baru, ambang penerimaan skala (S-CVI) yang umum dianut adalah $\ge 0{,}80$ — sehingga skor 0,78 memposisikan sistem pada status "layak namun perlu penyempurnaan iteratif" sebelum siap untuk penggunaan klinis penuh. Penilaian oleh satu pakar juga membatasi kekuatan generalisasi; sebagaimana disarankan Polit & Beck [2006], pelibatan lebih banyak pakar akan memperkuat estimasi validitas isi. Dengan demikian, CVI 0,78 sebaiknya dibaca sebagai konfirmasi bahwa sistem sudah berada pada arah yang benar, sekaligus penanda area spesifik yang menuntut iterasi lanjutan bersama ahli.
+
+---
+
+## 4.7.7 Posisi terhadap Kesenjangan Penelitian
 
 Secara ringkas, yang telah dikerjakan mengisi celah yang diidentifikasi di Bab 2: menggabungkan **klasifikasi multi-intent** (dengan kemampuan ZSL nyata, F1-Macro *unseen* 0,8913) dan **RAG spiritual** (retrieval ayat berbasis LLM reranker dengan *grounding*) dalam satu sistem konseling — sesuatu yang belum ditempuh gabungan penelitian terdahulu (Barnett et al. [2021]; Malhotra et al. [2021]; Nayinzira et al. [2024]). Setiap komponen — dari pemilihan backbone hingga *consent gate* — bukan keputusan intuitif, melainkan bersandar pada temuan empiris yang dapat ditelusuri.
 
@@ -70,6 +94,8 @@ Assayed, S. K., Shaalan, K., & Alkhatib, M. (2022). A Chatbot Intent Classifier 
 
 Barnett, A., Savic, M., Pienaar, K., Carter, A., Warren, N., Sandral, E., Manning, V., & Lubman, D. I. (2021). Enacting 'more-than-human' care: Clients' and counsellors' views on the multiple affordances of chatbots in alcohol and other drug counselling. *International Journal of Drug Policy*, 94, 102910. https://doi.org/10.1016/j.drugpo.2020.102910
 
+Es, S., James, J., Espinosa-Anke, L., & Schockaert, S. (2024). RAGAs: Automated Evaluation of Retrieval Augmented Generation. Dalam N. Aletras & O. De Clercq (Ed.), *Proceedings of the 18th Conference of the European Chapter of the Association for Computational Linguistics: System Demonstrations* (hlm. 150–158). Association for Computational Linguistics. https://doi.org/10.18653/v1/2024.eacl-demo.16
+
 Gao, Y., Xiong, Y., Gao, X., Jia, K., Pan, J., Bi, Y., Dai, Y., Sun, J., Wang, M., & Wang, H. (2024). *Retrieval-Augmented Generation for Large Language Models: A Survey* (arXiv:2312.10997). arXiv. https://doi.org/10.48550/arXiv.2312.10997
 
 Hamka, Suen, M.-W., Ramadhan, Y. A., Yusuf, M., & Wang, J.-H. (2022). Spiritual Well-Being, Depression, Anxiety, and Stress in Indonesian Muslim Communities During COVID-19. *Psychology Research and Behavior Management*, 15, 3013–3025. https://doi.org/10.2147/PRBM.S381926
@@ -77,6 +103,8 @@ Hamka, Suen, M.-W., Ramadhan, Y. A., Yusuf, M., & Wang, J.-H. (2022). Spiritual 
 Indrayanti, I., Salsabila, A. K., Amrita, V., Alhaddad, M. M., Saskia, A. B., & Ramadhani, D. P. (2025). PsyBot: A randomized controlled trial of WhatsApp-based psychological first aid to reduce loneliness among 18–22-year-old students in Yogyakarta, Indonesia. *SSM - Mental Health*, 8, 100504. https://doi.org/10.1016/j.ssmmh.2025.100504
 
 Jain, G., Pareek, S., & Carlbring, P. (2024). Revealing the source: How awareness alters perceptions of AI and human-generated mental health responses. *Internet Interventions*, 36, 100745. https://doi.org/10.1016/j.invent.2024.100745
+
+Landis, J. R., & Koch, G. G. (1977). The Measurement of Observer Agreement for Categorical Data. *Biometrics*, 33(1), 159–174. https://doi.org/10.2307/2529310
 
 Liu, J., Tan, Y. K., Fu, B., & Lim, K. H. (2025). *From Intents to Conversations: Generating Intent-Driven Dialogues with Contrastive Learning for Multi-Turn Classification* (arXiv:2411.14252). arXiv. https://doi.org/10.48550/arXiv.2411.14252
 
@@ -87,6 +115,8 @@ Malhotra, G., Waheed, A., Srivastava, A., Akhtar, M. S., & Chakraborty, T. (2021
 Nayinzira, J. P., & Adda, M. (2024). SentimentCareBot: Retrieval-Augmented Generation Chatbot for Mental Health Support with Sentiment Analysis. *Procedia Computer Science*, 251, 334–341. https://doi.org/10.1016/j.procs.2024.11.118
 
 Nganyu, G. N. (2025). Theological and Psychological Integration in Christian Psychotherapy: A Critical Review of the Literature and Implications for Church-Based Practice. *Greener Journal of Social Sciences*, 15(1), 75–82. https://doi.org/10.15580/gjss.2025.1.022525031
+
+Polit, D. F., & Beck, C. T. (2006). The content validity index: Are you sure you know what's being reported? Critique and recommendations. *Research in Nursing & Health*, 29(5), 489–497. https://doi.org/10.1002/nur.20147
 
 Ponmagal, R. S., Deep, H., & Yadav, D. (2025). Mental Health Support Using Gen-AI Shot Prompting Technique and Vector Embeddings. Dalam *2025 International Conference on Data Science and Business Systems* (hlm. 1–5). IEEE. https://doi.org/10.1109/ICDSBS63635.2025.11031881
 
