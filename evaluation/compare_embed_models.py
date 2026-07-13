@@ -60,8 +60,10 @@ RANDOM_SEED    = 42
 DEVICE         = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # ── Dataset path ─────────────────────────────────────────────────────────────
-AUG_CSV  = os.path.join(ROOT, "data", "augmentation", "dataset_multiintent_augmented.csv")
-ORIG_CSV = os.path.join(ROOT, "data", "dataset_multiintent.csv")
+from config import opt
+
+AUG_CSV  = opt.MULTIINTENT_AUG_CSV
+ORIG_CSV = opt.MULTIINTENT_CSV
 DATASET_CSV = AUG_CSV if os.path.exists(AUG_CSV) else ORIG_CSV
 
 # ── Candidate backbone models ───────────────────────────────────────────────

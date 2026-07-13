@@ -23,7 +23,7 @@ class VectorDBManager:
 
     # Bible index over the full TB Bible.
 
-    def build_bible_index(self, csv_path='data/verse_retrieval/alkitab_tb_enriched_groq.csv', index_dir='data/faiss_bible_index'):
+    def build_bible_index(self, csv_path=opt.BIBLE_ENRICHED_CSV, index_dir=opt.FAISS_BIBLE_INDEX):
         """Build or load the FAISS index for the entire TB Bible using the enriched CSV, loading from disk when present."""
         # Try loading from disk first.
         if os.path.exists(index_dir):
@@ -43,8 +43,8 @@ class VectorDBManager:
         if not os.path.exists(csv_path):
             print(f"[ERROR] File {csv_path} tidak ditemukan!")
             print("Jalankan pipeline AVI terlebih dahulu:")
-            print("  1. python data/verse_retrieval/generate_chapter_summaries.py")
-            print("  2. python data/verse_retrieval/prepare_enriched_bible.py")
+            print("  1. python data/verse_data/avi_system/generate_chapter_summaries.py")
+            print("  2. python data/verse_data/avi_system/prepare_enriched_bible.py")
             return
 
         print(f"Membangun Bible FAISS index dari {csv_path}...")
@@ -293,7 +293,7 @@ class VectorDBManager:
 
     # QnA index unchanged.
 
-    def build_qna_index(self, qna_csv_path='data/dataset_qna.csv', index_dir='data/faiss_qna_index'):
+    def build_qna_index(self, qna_csv_path=opt.QNA_CSV, index_dir=opt.FAISS_QNA_INDEX):
         if os.path.exists(index_dir):
             try:
                 print("Memuat QnA FAISS index dari disk...")
@@ -337,10 +337,11 @@ class VectorDBManager:
 if __name__ == "__main__":
     db_manager = VectorDBManager()
 
-    # Build the Bible index.    db_manager.build_bible_index('data/alkitab_tb.csv')
+    # Build the Bible index.
+    db_manager.build_bible_index()
 
     # Build the QnA index.
-    db_manager.build_qna_index('data/dataset_qna.csv')
+    db_manager.build_qna_index()
 
     # Test retrieval.
     print("\n=== Test Retrieve Verse ===")

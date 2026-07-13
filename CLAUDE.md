@@ -49,16 +49,25 @@ The_Chatbot/
 │   ├── bert_model.py           BertEmbedding — LABAN dual-encoder
 │   ├── predict.py              Predictor — threshold-based inference
 │   └── run_trainer.py          Training pipeline
-├── data/
-│   ├── alkitab_tb.csv          Full TB Bible (~31 k verses)
-│   ├── dataset_qna.csv         QnA pairs for RAG
-│   ├── faiss_bible_index/      Persisted FAISS Bible index (first build: 15–45 min)
-│   ├── faiss_qna_index/        Persisted FAISS QnA index
-│   ├── verse_retrieval/        AVI pipeline (chapter summaries → enriched CSV)
-│   │   ├── alkitab_tb_enriched.csv   Active Bible source for FAISS
-│   │   └── chapter_summaries_ollamaQwen.csv  Active summaries
-│   └── augmentation/
-│       └── dataset_multiintent_augmented.csv  ← ACTIVE training dataset
+├── data/                       Paths are centralised in `opt` (config.py) — never hardcode
+│   ├── __init__.py             Package — re-exports data_preparation (do not move)
+│   ├── data_preparation.py     Imported as `data.data_preparation` by run_trainer.py
+│   ├── verse_data/             All verse corpora + Bible FAISS index
+│   │   ├── alkitab_tb.csv                    Full TB Bible (~31 k verses) — opt.BIBLE_RAW_CSV
+│   │   ├── alkitab_tb_enriched_groq.csv      Active Bible source for FAISS — opt.BIBLE_ENRICHED_CSV
+│   │   ├── chapter_summaries*.csv            AVI summaries — opt.CHAPTER_SUMMARIES_CSV
+│   │   ├── faiss_bible_index/                Persisted FAISS Bible index (first build: 15–45 min)
+│   │   ├── scrape_system/scrape_alkitab.py   Bible scraper → alkitab_tb.csv
+│   │   └── avi_system/                       AVI pipeline (chapter summaries → enriched CSV)
+│   │       ├── generate_chapter_summaries.py   Step 1
+│   │       └── prepare_enriched_bible.py       Step 2
+│   └── qna-intent_data/        All QnA/intent datasets + QnA FAISS index
+│       ├── dataset_qna.csv                   QnA pairs for RAG — opt.QNA_CSV
+│       ├── dataset_multiintent.csv           Seed training set — opt.MULTIINTENT_CSV
+│       ├── dataset_multiintent_augmented.csv ← ACTIVE training dataset — opt.MULTIINTENT_AUG_CSV
+│       ├── intent_content.csv                Augmentation seeds — opt.INTENT_CONTENT_CSV
+│       ├── faiss_qna_index/                  Persisted FAISS QnA index
+│       └── augmentation_system/              Augmentation pipeline (run_augmentation.py etc.)
 ├── evaluation/
 │   ├── compare_embed_models.py  Backbone comparison (6 models)
 │   ├── eval_seen_unseen.py      ZSL seen/unseen evaluation
@@ -77,7 +86,8 @@ The_Chatbot/
 
 - **Config singleton:** Use `opt` from `config.py` only. Never re-instantiate.
 - **Typo `thresold`:** Canonical — do NOT rename (`config.py`, `predict.py`, tests).
-- **Active training data:** `data/augmentation/dataset_multiintent_augmented.csv` (not `dataset_multiintent.csv`).
+- **Active training data:** `opt.MULTIINTENT_AUG_CSV` → `data/qna-intent_data/dataset_multiintent_augmented.csv` (not `dataset_multiintent.csv`).
+- **Data paths:** All CSV/index paths live on `opt` (`config.py`) as absolute paths. Never hardcode a data path — add a constant instead.
 - **No hardcoded values:** Model name, batch size, thresholds, device → always from `opt`.
 - **Module separation:** `core/` and `models/multilabel/` must not cross-import.
 - **BERT skip:** `RAGEngine.SKIP_CLASSIFICATION_STAGES = frozenset({'pembukaan'})` — intentional, do not remove.
@@ -125,8 +135,8 @@ The_Chatbot/
 
 ### RAG Pipeline
 - Retrieval: `BIBLICAL_SYNONYMS` query expansion → FAISS top-10 → LLM reranker (`retrieve_verse_with_llm()`) → best verse. Falls back to top FAISS result.
-- Bible FAISS source: `data/verse_retrieval/alkitab_tb_enriched.csv` (AVI-enriched). If index absent, run AVI Steps 1→2 first.
-- QnA FAISS: `data/faiss_qna_index/` (persisted).
+- Bible FAISS source: `opt.BIBLE_ENRICHED_CSV` → `data/verse_data/alkitab_tb_enriched_groq.csv` (AVI-enriched). If index absent, run AVI Steps 1→2 first.
+- QnA FAISS: `opt.FAISS_QNA_INDEX` → `data/qna-intent_data/faiss_qna_index/` (persisted).
 
 ### Config Quick-Reference
 
@@ -194,7 +204,7 @@ Routes: `GET /` → `index.html` | `POST /chat` → `{response: str}` | `POST /r
 - [ ] Delete `core/knowledge_base.py` + `core/test_knowledge_base.py`
 - [ ] Trim `requirement.txt` (remove `anthropic`, `aiml`, `beautifulsoup4`)
 - [ ] Add "Mulai Sesi Baru" reset button to UI
-- [ ] Rebuild Bible FAISS index if enriched CSV updated (delete `data/faiss_bible_index/` then restart)
+- [ ] Rebuild Bible FAISS index if enriched CSV updated (delete `data/verse_data/faiss_bible_index/` then restart)
 
 ---
 

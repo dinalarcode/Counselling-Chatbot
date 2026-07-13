@@ -9,9 +9,9 @@ Orchestrates the full pipeline:
   5. Write intent_content_augmented.csv
 
 Usage:
-    python data/augmentation/run_augmentation.py
-    python data/augmentation/run_augmentation.py --intents "Perasaan Benci dan Jijik"
-    python data/augmentation/run_augmentation.py --batch 15 --dry_run
+    python data/qna-intent_data/augmentation_system/run_augmentation.py
+    python data/qna-intent_data/augmentation_system/run_augmentation.py --intents "Perasaan Benci dan Jijik"
+    python data/qna-intent_data/augmentation_system/run_augmentation.py --batch 15 --dry_run
 """
 
 import argparse
@@ -24,11 +24,13 @@ import sys
 
 # Load .env from project root
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, '..', '..'))
+PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, '..', '..', '..'))
 sys.path.insert(0, PROJECT_ROOT)
 
 from dotenv import load_dotenv
 load_dotenv(os.path.join(PROJECT_ROOT, '.env'))
+
+from config import opt
 
 import importlib.util
 
@@ -76,8 +78,8 @@ BATCH_DELAY = 10.0
 # PATHS
 # =====================================================================
 SEEDS_JSON = os.path.join(SCRIPT_DIR, 'seeds.json')
-ORIGINAL_CSV = os.path.join(PROJECT_ROOT, 'data', 'intent_content.csv')
-OUTPUT_CSV = os.path.join(PROJECT_ROOT, 'data', 'intent_content_augmented.csv')
+ORIGINAL_CSV = opt.INTENT_CONTENT_CSV
+OUTPUT_CSV = opt.INTENT_CONTENT_AUG_CSV
 RAW_DIR = os.path.join(SCRIPT_DIR, 'raw_generated')
 
 

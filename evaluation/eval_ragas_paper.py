@@ -10,7 +10,7 @@ script.
 
 Two-phase workflow:
   Phase 1 (--generate): Sample a standard testset (PAPER_SAMPLE_SIZE=100 rows)
-                        from data/dataset_qna.csv, balanced across the 6
+                        from data/qna-intent_data/dataset_qna.csv, balanced across the 6
                         counseling stages per STAGE_QUOTA (pembukaan capped
                         small — redundant greetings — remaining stages get
                         the bulk of the quota, shortfall in scarce stages
@@ -58,7 +58,7 @@ from config import opt
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
-QNA_CSV = os.path.join(PROJECT_ROOT, "data", "dataset_qna.csv")
+QNA_CSV = opt.QNA_CSV
 TESTSET_DIR = os.path.join(SCRIPT_DIR, "data")
 TESTSET_CSV = os.path.join(TESTSET_DIR, "ragas_testset_paper.csv")
 RESULTS_DIR = os.path.join(SCRIPT_DIR, "results", "ragas_paper_metrics")

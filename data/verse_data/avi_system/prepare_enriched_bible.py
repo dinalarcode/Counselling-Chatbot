@@ -5,10 +5,10 @@ Merges the original alkitab_tb.csv with chapter_summaries.csv and creates
 an enriched_text column that prepends the chapter summary to each verse.
 
 Usage:
-  cbenv\\Scripts\\python.exe data/verse_retrieval/prepare_enriched_bible.py
+  cbenv\\Scripts\\python.exe data/verse_data/avi_system/prepare_enriched_bible.py
 
 Output:
-  data/verse_retrieval/alkitab_tb_enriched.csv
+  data/verse_data/alkitab_tb_enriched_groq.csv
 """
 
 import os
@@ -20,14 +20,18 @@ import pandas as pd
 # Path setup
 # ---------------------------------------------------------------------------
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = os.path.dirname(os.path.dirname(SCRIPT_DIR))
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(SCRIPT_DIR)))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
+from config import opt
 
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
-BIBLE_CSV = os.path.join(PROJECT_ROOT, "data", "alkitab_tb.csv")
-SUMMARIES_CSV = os.path.join(SCRIPT_DIR, "chapter_summaries.csv")
-OUTPUT_CSV = os.path.join(SCRIPT_DIR, "alkitab_tb_enriched_groq.csv")
+BIBLE_CSV = opt.BIBLE_RAW_CSV
+SUMMARIES_CSV = opt.CHAPTER_SUMMARIES_CSV
+OUTPUT_CSV = opt.BIBLE_ENRICHED_CSV
 
 
 def main():

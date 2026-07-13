@@ -173,23 +173,27 @@ Ensure these files/directories exist before running:
 | Path | Description | How to Obtain |
 |---|---|---|
 | `checkpoint/IndoBERT_multi_label_zsl.pt` | Trained LABAN classifier weights | Included in repo or train via `models/multilabel/run_trainer.py` |
-| `data/faiss_bible_index/` | Pre-built FAISS Bible index | Auto-built on first run from the enriched CSV |
-| `data/faiss_qna_index/` | Pre-built FAISS QnA index | Auto-built on first run from `data/dataset_qna.csv` |
-| `data/verse_retrieval/alkitab_tb_enriched_groq.csv` | AVI-enriched Bible verses | Generate via the AVI pipeline (see below) |
+| `data/verse_data/faiss_bible_index/` | Pre-built FAISS Bible index | Auto-built on first run from the enriched CSV |
+| `data/qna-intent_data/faiss_qna_index/` | Pre-built FAISS QnA index | Auto-built on first run from `data/qna-intent_data/dataset_qna.csv` |
+| `data/verse_data/alkitab_tb_enriched_groq.csv` | AVI-enriched Bible verses | Generate via the AVI pipeline (see below) |
+
+> All data paths are defined as constants on the `opt` config singleton in `config.py`
+> (`opt.QNA_CSV`, `opt.BIBLE_ENRICHED_CSV`, `opt.FAISS_BIBLE_INDEX`, …). Reference those
+> rather than hardcoding a path.
 
 #### Building the AVI (Augmented Vector Indexing) Pipeline (if needed)
 
-If `data/verse_retrieval/alkitab_tb_enriched_groq.csv` does not exist:
+If `data/verse_data/alkitab_tb_enriched_groq.csv` does not exist:
 
 ```bash
 # Step 1: Generate chapter-level theological summaries via LLM
-python data/verse_retrieval/generate_chapter_summaries.py
+python data/verse_data/avi_system/generate_chapter_summaries.py
 
 # Step 2: Prepend summaries to each verse to create the enriched CSV
-python data/verse_retrieval/prepare_enriched_bible.py
+python data/verse_data/avi_system/prepare_enriched_bible.py
 ```
 
-> **Note:** The FAISS index is built automatically on first startup if `data/faiss_bible_index/` doesn't exist. This takes ~15–45 minutes (one-time cost).
+> **Note:** The FAISS index is built automatically on first startup if `data/verse_data/faiss_bible_index/` doesn't exist. This takes ~15–45 minutes (one-time cost).
 
 ---
 

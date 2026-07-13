@@ -5,17 +5,21 @@ Reads the wide-format CSV (8 intent columns) and collects all non-empty cells
 per column into a JSON dict: { intent_name: [seed1, seed2, ...] }.
 
 Usage:
-    python data/augmentation/parse_seeds.py
+    python data/qna-intent_data/augmentation_system/parse_seeds.py
 """
 
 import csv
 import json
 import os
+import sys
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, '..', '..'))
+PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, '..', '..', '..'))
+sys.path.insert(0, PROJECT_ROOT)
 
-INPUT_CSV = os.path.join(PROJECT_ROOT, 'data', 'intent_content.csv')
+from config import opt
+
+INPUT_CSV = opt.INTENT_CONTENT_CSV
 OUTPUT_JSON = os.path.join(SCRIPT_DIR, 'seeds.json')
 
 

@@ -14,7 +14,7 @@ import os
 from typing import Dict, List
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, '..', '..'))
+PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, '..', '..', '..'))
 
 # Column order must match the original intent_content.csv
 INTENT_COLUMNS = [

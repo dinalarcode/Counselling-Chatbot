@@ -91,8 +91,8 @@ class RAGEngine:
         # Initialize the vector DB manager knowledge base.
         self.vector_db = VectorDBManager()
         # Build indices if not already built.
-        self.vector_db.build_bible_index('data/verse_retrieval/alkitab_tb_enriched_groq.csv')
-        self.vector_db.build_qna_index('data/dataset_qna.csv')
+        self.vector_db.build_bible_index()
+        self.vector_db.build_qna_index()
 
         # Define the prompt template where stage_instruction replaces the stage label and bible_section is conditional.
         self.prompt_template = PromptTemplate(

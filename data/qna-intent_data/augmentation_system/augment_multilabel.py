@@ -10,11 +10,11 @@ Pipeline:
        that express ALL listed intents in a single sentence
     3. Parse pipe-delimited '|' output → multi-hot encoded DataFrame
     4. Merge with existing data (accumulated output or original seed) → dataset_multiintent_augmented.csv
-        - First run : seeds from data/dataset_multiintent.csv
-        - Next runs : reads from data/augmentation/dataset_multiintent_augmented.csv (accumulated)
+        - First run : seeds from data/qna-intent_data/dataset_multiintent.csv
+        - Next runs : reads from data/qna-intent_data/dataset_multiintent_augmented.csv (accumulated)
 
 Usage:
-    python data/augmentation/augment_multilabel.py
+    python data/qna-intent_data/augmentation_system/augment_multilabel.py
 
 Configuration:
     Edit COMBINATION_CONFIG and GROQ_API_KEY below (or set in .env).
@@ -34,9 +34,11 @@ from dotenv import load_dotenv
 
 # --- Path Setup ---
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, "..", ".."))
+PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, "..", "..", ".."))
 sys.path.insert(0, PROJECT_ROOT)
 load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
+
+from config import opt
 
 
 # ========================================================================
@@ -54,9 +56,9 @@ CALL_DELAY = 8.0
 
 # File paths
 # Original seed dataset (used on first run only)
-SEED_DATASET_CSV = os.path.join(PROJECT_ROOT, "data", "dataset_multiintent.csv")
+SEED_DATASET_CSV = opt.MULTIINTENT_CSV
 # Accumulated output — used as source on subsequent runs
-OUTPUT_CSV = os.path.join(SCRIPT_DIR, "dataset_multiintent_augmented.csv")
+OUTPUT_CSV = opt.MULTIINTENT_AUG_CSV
 
 # Combination config: each tuple = (*intent_names, n_samples)
 # The last element is always the number of samples to generate.

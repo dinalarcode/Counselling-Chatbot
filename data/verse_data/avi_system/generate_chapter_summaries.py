@@ -11,10 +11,10 @@ Features:
   - Error handling: logs failed chapters, does not crash
 
 Usage:
-  cbenv\\Scripts\\python.exe data/verse_retrieval/generate_chapter_summaries.py
+  cbenv\\Scripts\\python.exe data/verse_data/avi_system/generate_chapter_summaries.py
 
 Output:
-  data/verse_retrieval/chapter_summaries.csv
+  data/verse_data/chapter_summaries.csv
 """
 
 import os
@@ -28,26 +28,18 @@ from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langchain_ollama import ChatOllama
 
-# ---------------------------------------------------------------------------
-# Path setup
-# ---------------------------------------------------------------------------
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = os.path.dirname(os.path.dirname(SCRIPT_DIR))
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(SCRIPT_DIR)))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
 
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
-BIBLE_CSV = os.path.join(PROJECT_ROOT, "alkitab_tb.csv")
-OUTPUT_DIR = os.path.join(PROJECT_ROOT, "verse_retrieval")
-# ---------------------------------------------------------------------------
-# LLM Provider Toggle: "groq" or "ollama"
-# ---------------------------------------------------------------------------
-LLM_PROVIDER = "ollama"  # ← switch to "ollama" to use local Ollama
+from config import opt
 
+BIBLE_CSV = opt.BIBLE_RAW_CSV
+OUTPUT_DIR = opt.VERSE_DIR
+LLM_PROVIDER = "ollama"  # ← switch to "ollama" to use local Ollama
 GROQ_MODEL = "llama-3.1-8b-instant"
 SLEEP_SECONDS = 2.1  # ~28 RPM, under Groq free-tier 30 RPM limit
 
@@ -73,11 +65,6 @@ SUMMARIZE_PROMPT = (
 )
 
 RETRY_PROMPT_SUFFIX = "\n\nPERINGATAN: Jawab HANYA dalam Bahasa Indonesia."
-
-
-# ---------------------------------------------------------------------------
-# Helper functions
-# ---------------------------------------------------------------------------
 
 def load_checkpoint() -> set:
     """Load already-processed (book_name, chapter) pairs from checkpoint."""
@@ -161,11 +148,6 @@ def log_failure(book_name: str, chapter: int, error: str):
     """Log a failed chapter to the failure log."""
     with open(FAILED_LOG, "a", encoding="utf-8") as f:
         f.write(f"{book_name} {chapter}: {error}\n")
-
-
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
 
 def main():
     print("=" * 65)

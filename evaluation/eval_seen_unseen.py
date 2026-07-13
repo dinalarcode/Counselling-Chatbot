@@ -74,8 +74,8 @@ from models.multilabel.bert_model import BertEmbedding
 
 # ── Konstanta ──────────────────────────────────────────────────────────────────
 RESULTS_DIR  = os.path.join(ROOT, "evaluation", "results")
-CHECKPOINT   = os.path.join(ROOT, "checkpoint", "IndoBERT_multi_label_zsl.pt")
-DATASET_CSV  = os.path.join(ROOT, "data", "augmentation", "dataset_multiintent_augmented.csv")
+CHECKPOINT   = os.path.join(ROOT, "checkpoint", "IndoBERT_multi_label.pt")
+DATASET_CSV  = opt.MULTIINTENT_AUG_CSV
 DEVICE       = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 MAX_LEN      = opt.max_len
 BATCH_SIZE   = 32

@@ -4,7 +4,7 @@ Scraper untuk Alkitab Terjemahan Baru (TB) dari alkitab.mobi
 Sumber data: http://alkitab.mobi/tb/{book_abbr}/{chapter}
 Teknik: Sama seperti sonnylazuardi/alkitab-api (cheerio → BeautifulSoup)
 
-Jalankan sekali untuk menghasilkan data/alkitab_tb.csv
+Jalankan sekali untuk menghasilkan data/verse_data/alkitab_tb.csv
 """
 
 import requests
@@ -12,8 +12,16 @@ import csv
 import time
 import re
 import os
+import sys
 from bs4 import BeautifulSoup
 from tqdm import tqdm
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(SCRIPT_DIR)))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
+from config import opt
 
 # === Daftar 66 Buku Alkitab (Singkatan alkitab.mobi + Nama Lengkap) ===
 BOOKS = [
@@ -88,7 +96,7 @@ BOOKS = [
 ]
 
 BASE_URL = "http://alkitab.mobi/tb"
-OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "alkitab_tb.csv")
+OUTPUT_PATH = opt.BIBLE_RAW_CSV
 DELAY_SECONDS = 0.5  # Rate limiting — jeda antar request
 
 

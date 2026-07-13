@@ -148,8 +148,8 @@ def train():
 
         if val_f1 > best_val_f1:  # Simpan model jika F1 validasi lebih besar dari sebelumnya
             best_val_f1 = val_f1
-            torch.save(model.state_dict(), 'checkpoint/IndoBERT_multi_label_zsl.pt')
-            print('Model saved to checkpoint/IndoBERT_multi_label_zsl.pt')
+            torch.save(model.state_dict(), 'checkpoint/IndoBERT_multi_label.pt')
+            print('Model saved to checkpoint/IndoBERT_multi_label.pt')
 
     # end of training loop
     # plot
@@ -180,7 +180,7 @@ def train():
     # ====== TESTING PHASE ======
     print("\n====== TESTING PHASE ======")
     print("Loading the best model for testing...")
-    model.load_state_dict(torch.load('checkpoint/IndoBERT_multi_label_zsl.pt'))
+    model.load_state_dict(torch.load('checkpoint/IndoBERT_multi_label.pt'))
     model.eval()
     test_loss_total = 0
     test_predict = []

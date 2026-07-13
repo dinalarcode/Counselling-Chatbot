@@ -10,7 +10,7 @@ _EVAL_DIR = os.path.dirname(_SCRIPT_DIR)
 PROJECT_ROOT = os.path.dirname(_EVAL_DIR)
 
 # Path to the source QnA dataset at the project root.
-QNA_CSV = os.path.join(PROJECT_ROOT, "data", "dataset_qna.csv")
+QNA_CSV = opt.QNA_CSV
 # Directory and path of the generated test set template inside the evaluation folder.
 TESTSET_DIR = os.path.join(_EVAL_DIR, "data")
 TESTSET_CSV = os.path.join(TESTSET_DIR, "ragas_testset.csv")

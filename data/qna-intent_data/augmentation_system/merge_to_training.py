@@ -8,18 +8,22 @@ in the same (question, Intent) format as dataset_multiintent.csv.
 Run this AFTER you have reviewed and edited intent_content_augmented.csv.
 
 Usage:
-    python data/augmentation/merge_to_training.py
+    python data/qna-intent_data/augmentation_system/merge_to_training.py
 """
 
 import csv
 import os
+import sys
 from collections import Counter
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, '..', '..'))
+PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, '..', '..', '..'))
+sys.path.insert(0, PROJECT_ROOT)
 
-INPUT_CSV = os.path.join(PROJECT_ROOT, 'data', 'intent_content_augmented.csv')
-OUTPUT_CSV = os.path.join(PROJECT_ROOT, 'data', 'dataset_multiintent_augmented.csv')
+from config import opt
+
+INPUT_CSV = opt.INTENT_CONTENT_AUG_CSV
+OUTPUT_CSV = opt.MULTIINTENT_AUG_CSV
 
 
 def merge_to_training(input_csv: str, output_csv: str) -> None:
@@ -96,7 +100,7 @@ def main():
     if not os.path.exists(INPUT_CSV):
         print(f"ERROR: {INPUT_CSV} not found.")
         print("Run the augmentation pipeline first, then review the output.")
-        print("Expected file: data/intent_content_augmented.csv")
+        print("Expected file: data/qna-intent_data/intent_content_augmented.csv")
         return
 
     merge_to_training(INPUT_CSV, OUTPUT_CSV)
