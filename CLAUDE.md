@@ -63,7 +63,7 @@ The_Chatbot/
 │   ├── compare_embed_models.py  Backbone comparison (6 models)
 │   ├── eval_seen_unseen.py      ZSL seen/unseen evaluation
 │   ├── eval_cosine_heatmap.py   Cosine similarity heatmap
-│   ├── eval_ragas.py            RAGAS evaluation
+│   ├── ragas_manager/          RAGAS AspectCritic eval (ragas_engine.py + listof_ragaslist.py)
 │   └── results/                 Output CSVs and PNGs (all ✅ DONE except RAGAS Phase 2)
 ├── templates/index.html         Chat UI
 ├── static/style.css + script.js Chat UI assets
@@ -120,7 +120,7 @@ The_Chatbot/
 
 *Bible verse in `relaksasi` only if `spiritual_consent is True`. `BIBLE_VERSE_STAGES = ['relaksasi']`.
 
-- **Spiritual consent** (`spiritual_consent`): tri-state `None`/`True`/`False`. Asked once on final `solusi` turn. Captured stickily. If never asked → no verses (safe fail). Pass `spiritual_consent=True` explicitly in non-session callers (e.g. `eval_ragas.py`).
+- **Spiritual consent** (`spiritual_consent`): tri-state `None`/`True`/`False`. Asked once on final `solusi` turn. Captured stickily. If never asked → no verses (safe fail). Pass `spiritual_consent=True` explicitly in non-session callers (e.g. `ragas_manager/ragas_engine.py`).
 - **Do not alter stage transition logic** without explicit user confirmation.
 
 ### RAG Pipeline
@@ -187,7 +187,7 @@ Routes: `GET /` → `index.html` | `POST /chat` → `{response: str}` | `POST /r
 
 ### 🎯 RAGAS (pending)
 - Phase 1 ✅ → `evaluation/data/ragas_testset.csv` (50 samples)
-- Phase 2 ⏳ → fill `reference` column, then run `python eval_ragas.py --evaluate`
+- Phase 2 ⏳ → fill `reference` column, then run `python evaluation/ragas_manager/ragas_engine.py --evaluate`
 
 ### 🔧 Before Submission
 - [ ] Remove all `[TIMING]` prints from `rag_engine.py`

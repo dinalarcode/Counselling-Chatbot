@@ -137,7 +137,7 @@ The_Chatbot/
 │   ├── compare_embed_models.py  LABAN backbone comparison (6 models, identical hyperparams)
 │   ├── eval_seen_unseen.py      Zero-shot seen/unseen label evaluation (3 splits)
 │   ├── eval_cosine_heatmap.py   Cosine similarity heatmap evaluation
-│   ├── eval_ragas.py            RAGAS RAG quality evaluation (--generate / --evaluate)
+│   ├── ragas_manager/          RAGAS RAG quality evaluation (ragas_engine.py --generate / --evaluate)
 │   ├── data/                    Test data for evaluations
 │   │   └── ragas_testset.csv    50-sample test set (question, stage, reference, intent_override)
 │   └── results/                 Auto-created output CSVs and PNGs
@@ -304,7 +304,7 @@ Current intents (from training CSV):
 The `reference` column is currently empty. The user must manually fill in ideal reference answers for each row
 (including relevant Bible verses for rows with stage=`solusi` or `relaksasi`), then run:
 ```
-python evaluation/eval_ragas.py --evaluate
+python evaluation/ragas_manager/ragas_engine.py --evaluate
 ```
 
 ### 6.2 Performance Measurement (Started, Not Yet Measured)

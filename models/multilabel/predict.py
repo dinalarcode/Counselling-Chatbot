@@ -28,7 +28,6 @@ class predictor:
         self.intent_mask = tokenized_intent['attention_mask'].to(self.device)
         self.label_names = listof_intent
 
-        # ponytail: forward hooks tap the dual-encoder's intermediate outputs for
         # diagnostic logging without touching bert_model.py or duplicating the forward pass.
         self._label_encoder_capture = {}
         self._utterance_encoder_capture = {}

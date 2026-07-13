@@ -180,7 +180,7 @@ The_Chatbot/
 │   ├── compare_embed_models.py     # Backbone comparison
 │   ├── eval_seen_unseen.py         # Zero-shot evaluation
 │   ├── eval_cosine_heatmap.py      # Embedding space visualization
-│   ├── eval_ragas.py               # RAGAS RAG evaluation
+│   ├── ragas_manager/             # RAGAS RAG evaluation (ragas_engine.py + listof_ragaslist.py)
 │   └── eval_verse_retrieval.py     # Verse retrieval accuracy
 ├── checkpoint/                     # Saved model weights
 ├── templates/                      # Flask HTML templates

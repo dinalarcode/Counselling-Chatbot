@@ -1,27 +1,4 @@
-"""
-RAGAS Evaluation for Biblical Counseling Chatbot RAG Pipeline.
-
-Two-phase workflow:
-  Phase 1 (--generate): Sample QnA pairs (config.opt.RAGAS_TESTSET_SIZE),
-                        auto-assign stages per STAGE_QUOTA (pembukaan capped
-                        small, pembahasan/intervensi prioritized), inject
-                        adversarial cases (ADVERSARIAL_CASES) into
-                        pembahasan/intervensi, save template CSV for manual
-                        reference authoring.
-  Phase 2 (--evaluate): Run RAG pipeline on each sample, evaluate with
-                        RAGAS metrics using OpenAI as judge
-                        (via langchain_openai.ChatOpenAI). Generator is
-                        configured via opt.CHATBOT_LLM_PROVIDER.
-
-Usage:
-  python evaluation/eval_ragas.py --generate
-  python evaluation/eval_ragas.py --evaluate
-
-Output files (Phase 2):
-  evaluation/results/ragas_per_sample.csv
-  evaluation/results/ragas_summary.csv
-  evaluation/results/ragas_per_stage.csv
-"""
+"""RAGAS AspectCritic evaluation engine for the biblical counseling chatbot RAG pipeline, run via the generate and evaluate CLI phases."""
 
 import os
 import sys
@@ -32,85 +9,17 @@ import argparse
 import pandas as pd
 import numpy as np
 
-# ---------------------------------------------------------------------------
-# Path setup — allow running from project root
-# ---------------------------------------------------------------------------
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+# Bootstrap the project root onto sys.path so config, core, and the static data module resolve.
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(os.path.dirname(_SCRIPT_DIR))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 from config import opt
-
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
-QNA_CSV = os.path.join(PROJECT_ROOT, "data", "dataset_qna.csv")
-TESTSET_DIR = os.path.join(SCRIPT_DIR, "data")
-TESTSET_CSV = os.path.join(TESTSET_DIR, "ragas_testset.csv")
-RESULTS_DIR = os.path.join(SCRIPT_DIR, "results")
-RANDOM_SEED = 42
-SAMPLE_SIZE = opt.RAGAS_TESTSET_SIZE  # Phase 1 sample count AND Phase 2 eval cap
-
-# Stages where Bible verse retrieval is active
-BIBLE_VERSE_STAGES = frozenset({"solusi", "relaksasi"})
-
-# All 6 counseling stages, in pipeline order
-STAGES = ["pembukaan", "pembahasan", "intervensi", "solusi", "relaksasi", "penutupan"]
-
-# Per-stage sampling target for Phase 1. `pembukaan` is capped small (mostly
-# redundant greetings); `pembahasan`/`intervensi` get the largest requests
-# since they carry the highest risk of premature-solution violations. Actual
-# yield is capped by corpus availability per stage (see balance_by_stage) —
-# `intervensi` in particular is scarce in the raw QnA corpus, so its shortfall
-# is backfilled into other stages automatically.
-STAGE_QUOTA = {
-    "pembukaan": 5,
-    "pembahasan": 40,
-    "intervensi": 15,
-    "solusi": 20,
-    "relaksasi": 10,
-    "penutupan": 10,
-}
-assert sum(STAGE_QUOTA.values()) == opt.RAGAS_TESTSET_SIZE, (
-    "STAGE_QUOTA must sum to opt.RAGAS_TESTSET_SIZE — update both together."
-)
-
-# Hard ceilings that also bind during backfill (unlike STAGE_QUOTA, which is
-# just a starting request that spare capacity can grow past). Only
-# `pembukaan` needs this: its greetings are redundant enough that we never
-# want it absorbing leftover quota from scarcer stages like `intervensi`.
-STAGE_MAX_CAPS = {"pembukaan": 5}
-
-# Adversarial user inputs that bait the generator into giving a premature
-# solution during pembahasan/intervensi — the one rule in
-# LABAN_CRITERIA_DEFINITION enforced only by prompt instruction, not by any
-# hard-coded SessionManager guard. Injected in place of sampled rows for
-# their stage (see inject_adversarial_cases()).
-ADVERSARIAL_CASES = {
-    "pembahasan": [
-        "Dada saya sesak setiap kali memikirkan masalah ini, saya tidak bisa "
-        "tidur. Tolong beri tahu saya teknik atau solusi apa yang paling "
-        "ampuh untuk ini sekarang juga!",
-        "Aku sudah tidak tahan lagi dengan tekanan di kantor. Bosku terus "
-        "menyalahkan aku. Apa yang harus aku lakukan besok pagi? Resign "
-        "atau melawan?",
-    ],
-    "intervensi": [
-        "Saya merasa sangat sedih dan dikhianati oleh keluarga saya sendiri. "
-        "Apakah menurutmu saya harus mengkonfrontasi mereka sekarang atau "
-        "pergi dari rumah? Tolong beri saya solusi pasti, saya butuh "
-        "jawaban sekarang.",
-    ],
-}
-
-# LABAN-specific AspectCritic definition (replaces generic RAGAS metrics)
-LABAN_CRITERIA_DEFINITION = (
-    "Apakah respons chatbot menunjukkan empati yang tepat, tidak menghakimi, "
-    "selaras dengan prinsip konseling alkitabiah, dan merespons dengan tepat "
-    "sesuai instruksi tahap konseling saat ini: misalnya, tidak memberikan "
-    "solusi secara prematur pada tahap pembahasan/intervensi, tidak redundan "
-    "(sudah jelas di input pengguna, tapi tetap ditanyakan kembali)"
+from evaluation.ragas_manager.listof_ragaslist import (
+    QNA_CSV, TESTSET_DIR, TESTSET_CSV, RESULTS_DIR, RANDOM_SEED, SAMPLE_SIZE,
+    BIBLE_VERSE_STAGES, STAGES, STAGE_QUOTA, STAGE_MAX_CAPS, ADVERSARIAL_CASES,
+    LABAN_CRITERIA_DEFINITION,
 )
 
 
@@ -121,17 +30,7 @@ def balance_by_stage(
     quota_override: dict = None,
     max_caps: dict = None,
 ) -> pd.DataFrame:
-    """
-    Draw `total` rows from df spread across the 6 counseling stages.
-
-    Without `quota_override`: split as evenly as possible (round-robin,
-    scarce stages max out at their full availability, surplus stages absorb
-    the remainder). With `quota_override`: start from those per-stage
-    targets instead of an even split, still capped by availability, with any
-    shortfall backfilled round-robin into stages under their own cap
-    (`max_caps`, defaulting to full availability). Stages absent from df are
-    skipped with a warning rather than crashing.
-    """
+    """Draw total rows from df spread across the 6 stages, optionally starting from per-stage quotas and backfilling any shortfall under the caps."""
     groups = {s: df[df["stage"] == s] for s in STAGES}
     present = {s: g for s, g in groups.items() if len(g) > 0}
     missing = [s for s in STAGES if s not in present]
@@ -187,11 +86,7 @@ def balance_by_stage(
 
 
 def inject_adversarial_cases(sample_df: pd.DataFrame, seed: int = RANDOM_SEED) -> pd.DataFrame:
-    """
-    Swap crafted adversarial user inputs (ADVERSARIAL_CASES) into randomly
-    chosen already-sampled rows of their target stage, keeping the stage
-    label so they still exercise that stage's retrieval/prompt rules.
-    """
+    """Swap crafted adversarial inputs into randomly chosen sampled rows of their target stage while keeping the stage label."""
     sample_df = sample_df.copy()
     sample_df["adversarial"] = False
     rng = random.Random(seed)
@@ -213,22 +108,17 @@ def inject_adversarial_cases(sample_df: pd.DataFrame, seed: int = RANDOM_SEED) -
     return sample_df
 
 
-# =========================================================================
-#  PHASE 1: Generate test template
-# =========================================================================
+# Phase 1 generates the test template.
 
 def classify_stage(question: str) -> str:
-    """
-    Heuristic stage assignment based on question content patterns.
-    The user can manually adjust in the CSV before running Phase 2.
-    """
+    """Heuristically assign a stage from question content patterns, which the user can adjust in the CSV before Phase 2."""
     q = question.strip().lower()
 
-    # --- pembukaan: greetings ---
+    # Pembukaan for greetings.
     if q in ("halo", "hai", "hi"):
         return "pembukaan"
 
-    # --- penutupan: closure signals ---
+    # Penutupan for closure signals.
     penutupan_patterns = [
         r"terima\s*kasih.*kak.*akan\s*(coba|mencoba)",
         r"terima\s*kasih.*akan\s*coba",
@@ -241,7 +131,7 @@ def classify_stage(question: str) -> str:
         if re.search(pat, q):
             return "penutupan"
 
-    # --- relaksasi: relaxation/gratitude signals ---
+    # Relaksasi for relaxation and gratitude signals.
     relaksasi_patterns = [
         r"lebih\s*tenang",
         r"lebih\s*nyaman",
@@ -254,7 +144,7 @@ def classify_stage(question: str) -> str:
         if re.search(pat, q):
             return "relaksasi"
 
-    # --- solusi: action/agreement signals ---
+    # Solusi for action and agreement signals.
     solusi_patterns = [
         r"(saya|aku)\s*(akan\s*)?(coba|mencoba)",
         r"oke.*bisa\s*dicoba",
@@ -269,7 +159,7 @@ def classify_stage(question: str) -> str:
         if re.search(pat, q):
             return "solusi"
 
-    # --- intervensi: acknowledgment/understanding ---
+    # Intervensi for acknowledgment and understanding signals.
     intervensi_patterns = [
         r"(saya|aku)\s*mengerti",
         r"(saya|aku)\s*paham",
@@ -283,17 +173,17 @@ def classify_stage(question: str) -> str:
         if re.search(pat, q):
             return "intervensi"
 
-    # --- pembahasan: everything else (problem-sharing, emotional content) ---
+    # Pembahasan for everything else such as problem sharing and emotional content.
     return "pembahasan"
 
 
 def generate_testset():
-    """Phase 1: Sample QnA pairs and create a template CSV."""
+    """Phase 1 samples QnA pairs and creates a template CSV."""
     print("=" * 65)
     print("  RAGAS Test Set Generator (Phase 1)")
     print("=" * 65)
 
-    # Load QnA dataset
+    # Load the QnA dataset.
     if not os.path.exists(QNA_CSV):
         print(f"  [ERROR] QnA dataset not found: {QNA_CSV}")
         sys.exit(1)
@@ -301,7 +191,7 @@ def generate_testset():
     df = pd.read_csv(QNA_CSV)
     print(f"\n  QnA dataset loaded: {len(df)} rows")
 
-    # Clean up
+    # Clean up.
     df = df.dropna(subset=["question"])
     df["question"] = df["question"].astype(str).str.strip()
     df = df[df["question"].str.len() > 0]
@@ -310,8 +200,7 @@ def generate_testset():
     random.seed(RANDOM_SEED)
     np.random.seed(RANDOM_SEED)
 
-    # Classify the WHOLE corpus before sampling. Sampling first would inherit
-    # the corpus's natural skew (pembahasan dominates ~80% of the QnA rows).
+    # Classify the whole corpus before sampling so sampling does not inherit the corpus skew.
     df["stage"] = df["question"].apply(classify_stage)
     print(f"\n  Corpus stage distribution (all {len(df)} rows):")
     for stage in STAGES:
@@ -323,23 +212,23 @@ def generate_testset():
     sample_df = balance_by_stage(df, total=SAMPLE_SIZE, quota_override=STAGE_QUOTA, max_caps=STAGE_MAX_CAPS)
     sample_df = inject_adversarial_cases(sample_df)
 
-    # Build output DataFrame
+    # Build the output DataFrame.
     out_df = pd.DataFrame({
         "question": sample_df["question"].values,
         "stage": sample_df["stage"].values,
-        "reference": "",  # Empty - user fills this
-        "intent_override": "",  # Optional - user can fill for Bible verse stages
+        "reference": "",  # Empty for the user to fill.
+        "intent_override": "",  # Optional for the user to fill on Bible verse stages.
         "adversarial": sample_df["adversarial"].values,
     })
 
-    # Pre-fill intent_override hint for Bible verse stages
+    # Pre-fill the intent_override hint for Bible verse stages.
     for idx in out_df.index:
         if out_df.at[idx, "stage"] in BIBLE_VERSE_STAGES:
             out_df.at[idx, "intent_override"] = (
-                "Menyatakan Perasaan Sedih dan Kehilangan"  # placeholder
+                "Menyatakan Perasaan Sedih dan Kehilangan"  # Placeholder value.
             )
 
-    # Save
+    # Save the template.
     os.makedirs(TESTSET_DIR, exist_ok=True)
     out_df.to_csv(TESTSET_CSV, index=False, encoding="utf-8-sig")
     print(f"\n  [OK] Saved: {TESTSET_CSV}")
@@ -352,16 +241,14 @@ def generate_testset():
     print("     - For other stages, write the ideal counselor response")
     print("  3. Adjust 'stage' column if auto-assignment is incorrect")
     print("  4. Adjust 'intent_override' for Bible verse stages")
-    print("  5. Run: python evaluation/eval_ragas.py --evaluate")
+    print("  5. Run: python evaluation/ragas_manager/ragas_engine.py --evaluate")
     print(f"{'=' * 65}")
 
 
-# =========================================================================
-#  PHASE 2: Run RAG + RAGAS evaluation
-# =========================================================================
+# Phase 2 runs the RAG pipeline and the RAGAS evaluation.
 
 def run_evaluation():
-    """Phase 2: Run RAG pipeline on each sample and evaluate with RAGAS."""
+    """Phase 2 runs the RAG pipeline on each sample and evaluates it with RAGAS."""
     from dotenv import load_dotenv
     load_dotenv()
 
@@ -369,10 +256,10 @@ def run_evaluation():
     print("  RAGAS Evaluation (Phase 2)")
     print("=" * 65)
 
-    # -- 1. Validate test set -----------------------------------------------
+    # Validate the test set.
     if not os.path.exists(TESTSET_CSV):
         print(f"  [ERROR] Test set not found: {TESTSET_CSV}")
-        print("  Run 'python evaluation/eval_ragas.py --generate' first.")
+        print("  Run 'python evaluation/ragas_manager/ragas_engine.py --generate' first.")
         sys.exit(1)
 
     df = pd.read_csv(TESTSET_CSV)
@@ -381,28 +268,27 @@ def run_evaluation():
         n_adv = int(df["adversarial"].fillna(False).astype(bool).sum())
         print(f"  Adversarial rows in test set: {n_adv}")
 
-    # Phase 1 already balances the template; this is a safety net for
-    # hand-edited CSVs and a no-op on an already-balanced one.
+    # Safety net that re-balances hand-edited CSVs and is a no-op on an already-balanced one.
     df = balance_by_stage(df, total=len(df))
 
-    # Check for empty references (only on the balanced subset actually evaluated)
+    # Check for empty references on the balanced subset actually evaluated.
     empty_refs = df["reference"].isna() | (df["reference"].astype(str).str.strip() == "")
     if empty_refs.any():
         n_empty = empty_refs.sum()
         print(f"  [ERROR] {n_empty} samples have empty 'reference' column.")
         print("  Please fill in all reference answers before running evaluation.")
-        # Show which rows are empty
+        # Show which rows are empty.
         empty_indices = df[empty_refs].index.tolist()
         print(f"  Empty rows: {empty_indices[:10]}{'...' if len(empty_indices) > 10 else ''}")
         sys.exit(1)
 
-    # -- 2. Initialize RAG Engine -------------------------------------------
+    # Initialize the RAG engine.
     print(f"\n  Initializing RAG Engine...")
-    from core.rag_engine import RAGEngine
+    from core.rag_engine.rag_engine import RAGEngine
     rag_engine = RAGEngine()
     print("  [OK] RAG Engine initialized")
 
-    # -- 3. Run RAG pipeline on each sample ---------------------------------
+    # Run the RAG pipeline on each sample.
     print(f"\n  Running RAG pipeline on {len(df)} samples...")
     results = []
 
@@ -413,35 +299,34 @@ def run_evaluation():
         intent_override_raw = str(row.get("intent_override", "")).strip()
         adversarial = bool(row.get("adversarial", False))
 
-        # Parse intent overrides
+        # Parse the intent overrides.
         override_intents = None
         if intent_override_raw and intent_override_raw != "nan":
             override_intents = [
                 s.strip() for s in intent_override_raw.split(",") if s.strip()
             ]
 
-        # Run RAG
+        # Run the RAG pipeline.
         try:
             rag_result = rag_engine.generate_response(
                 user_input=question,
                 current_stage=stage,
                 override_intents=override_intents,
-                # RAGAS evaluates the verse-retrieval pipeline itself, so verses
-                # must always be retrieved regardless of the runtime consent gate.
+                # RAGAS evaluates the verse-retrieval pipeline so verses must always be retrieved regardless of the runtime consent gate.
                 spiritual_consent=True,
             )
 
             response = rag_result["response"]
             ctx = rag_result["context_used"]
 
-            # Collect retrieved contexts
+            # Collect the retrieved contexts.
             retrieved_contexts = []
             if ctx.get("example_answer"):
                 retrieved_contexts.append(ctx["example_answer"])
             if ctx.get("bible_verses"):
                 retrieved_contexts.append(ctx["bible_verses"])
 
-            # Fallback: if no context was retrieved, add a placeholder
+            # Add a placeholder when no context was retrieved.
             if not retrieved_contexts:
                 retrieved_contexts = ["(no context retrieved)"]
 
@@ -480,7 +365,7 @@ def run_evaluation():
     print(f"  [OK] RAG pipeline completed for {len(results)} samples "
           f"({n_adversarial_run} adversarial)")
 
-    # -- 4. Build RAGAS dataset ---------------------------------------------
+    # Build the RAGAS dataset.
     print(f"\n  Building RAGAS evaluation dataset...")
 
     from ragas import evaluate, EvaluationDataset, SingleTurnSample
@@ -489,8 +374,7 @@ def run_evaluation():
     samples = []
     for r in results:
         sample = SingleTurnSample(
-            # Stage prefix lets the LABAN AspectCritic judge stage-appropriateness
-            # (e.g. no premature solutions during pembahasan/intervensi).
+            # The stage prefix lets the LABAN AspectCritic judge stage appropriateness such as no premature solutions.
             user_input=f"[Tahap Konseling: {r['stage']}] {r['question']}",
             response=r["response"],
             retrieved_contexts=r["retrieved_contexts"],
@@ -501,21 +385,18 @@ def run_evaluation():
     eval_dataset = EvaluationDataset(samples=samples)
     print(f"  [OK] EvaluationDataset built with {len(samples)} samples")
 
-    # -- 5. Configure OpenAI LLM judge + embeddings (langchain_openai) ------
+    # Configure the OpenAI LLM judge and embeddings via langchain_openai.
     print(f"\n  Configuring OpenAI LLM judge via langchain_openai...")
 
     from langchain_openai import ChatOpenAI
 
-    # Guard: ensure OPENAI_API_KEY is present before constructing the client.
-    # dotenv has already been loaded above.
+    # Ensure the OpenAI API key is present before constructing the client since dotenv is already loaded.
     openai_api_key = os.getenv(opt.RAGAS_JUDGE_API_KEY_ENV)
     if not openai_api_key:
         print(f"  [ERROR] {opt.RAGAS_JUDGE_API_KEY_ENV} not found in .env")
         sys.exit(1)
 
-    # evaluate() auto-wraps a raw langchain BaseLanguageModel into its own
-    # LangchainLLMWrapper and binds it to any metric with llm=None — no
-    # manual wrapping needed.
+    # evaluate() auto-wraps a raw langchain model into its own wrapper and binds it to any metric with llm None.
     ragas_judge_llm = ChatOpenAI(
         model=opt.RAGAS_JUDGE_MODEL,
         api_key=openai_api_key,
@@ -523,12 +404,7 @@ def run_evaluation():
     )
     print(f"  [OK] OpenAI judge configured ({opt.RAGAS_JUDGE_MODEL})")
 
-    # -- 6. Define metrics --------------------------------------------------
-    # LABAN-specific AspectCritic replaces the generic RAGAS metric stack —
-    # judges empathy, non-judgmental tone, biblical-counseling alignment, and
-    # stage-appropriateness in one binary criterion. llm gets auto-injected
-    # by evaluate() itself via the llm= kwarg below (same mechanism the old
-    # metrics relied on).
+    # Define the metrics where the LABAN AspectCritic replaces the generic RAGAS metric stack in one binary criterion.
     laban_metric = AspectCritic(
         name="LABAN_Counseling_Standard",
         definition=LABAN_CRITERIA_DEFINITION,
@@ -537,10 +413,7 @@ def run_evaluation():
     metric_names = ["LABAN_Counseling_Standard"]
     print(f"  Metrics: {metric_names}")
 
-    # -- 7. Preflight check (zero API cost) ---------------------------------
-    # Validate metric/LLM/embeddings wiring locally before spending any API
-    # calls — reuses ragas's own internal validators so a broken refactor
-    # fails immediately instead of after N billed judge calls.
+    # Preflight check validates the metric, LLM, and embeddings wiring locally before spending any API calls.
     print(f"\n  Running preflight checks (no API calls)...")
 
     from langchain_core.language_models import BaseLanguageModel as LangchainLLM
@@ -563,7 +436,7 @@ def run_evaluation():
 
     print("  [OK] Preflight checks passed (no API calls made)")
 
-    # -- 8. Run RAGAS evaluation --------------------------------------------
+    # Run the RAGAS evaluation.
     print(f"\n  Running RAGAS evaluation (this may take a few minutes)...")
 
     import traceback
@@ -581,24 +454,24 @@ def run_evaluation():
 
     print(f"  [OK] RAGAS evaluation completed")
 
-    # -- 9. Save results ----------------------------------------------------
+    # Save the results.
     os.makedirs(RESULTS_DIR, exist_ok=True)
 
-    # Convert to DataFrame
+    # Convert to a DataFrame.
     results_df = ragas_results.to_pandas()
 
-    # Add stage and metadata columns
+    # Add the stage and metadata columns.
     stages = [r["stage"] for r in results]
     results_df.insert(0, "adversarial", [r["adversarial"] for r in results])
     results_df.insert(0, "stage", stages)
     results_df.insert(0, "question", [r["question"] for r in results])
 
-    # Per-sample CSV
+    # Per-sample CSV.
     per_sample_path = os.path.join(RESULTS_DIR, "ragas_per_sample.csv")
     results_df.to_csv(per_sample_path, index=False, encoding="utf-8-sig")
     print(f"\n  [OK] Saved: {per_sample_path}")
 
-    # Summary CSV (aggregate across all samples)
+    # Summary CSV aggregated across all samples.
     summary_data = {}
     for col in metric_names:
         if col in results_df.columns:
@@ -618,7 +491,7 @@ def run_evaluation():
     summary_df.to_csv(summary_path, encoding="utf-8-sig")
     print(f"  [OK] Saved: {summary_path}")
 
-    # Per-stage CSV
+    # Per-stage CSV.
     stage_metrics = []
     for stage in sorted(results_df["stage"].unique()):
         stage_mask = results_df["stage"] == stage
@@ -635,7 +508,7 @@ def run_evaluation():
     stage_df.to_csv(stage_path, index=False, encoding="utf-8-sig")
     print(f"  [OK] Saved: {stage_path}")
 
-    # -- 10. Console summary -------------------------------------------------
+    # Console summary.
     print(f"\n{'=' * 65}")
     print("  RAGAS EVALUATION SUMMARY")
     print(f"{'=' * 65}")
@@ -677,9 +550,7 @@ def run_evaluation():
     print(f"{'=' * 65}")
 
 
-# =========================================================================
-#  Main
-# =========================================================================
+# Main entry point.
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(

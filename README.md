@@ -363,7 +363,7 @@ The_Chatbot/
 │       └── seeds.json              # Augmentation seed data
 │
 ├── evaluation/                     # Evaluation and benchmarking
-│   ├── eval_ragas.py               # RAGAS evaluation framework
+│   ├── ragas_manager/             # RAGAS AspectCritic eval (ragas_engine.py + listof_ragaslist.py)
 │   ├── eval_cosine_heatmap.py      # Cosine similarity heatmap analysis
 │   ├── eval_seen_unseen.py         # Seen/unseen data evaluation
 │   └── compare_embed_models.py     # Embedding model comparison
@@ -385,7 +385,7 @@ The project includes several evaluation tools under `evaluation/`:
 
 | Script | Purpose |
 |---|---|
-| `eval_ragas.py` | End-to-end RAG evaluation using the RAGAS framework (faithfulness, relevance, etc.) |
+| `ragas_manager/ragas_engine.py` | End-to-end RAG evaluation using the RAGAS framework (faithfulness, relevance, etc.) |
 | `eval_seen_unseen.py` | Evaluates classifier performance on seen vs. unseen intent data |
 | `eval_cosine_heatmap.py` | Generates cosine similarity heatmaps between intents and Bible verses |
 | `compare_embed_models.py` | Benchmarks different embedding models for verse retrieval quality |
@@ -393,7 +393,7 @@ The project includes several evaluation tools under `evaluation/`:
 ### Running RAGAS Evaluation
 
 ```bash
-python evaluation/eval_ragas.py
+python evaluation/ragas_manager/ragas_engine.py
 ```
 
 > Requires `GEMINI_API_KEY` in `.env` (uses Gemini as the RAGAS judge by default).

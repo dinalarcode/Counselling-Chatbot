@@ -1,5 +1,5 @@
-from core.rag_engine import RAGEngine
-from core.session_manager import SessionManager
+from core.rag_engine.rag_engine import RAGEngine
+from core.session_manager.SM_Engine import SessionManager
 import logging
 
 # Set up logging to only show critical errors (suppresses transformers/langchain warnings)

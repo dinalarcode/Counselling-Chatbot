@@ -7,8 +7,8 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 if SCRIPT_DIR not in sys.path:
     sys.path.insert(0, SCRIPT_DIR)
 
-from core.rag_engine import RAGEngine
-from core.session_manager import SessionManager
+from core.rag_engine.rag_engine import RAGEngine
+from core.session_manager.SM_Engine import SessionManager
 
 
 # ── Bible Test Session (sandbox for verse retrieval testing) ────────────

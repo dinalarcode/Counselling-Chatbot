@@ -1,3 +1,5 @@
+"""FAISS vector database manager handling Bible and QnA index building, loading, and semantic search."""
+
 import os
 import random
 import re
@@ -7,82 +9,10 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.documents import Document
 from config import opt
 
-from Sastrawi.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFactory
-
-# Indonesian stopwords: Sastrawi's comprehensive list + colloquial extras
-_sastrawi_factory = StopWordRemoverFactory()
-STOPWORDS_ID = set(_sastrawi_factory.get_stop_words())
-# Tambahkan kata-kata informal/colloquial yang tidak ada di Sastrawi
-STOPWORDS_ID.update({
-    'kak', 'nggak', 'gak', 'dong', 'sih', 'nih', 'deh', 'lho', 'kan',
-    'kok', 'banget', 'kayak', 'gimana', 'gitu', 'udah', 'terus',
-    'aja', 'emang', 'doang', 'cuma', 'tuh', 'yah', 'wah',
-    'gatau', 'gapaham', 'gajelas', 'gamau', 'gaada', 'gabisa',
-})
-
-# ── Biblical Synonyms for Query Expansion ──────────────────────────────────
-# Maps each of the 10 LABAN intents to formal vocabulary found in the
-# Alkitab Terjemahan Baru (TB). These terms are injected into the FAISS
-# query so that informal user slang ("kesel", "capek") gets expanded with
-# formal biblical words ("murka", "lelah") that actually appear in the Bible.
-BIBLICAL_SYNONYMS = {
-    "Mengisyaratkan Butuh Bantuan Profesional": (
-        "pertolongan penolong selamatkan tolong lindungi "
-        "perlindungan harapan kekuatan penghiburan pemulihan"
-        "nasihat didikan hikmat teguran petunjuk jalan keluar terang kekuatan"
-    ),
-    "Mengisyaratkan Gejala Fisik": (
-        "sakit penyakit lemah lelah tubuh daging "
-        "luka menderita penderitaan kesembuhan"
-        "lesu penat letih sembuh menyegarkan membalut kekuatan baru memulihkan"
-    ),
-    "Menyatakan Perasaan Benci dan Jijik": (
-        "benci kebencian murka jijik kejijikan hina "
-        "menghina najis kekejian muak"
-        "kekejian muak mengampuni kasih damai memberkati pengampunan saudara"
-    ),
-    "Menyatakan Perasaan Marah dan Frustasi": (
-        "murka amarah marah gusar geram berang "
-        "kemarahan emosi mengeluh keluh kesah"
-        "dendam sabar kasih karunia menahan diri damai sejahtera lemah lembut"
-    ),
-    "Menyatakan Perasaan Percaya": (
-        "percaya iman beriman setia kesetiaan "
-        "pengharapan berharap yakin teguh penyertaan"
-        "berserah percaya setia dijagai janji aman tempat perlindungan"
-    ),
-    "Menyatakan Perasaan Sebelum Menghadapi Kejadian": (
-        "kuatir khawatir gelisah waswas gentar "
-        "bimbang ragu cemas menanti menunggu"
-        "berjaga-jaga pencobaan ujian waspada penyertaan jangan takut berani teguh melangkah"
-
-    ),
-    "Menyatakan Perasaan Sedih dan Kehilangan": (
-        "dukacita ratap tangis meratap bersedih perkabungan "
-        "berkabung kehilangan air mata patah hati remuk jiwa"
-        "duka ratapan hancur hati penghiburan dihibur sukacita memulihkan"
-    ),
-    "Menyatakan Perasaan Takut dan Kecemasan": (
-        "takut ketakutan gentar ngeri kecemasan gemetar "
-        "cemas waswas kuatir gelisah"
-        "damai berani aman perlindungan tempat perlindungan penolong"
-    ),
-    "Menyatakan Rasa Syukur dan Apresiasi": (
-        "syukur bersyukur puji pujian memuji ucapan syukur "
-        "berkat diberkati terima kasih sukacita"
-        "sukacita sorak karunia kebaikan melimpah"
-    ),
-    "Menyatakan Reaksi Terkejut dan Tidak Terduga": (
-        "heran takjub tercengang dahsyat ajaib mujizat "
-        "keajaiban terkejut terperanjat"
-        "gempar kedaulatan rencana damai sejahtera pegangan pertolongan ajaib"
-    ),
-}
-
-# ── Diversity Constants ───────────────────────────────────────────────────
-# Used by _faiss_search to ensure FAISS candidates come from varied chapters.
-OVERSAMPLE_FACTOR = 3     # fetch 3× more from FAISS before filtering
-MAX_PER_CHAPTER   = 2     # at most 2 verses per chapter in the final k candidates
+# Static stopwords, biblical synonyms, and diversity constants.
+from core.vectordb_manager.listof_vdblist import (
+    STOPWORDS_ID, BIBLICAL_SYNONYMS, OVERSAMPLE_FACTOR, MAX_PER_CHAPTER,
+)
 
 
 class VectorDBManager:
@@ -91,20 +21,11 @@ class VectorDBManager:
         self.bible_db = None
         self.qna_db = None
 
-    # ── Bible Index (Full TB Bible) ────────────────────────────────
+    # Bible index over the full TB Bible.
 
     def build_bible_index(self, csv_path='data/verse_retrieval/alkitab_tb_enriched_groq.csv', index_dir='data/faiss_bible_index'):
-        """
-        Membangun atau memuat FAISS index untuk seluruh Alkitab TB.
-        
-        Uses the enriched CSV (with chapter context prepended to each verse)
-        so FAISS embeds both the theological context and the verse text.
-        The raw verse text is preserved in metadata["text"] for display.
-        
-        Jika index sudah ada di disk, langsung dimuat (cepat).
-        Jika belum, membangun dari CSV (lambat, hanya sekali).
-        """
-        # Coba muat dari disk terlebih dahulu
+        """Build or load the FAISS index for the entire TB Bible using the enriched CSV, loading from disk when present."""
+        # Try loading from disk first.
         if os.path.exists(index_dir):
             try:
                 print("Memuat Bible FAISS index dari disk...")
@@ -118,7 +39,7 @@ class VectorDBManager:
                 print(f"Gagal memuat index dari disk: {e}")
                 print("Membangun ulang index...")
 
-        # Bangun dari CSV
+        # Build from the CSV.
         if not os.path.exists(csv_path):
             print(f"[ERROR] File {csv_path} tidak ditemukan!")
             print("Jalankan pipeline AVI terlebih dahulu:")
@@ -128,9 +49,9 @@ class VectorDBManager:
 
         print(f"Membangun Bible FAISS index dari {csv_path}...")
         print("Ini akan memakan waktu ~15-45 menit (hanya sekali)...")
-        
+
         df = pd.read_csv(csv_path)
-        
+
         documents = []
         for _, row in df.iterrows():
             text = str(row['text']).strip()
@@ -139,15 +60,14 @@ class VectorDBManager:
             book_name = str(row['book_name']).strip()
             chapter = int(row['chapter'])
             verse = int(row['verse'])
-            
+
             if not text or text == 'nan':
                 continue
 
-            # Use enriched_text (chapter context + verse) for embedding;
-            # fall back to raw text if enriched_text is missing
+            # Use enriched_text for embedding and fall back to raw text when it is missing.
             enriched_text = str(row.get('enriched_text', '')).strip()
             page_content = enriched_text if enriched_text and enriched_text != 'nan' else text
-            
+
             doc = Document(
                 page_content=page_content,
                 metadata={
@@ -155,50 +75,28 @@ class VectorDBManager:
                     "book_name": book_name,
                     "chapter": chapter,
                     "verse": verse,
-                    "text": text,       # raw verse — displayed to user
+                    "text": text,       # Raw verse displayed to the user.
                     "reference": reference,
                 }
             )
             documents.append(doc)
-        
+
         if not documents:
             print("[ERROR] Tidak ada dokumen valid ditemukan dalam CSV.")
             return
-        
+
         print(f"Mengindeks {len(documents)} ayat (enriched)... (sabar ya)")
         self.bible_db = FAISS.from_documents(documents, self.embeddings)
-        
-        # Simpan ke disk
+
+        # Save to disk.
         self.bible_db.save_local(index_dir)
         print(f"Bible index selesai dibangun dan disimpan ke {index_dir}")
         print(f"Total dokumen: {self.bible_db.index.ntotal}")
 
-    # ── FAISS Semantic Search (Layer 1 + 2) ──────────────────────────────
+    # FAISS semantic search covering layers 1 and 2.
 
     def _faiss_search(self, intents, user_input, k=10, excluded_books=None, excluded_verses=None):
-        """
-        Layer 1: Build combined query (intents + biblical synonyms ONLY)
-        Layer 2: FAISS semantic search → oversampled pool
-        Layer 2.5: Diversity filter → top-k diverse candidate verses
-        
-        Note: raw user_input is NOT included in the FAISS query to avoid
-        semantic noise dilution. It is used exclusively by the LLM reranker
-        (Layer 3) for contextual verse selection.
-        
-        Args:
-            intents: list of detected intent strings
-            user_input: raw user utterance (kept for API compatibility;
-                        not used in FAISS query — routed to LLM reranker)
-            k: desired number of diverse candidates to return
-            excluded_books: optional set of book_abbr strings to completely
-                            skip (used for session-level book exclusion)
-            excluded_verses: optional set of exact reference strings to skip
-                             (e.g. {"Mazmur 34:18"}) — session-level verse exclusion
-        
-        Returns:
-            list of dict: [{reference, text, book_abbr, faiss_score}, ...]
-                          sorted by L2 distance, with diversity applied
-        """
+        """Build the combined query, run FAISS semantic search with oversampling, and apply a diversity filter to return top-k diverse verses."""
         if self.bible_db is None:
             print("[WARNING] Bible index belum dibangun!")
             return []
@@ -211,10 +109,10 @@ class VectorDBManager:
         if excluded_verses is None:
             excluded_verses = set()
 
-        # --- Layer 1: Build combined query (intents + biblical synonyms only) ---
+        # Layer 1 builds the combined query from intents and biblical synonyms only.
         intent_part = " ".join(intents)
 
-        # Inject biblical synonyms for each detected intent
+        # Inject biblical synonyms for each detected intent.
         synonym_parts = []
         for intent in intents:
             synonyms = BIBLICAL_SYNONYMS.get(intent, "")
@@ -227,7 +125,7 @@ class VectorDBManager:
         if not combined_query:
             return []
 
-        # --- Layer 2: Semantic search di FAISS (oversample) ---
+        # Layer 2 runs the semantic search in FAISS with oversampling.
         oversample_k = k * OVERSAMPLE_FACTOR
         try:
             candidates_with_scores = self.bible_db.similarity_search_with_score(
@@ -240,31 +138,26 @@ class VectorDBManager:
         if not candidates_with_scores:
             return []
 
-        # Sort by L2 distance (lowest = best)
+        # Sort by L2 distance where lowest is best.
         candidates_with_scores.sort(key=lambda x: x[1])
 
-        # --- Layer 2.5: Diversity filter ---
-        # 1. Skip exact verses already used in this session (excluded_verses)
-        # 2. Skip verses from excluded_books (session-level exclusion — book level)
-        # 3. Cap at MAX_PER_CHAPTER verses per unique book+chapter key (call-level diversity)
+        # Layer 2.5 applies the diversity filter over exclusions and per-chapter caps.
         results = []
-        chapter_count = {}  # "book_name chapter" → count in results so far
+        chapter_count = {}  # Maps book_name chapter key to its count in results so far.
 
         for doc, score in candidates_with_scores:
             reference = doc.metadata.get("reference", "")
             book_abbr = doc.metadata.get("book_abbr", "")
 
-            # Session-level verse exclusion: skip exact references already chosen
+            # Session-level verse exclusion skips exact references already chosen.
             if reference in excluded_verses:
                 continue
 
-            # Session-level book exclusion: skip ALL candidates from excluded books
+            # Session-level book exclusion skips all candidates from excluded books.
             if book_abbr in excluded_books:
                 continue
 
-            # Extract the chapter key from the candidate's reference string.
-            # Uses book_name + chapter from metadata when available (most reliable);
-            # falls back to parsing the reference string directly.
+            # Derive the chapter key from metadata when available and fall back to parsing the reference string.
             book_name = doc.metadata.get("book_name", "")
             chapter   = doc.metadata.get("chapter", None)
             if book_name and chapter is not None:
@@ -272,7 +165,7 @@ class VectorDBManager:
             else:
                 chapter_key = self._extract_chapter_key(reference)
 
-            # Call-level diversity: cap per-chapter count
+            # Call-level diversity caps the per-chapter count.
             current_count = chapter_count.get(chapter_key, 0)
             if current_count >= MAX_PER_CHAPTER:
                 continue
@@ -295,47 +188,31 @@ class VectorDBManager:
 
         return results
 
-    # ── LLM Reranker ──────────────────────────────────────────────────
+    # LLM reranker.
 
     def retrieve_verse_with_llm(self, intents, user_input, llm, k=10, excluded_books=None, excluded_verses=None):
-        """
-        Retrieve the most contextually relevant Bible verse using:
-        Layer 1 + 2 + 2.5: FAISS semantic search + diversity filters → top-k candidates
-        LLM Reranker: LLM picks the best verse based on user context
-        
-        Args:
-            intents: list of detected intent strings
-            user_input: raw user utterance (conversational context)
-            llm: LangChain LLM instance (reuse from RAGEngine)
-            k: number of FAISS candidates to present to the LLM
-            excluded_books: optional set of book_abbr to exclude (session-level)
-            excluded_verses: optional set of exact reference strings to exclude
-                             (e.g. {"Mazmur 34:18"}) — session-level verse exclusion
-            
-        Returns:
-            list of dict: [{reference: str, text: str, book_abbr: str}] — always 1 result
-        """
-        # Step 1+2+2.5: Get FAISS candidates (with diversity filters)
+        """Retrieve the most contextually relevant verse by getting FAISS diverse candidates and letting the LLM pick the best one."""
+        # Get FAISS candidates with the diversity filters applied.
         candidates = self._faiss_search(intents, user_input, k=k, excluded_books=excluded_books, excluded_verses=excluded_verses)
 
         if not candidates:
             return []
 
-        # If only 1 candidate, skip LLM — return directly
+        # If only one candidate exists, skip the LLM and return it directly.
         if len(candidates) == 1:
             return [{"reference": candidates[0]["reference"], "text": candidates[0]["text"], "book_abbr": candidates[0].get("book_abbr", "")}]
 
-        # Print all FAISS candidate references to terminal
+        # Print all FAISS candidate references to the terminal.
         candidate_refs = ", ".join(c["reference"] for c in candidates)
         print(f"[LLM Reranker] FAISS Candidates ({len(candidates)}): {candidate_refs}")
 
-        # Build numbered candidate list for the LLM
+        # Build a numbered candidate list for the LLM.
         candidate_lines = []
         for i, c in enumerate(candidates, 1):
             candidate_lines.append(f"{i}. {c['reference']} — \"{c['text']}\"")
         candidate_list_str = "\n".join(candidate_lines)
 
-        # Build the reranker prompt
+        # Build the reranker prompt.
         prompt = (
             "You are the Bible verse selector assistant for the Bible Terjemahan Baru (TB).\n\n"
             "The context of the user's counseling conversation:\n"
@@ -357,80 +234,64 @@ class VectorDBManager:
             response = llm.invoke(prompt)
             raw_output = response.content.strip()
 
-            # Parse pipe-delimited output: REFERENSI|TEKS
+            # Parse the pipe-delimited output of reference and text.
             if "|" in raw_output:
                 parts = raw_output.split("|", 1)
                 ref = parts[0].strip()
                 text = parts[1].strip().strip('"').strip("'")
 
-                # Validate: reference must exist in our candidates
+                # Validate that the reference exists in our candidates.
                 for c in candidates:
                     if c["reference"] == ref:
                         print(f"[LLM Reranker] Selected: {ref}")
                         return [{"reference": ref, "text": c["text"], "book_abbr": c.get("book_abbr", "")}]
 
-                # LLM returned a valid format but reference not in candidates
-                # Use the text from LLM but log a warning
+                # The LLM returned a valid format but the reference is not in candidates, so use the LLM text with a warning.
                 print(f"[LLM Reranker] WARNING: reference '{ref}' not in candidates, using LLM text")
                 return [{"reference": ref, "text": text, "book_abbr": ""}]
 
-            # Fallback: try to match LLM output to a candidate reference
+            # Fallback tries to match the LLM output to a candidate reference.
             for c in candidates:
                 if c["reference"] in raw_output:
                     print(f"[LLM Reranker] Parsed reference from raw output: {c['reference']}")
                     return [{"reference": c["reference"], "text": c["text"], "book_abbr": c.get("book_abbr", "")}]
 
-            # Complete fallback: LLM output unparseable → return top FAISS result
+            # Complete fallback when the LLM output is unparseable returns the top FAISS result.
             print(f"[LLM Reranker] FALLBACK: Could not parse LLM output, using top FAISS result")
             print(f"[LLM Reranker] Raw output was: {raw_output[:200]}")
 
         except Exception as e:
             print(f"[LLM Reranker] ERROR: {e} — falling back to top FAISS result")
 
-        # Fallback: return the top FAISS candidate
+        # Fallback returns the top FAISS candidate.
         return [{"reference": candidates[0]["reference"], "text": candidates[0]["text"], "book_abbr": candidates[0].get("book_abbr", "")}]
 
-    # ── Legacy retrieve_verse (FAISS-only, no LLM) ───────────────────
+    # Legacy retrieve_verse using FAISS only without the LLM.
 
     def retrieve_verse(self, intents, user_input, k=1):
-        """
-        Simple FAISS-only retrieval (no LLM reranking).
-        Returns the top-k results by L2 distance.
-        Kept for backward compatibility and non-LLM contexts.
-        """
+        """Return the top-k FAISS results by L2 distance without LLM reranking, kept for backward compatibility."""
         candidates = self._faiss_search(intents, user_input, k=k)
         return [{"reference": c["reference"], "text": c["text"]} for c in candidates]
 
     @staticmethod
     def _extract_chapter_key(reference: str) -> str:
-        """
-        Parse a Bible reference string into a unique book+chapter key.
-
-        Handles:
-          - Standard references  : "Mazmur 34:18"    → "Mazmur 34"
-          - Numbered book names  : "1 Yohanes 4:8"   → "1 Yohanes 4"
-                                   "2 Korintus 12:9" → "2 Korintus 12"
-        Strategy:
-          Split on ":" to drop the verse number, then strip trailing whitespace.
-          The result is everything before the colon, which is "<book_name> <chapter>".
-          If no ":" is found, the full reference is returned as-is (safe fallback).
-        """
+        """Parse a Bible reference into a unique book and chapter key by dropping the verse number after the colon."""
         if ":" in reference:
             return reference.rsplit(":", 1)[0].strip()
         return reference.strip()
 
     def _extract_keywords(self, text):
-        """Ekstrak kata kunci dari teks (hapus stopwords)."""
+        """Extract keywords from text by removing stopwords and return them as a joined string."""
         words = re.findall(r'\b[a-zA-Z]{3,}\b', text.lower())
         keywords = [w for w in words if w not in STOPWORDS_ID]
         return " ".join(keywords)
 
     def _get_keyword_list(self, text):
-        """Kembalikan list kata kunci dari teks."""
+        """Return the list of keywords from text after removing stopwords."""
         words = re.findall(r'\b[a-zA-Z]{3,}\b', text.lower())
         return [w for w in words if w not in STOPWORDS_ID]
 
-    # ── QnA Index (unchanged) ─────────────────────────────────────
+    # QnA index unchanged.
 
     def build_qna_index(self, qna_csv_path='data/dataset_qna.csv', index_dir='data/faiss_qna_index'):
         if os.path.exists(index_dir):
@@ -475,17 +336,17 @@ class VectorDBManager:
 
 if __name__ == "__main__":
     db_manager = VectorDBManager()
-    
-    # Build Bible index    db_manager.build_bible_index('data/alkitab_tb.csv')
-    
-    # Build QnA index
+
+    # Build the Bible index.    db_manager.build_bible_index('data/alkitab_tb.csv')
+
+    # Build the QnA index.
     db_manager.build_qna_index('data/dataset_qna.csv')
-    
-    # Test retrieval
+
+    # Test retrieval.
     print("\n=== Test Retrieve Verse ===")
     intents = ["Perasaan Sedih dan Kehilangan", "Perasaan Takut dan Kecemasan"]
     user_input = "saya merasa sendirian dan takut tidak ada yang peduli"
-    
+
     results = db_manager.retrieve_verse(intents, user_input, k=1)
     for r in results:
         print(f"  {r['reference']}: {r['text']}")
