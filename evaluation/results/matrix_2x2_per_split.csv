@@ -1,0 +1,13 @@
+﻿split,model,intent_group,unseen_intents,precision_macro,recall_macro,f1_micro,f1_macro
+Split-A,A,seen7,Mengisyaratkan Butuh Bantuan Profesional; Mengisyaratkan Gejala Fisik; Menyatakan Reaksi Terkejut dan Tidak Terduga,0.8499,0.8235,0.8396,0.8317
+Split-A,A,unseen3,Mengisyaratkan Butuh Bantuan Profesional; Mengisyaratkan Gejala Fisik; Menyatakan Reaksi Terkejut dan Tidak Terduga,0.0,0.0,0.0,0.0
+Split-A,B,seen7,Mengisyaratkan Butuh Bantuan Profesional; Mengisyaratkan Gejala Fisik; Menyatakan Reaksi Terkejut dan Tidak Terduga,0.908,0.8488,0.8826,0.8772
+Split-A,B,unseen3,Mengisyaratkan Butuh Bantuan Profesional; Mengisyaratkan Gejala Fisik; Menyatakan Reaksi Terkejut dan Tidak Terduga,0.9609,0.8901,0.9374,0.9229
+Split-B,A,seen7,Menyatakan Perasaan Benci dan Jijik; Menyatakan Rasa Syukur dan Apresiasi; Menyatakan Perasaan Sebelum Menghadapi Kejadian,0.9152,0.8682,0.8968,0.8898
+Split-B,A,unseen3,Menyatakan Perasaan Benci dan Jijik; Menyatakan Rasa Syukur dan Apresiasi; Menyatakan Perasaan Sebelum Menghadapi Kejadian,0.0,0.0,0.0,0.0
+Split-B,B,seen7,Menyatakan Perasaan Benci dan Jijik; Menyatakan Rasa Syukur dan Apresiasi; Menyatakan Perasaan Sebelum Menghadapi Kejadian,0.9264,0.8692,0.9014,0.8963
+Split-B,B,unseen3,Menyatakan Perasaan Benci dan Jijik; Menyatakan Rasa Syukur dan Apresiasi; Menyatakan Perasaan Sebelum Menghadapi Kejadian,0.9179,0.8425,0.888,0.8783
+Split-C,A,seen7,Menyatakan Perasaan Marah dan Frustasi; Menyatakan Perasaan Percaya; Menyatakan Perasaan Sedih dan Kehilangan,0.9416,0.8624,0.907,0.899
+Split-C,A,unseen3,Menyatakan Perasaan Marah dan Frustasi; Menyatakan Perasaan Percaya; Menyatakan Perasaan Sedih dan Kehilangan,0.0,0.0,0.0,0.0
+Split-C,B,seen7,Menyatakan Perasaan Marah dan Frustasi; Menyatakan Perasaan Percaya; Menyatakan Perasaan Sedih dan Kehilangan,0.9362,0.8653,0.9067,0.8987
+Split-C,B,unseen3,Menyatakan Perasaan Marah dan Frustasi; Menyatakan Perasaan Percaya; Menyatakan Perasaan Sedih dan Kehilangan,0.8952,0.8517,0.875,0.8728

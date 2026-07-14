@@ -1,61 +1,41 @@
 ﻿model,intent,precision,recall,f1-score,support
+IndoBERT,Mengisyaratkan Butuh Bantuan Profesional,1.0,0.9608,0.98,51.0
+IndoBERT,Mengisyaratkan Gejala Fisik,0.9792,1.0,0.9895,47.0
+IndoBERT,Menyatakan Perasaan Benci dan Jijik,0.9783,0.9,0.9375,50.0
+IndoBERT,Menyatakan Perasaan Marah dan Frustasi,0.9474,0.8571,0.9,42.0
+IndoBERT,Menyatakan Perasaan Percaya,0.9487,0.881,0.9136,42.0
+IndoBERT,Menyatakan Perasaan Sebelum Menghadapi Kejadian,0.8846,0.7419,0.807,31.0
+IndoBERT,Menyatakan Perasaan Sedih dan Kehilangan,0.98,0.9074,0.9423,54.0
+IndoBERT,Menyatakan Perasaan Takut dan Kecemasan,0.8676,0.9219,0.8939,64.0
+IndoBERT,Menyatakan Rasa Syukur dan Apresiasi,1.0,0.9556,0.9773,45.0
+IndoBERT,Menyatakan Reaksi Terkejut dan Tidak Terduga,0.84,0.7778,0.8077,27.0
 IndoBERTweet,Mengisyaratkan Butuh Bantuan Profesional,1.0,0.9804,0.9901,51.0
 IndoBERTweet,Mengisyaratkan Gejala Fisik,1.0,0.8936,0.9438,47.0
-IndoBERTweet,Menyatakan Perasaan Benci dan Jijik,0.9773,0.86,0.9149,50.0
-IndoBERTweet,Menyatakan Perasaan Marah dan Frustasi,0.9444,0.8095,0.8718,42.0
-IndoBERTweet,Menyatakan Perasaan Percaya,0.907,0.9286,0.9176,42.0
-IndoBERTweet,Menyatakan Perasaan Sebelum Menghadapi Kejadian,0.84,0.6774,0.75,31.0
-IndoBERTweet,Menyatakan Perasaan Sedih dan Kehilangan,0.94,0.8704,0.9038,54.0
-IndoBERTweet,Menyatakan Perasaan Takut dan Kecemasan,0.8889,0.875,0.8819,64.0
-IndoBERTweet,Menyatakan Rasa Syukur dan Apresiasi,1.0,0.8889,0.9412,45.0
-IndoBERTweet,Menyatakan Reaksi Terkejut dan Tidak Terduga,0.7692,0.7407,0.7547,27.0
-IndoBERT-Lite,Mengisyaratkan Butuh Bantuan Profesional,0.0,0.0,0.0,51.0
-IndoBERT-Lite,Mengisyaratkan Gejala Fisik,0.2386,1.0,0.3852,47.0
-IndoBERT-Lite,Menyatakan Perasaan Benci dan Jijik,0.25,1.0,0.4,50.0
-IndoBERT-Lite,Menyatakan Perasaan Marah dan Frustasi,0.21,1.0,0.3471,42.0
-IndoBERT-Lite,Menyatakan Perasaan Percaya,0.2113,0.9762,0.3475,42.0
-IndoBERT-Lite,Menyatakan Perasaan Sebelum Menghadapi Kejadian,0.155,1.0,0.2684,31.0
-IndoBERT-Lite,Menyatakan Perasaan Sedih dan Kehilangan,0.27,1.0,0.4252,54.0
-IndoBERT-Lite,Menyatakan Perasaan Takut dan Kecemasan,0.32,1.0,0.4848,64.0
-IndoBERT-Lite,Menyatakan Rasa Syukur dan Apresiasi,0.225,1.0,0.3673,45.0
-IndoBERT-Lite,Menyatakan Reaksi Terkejut dan Tidak Terduga,0.0,0.0,0.0,27.0
-IndoBERT,Mengisyaratkan Butuh Bantuan Profesional,1.0,0.9608,0.98,51.0
-IndoBERT,Mengisyaratkan Gejala Fisik,1.0,0.9787,0.9892,47.0
-IndoBERT,Menyatakan Perasaan Benci dan Jijik,0.9778,0.88,0.9263,50.0
-IndoBERT,Menyatakan Perasaan Marah dan Frustasi,0.9268,0.9048,0.9157,42.0
-IndoBERT,Menyatakan Perasaan Percaya,0.95,0.9048,0.9268,42.0
-IndoBERT,Menyatakan Perasaan Sebelum Menghadapi Kejadian,0.8889,0.7742,0.8276,31.0
-IndoBERT,Menyatakan Perasaan Sedih dan Kehilangan,0.9608,0.9074,0.9333,54.0
-IndoBERT,Menyatakan Perasaan Takut dan Kecemasan,0.9365,0.9219,0.9291,64.0
-IndoBERT,Menyatakan Rasa Syukur dan Apresiasi,1.0,0.9333,0.9655,45.0
-IndoBERT,Menyatakan Reaksi Terkejut dan Tidak Terduga,0.913,0.7778,0.84,27.0
-MiniLM-L6-v2,Mengisyaratkan Butuh Bantuan Profesional,0.9423,0.9608,0.9515,51.0
-MiniLM-L6-v2,Mengisyaratkan Gejala Fisik,1.0,0.9362,0.967,47.0
-MiniLM-L6-v2,Menyatakan Perasaan Benci dan Jijik,0.8958,0.86,0.8776,50.0
-MiniLM-L6-v2,Menyatakan Perasaan Marah dan Frustasi,0.973,0.8571,0.9114,42.0
-MiniLM-L6-v2,Menyatakan Perasaan Percaya,0.9,0.8571,0.878,42.0
-MiniLM-L6-v2,Menyatakan Perasaan Sebelum Menghadapi Kejadian,0.8148,0.7097,0.7586,31.0
-MiniLM-L6-v2,Menyatakan Perasaan Sedih dan Kehilangan,0.9231,0.8889,0.9057,54.0
-MiniLM-L6-v2,Menyatakan Perasaan Takut dan Kecemasan,0.9655,0.875,0.918,64.0
-MiniLM-L6-v2,Menyatakan Rasa Syukur dan Apresiasi,0.86,0.9556,0.9053,45.0
-MiniLM-L6-v2,Menyatakan Reaksi Terkejut dan Tidak Terduga,0.7241,0.7778,0.75,27.0
-Multilingual-E5,Mengisyaratkan Butuh Bantuan Profesional,1.0,0.9804,0.9901,51.0
-Multilingual-E5,Mengisyaratkan Gejala Fisik,0.9574,0.9574,0.9574,47.0
-Multilingual-E5,Menyatakan Perasaan Benci dan Jijik,0.92,0.92,0.92,50.0
-Multilingual-E5,Menyatakan Perasaan Marah dan Frustasi,1.0,0.8333,0.9091,42.0
-Multilingual-E5,Menyatakan Perasaan Percaya,0.9286,0.9286,0.9286,42.0
-Multilingual-E5,Menyatakan Perasaan Sebelum Menghadapi Kejadian,0.92,0.7419,0.8214,31.0
-Multilingual-E5,Menyatakan Perasaan Sedih dan Kehilangan,0.9412,0.8889,0.9143,54.0
-Multilingual-E5,Menyatakan Perasaan Takut dan Kecemasan,0.9219,0.9219,0.9219,64.0
-Multilingual-E5,Menyatakan Rasa Syukur dan Apresiasi,0.9773,0.9556,0.9663,45.0
-Multilingual-E5,Menyatakan Reaksi Terkejut dan Tidak Terduga,0.8148,0.8148,0.8148,27.0
-DistilBERT-multi,Mengisyaratkan Butuh Bantuan Profesional,1.0,0.9804,0.9901,51.0
-DistilBERT-multi,Mengisyaratkan Gejala Fisik,1.0,0.8936,0.9438,47.0
-DistilBERT-multi,Menyatakan Perasaan Benci dan Jijik,0.9375,0.9,0.9184,50.0
-DistilBERT-multi,Menyatakan Perasaan Marah dan Frustasi,0.9474,0.8571,0.9,42.0
-DistilBERT-multi,Menyatakan Perasaan Percaya,0.9714,0.8095,0.8831,42.0
-DistilBERT-multi,Menyatakan Perasaan Sebelum Menghadapi Kejadian,0.8696,0.6452,0.7407,31.0
-DistilBERT-multi,Menyatakan Perasaan Sedih dan Kehilangan,0.9592,0.8704,0.9126,54.0
-DistilBERT-multi,Menyatakan Perasaan Takut dan Kecemasan,0.875,0.875,0.875,64.0
-DistilBERT-multi,Menyatakan Rasa Syukur dan Apresiasi,0.9535,0.9111,0.9318,45.0
-DistilBERT-multi,Menyatakan Reaksi Terkejut dan Tidak Terduga,0.6667,0.8889,0.7619,27.0
+IndoBERTweet,Menyatakan Perasaan Benci dan Jijik,1.0,0.84,0.913,50.0
+IndoBERTweet,Menyatakan Perasaan Marah dan Frustasi,0.9268,0.9048,0.9157,42.0
+IndoBERTweet,Menyatakan Perasaan Percaya,0.9024,0.881,0.8916,42.0
+IndoBERTweet,Menyatakan Perasaan Sebelum Menghadapi Kejadian,0.8889,0.7742,0.8276,31.0
+IndoBERTweet,Menyatakan Perasaan Sedih dan Kehilangan,0.9423,0.9074,0.9245,54.0
+IndoBERTweet,Menyatakan Perasaan Takut dan Kecemasan,0.9032,0.875,0.8889,64.0
+IndoBERTweet,Menyatakan Rasa Syukur dan Apresiasi,1.0,0.9111,0.9535,45.0
+IndoBERTweet,Menyatakan Reaksi Terkejut dan Tidak Terduga,0.8333,0.7407,0.7843,27.0
+mBERT,Mengisyaratkan Butuh Bantuan Profesional,0.9804,0.9804,0.9804,51.0
+mBERT,Mengisyaratkan Gejala Fisik,1.0,0.9362,0.967,47.0
+mBERT,Menyatakan Perasaan Benci dan Jijik,0.9783,0.9,0.9375,50.0
+mBERT,Menyatakan Perasaan Marah dan Frustasi,0.881,0.881,0.881,42.0
+mBERT,Menyatakan Perasaan Percaya,0.973,0.8571,0.9114,42.0
+mBERT,Menyatakan Perasaan Sebelum Menghadapi Kejadian,0.7879,0.8387,0.8125,31.0
+mBERT,Menyatakan Perasaan Sedih dan Kehilangan,0.9434,0.9259,0.9346,54.0
+mBERT,Menyatakan Perasaan Takut dan Kecemasan,0.8429,0.9219,0.8806,64.0
+mBERT,Menyatakan Rasa Syukur dan Apresiasi,1.0,0.9778,0.9888,45.0
+mBERT,Menyatakan Reaksi Terkejut dan Tidak Terduga,0.8148,0.8148,0.8148,27.0
+MiniLM-multi,Mengisyaratkan Butuh Bantuan Profesional,1.0,0.9412,0.9697,51.0
+MiniLM-multi,Mengisyaratkan Gejala Fisik,0.9773,0.9149,0.9451,47.0
+MiniLM-multi,Menyatakan Perasaan Benci dan Jijik,0.9545,0.84,0.8936,50.0
+MiniLM-multi,Menyatakan Perasaan Marah dan Frustasi,0.8605,0.881,0.8706,42.0
+MiniLM-multi,Menyatakan Perasaan Percaya,0.7647,0.9286,0.8387,42.0
+MiniLM-multi,Menyatakan Perasaan Sebelum Menghadapi Kejadian,0.8148,0.7097,0.7586,31.0
+MiniLM-multi,Menyatakan Perasaan Sedih dan Kehilangan,1.0,0.7963,0.8866,54.0
+MiniLM-multi,Menyatakan Perasaan Takut dan Kecemasan,0.8636,0.8906,0.8769,64.0
+MiniLM-multi,Menyatakan Rasa Syukur dan Apresiasi,0.9756,0.8889,0.9302,45.0
+MiniLM-multi,Menyatakan Reaksi Terkejut dan Tidak Terduga,0.7667,0.8519,0.807,27.0

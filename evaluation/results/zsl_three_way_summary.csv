@@ -1,0 +1,4 @@
+﻿skenario,deskripsi,f1_macro,precision_macro,recall_macro,std,eval_method
+1 — Baseline Produksi,"10 Seen Intents, Gram-Inverse Logit (Produksi Penuh)",0.8909,0.9239,0.8612,N/A,Gram-Inverse Head
+2 — Split Degradation,"7 Seen Intents, Gram-Inverse (In-Memory Fine-Tune 15 epoch)",0.8813,0.9223,0.8535,±0.0346,Gram-Inverse Head
+3 — ZSL Capability,"3 Unseen Intents, Pure Cosine Similarity (Bypass Linear Head)",0.2023,0.6923,0.1703,±0.1279,Pure Cosine Similarity

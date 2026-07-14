@@ -1,0 +1,4 @@
+﻿model,architecture,intent_set,zsl_capable,f1_macro,precision,recall,std
+A — Non-ZSL / Produksi,Dual-Encoder + Linear (Gram-Inverse) Head,10 Seen (Closed-Set),Tidak,0.8909,0.9239,0.8612,N/A
+B — ZSL-Capable (Seen),Dual-Encoder + Pure Cosine Similarity,7 Seen (avg 3 split),Ya,0.1734,0.5934,0.146,±0.0548
+B — ZSL-Capable (Unseen),Dual-Encoder + Pure Cosine Similarity,3 Unseen (avg 3 split),Ya,0.2023,0.6923,0.1703,±0.1279

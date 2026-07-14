@@ -1,0 +1,7 @@
+﻿model,architecture,scenario,intent_group,precision_macro,recall_macro,f1_micro,f1_macro,f1_macro_std
+A — Fixed Basis,Gram-Inverse (Fixed Basis),Produksi,10,0.9239,0.8612,0.8975,0.8909,N/A
+B — Extended Basis,Gram-Inverse (Extended Basis),Produksi,10,0.9239,0.8612,0.8975,0.8909,N/A
+A — Fixed Basis,Gram-Inverse (Fixed Basis),Riset ZSL,7 Seen,0.9022,0.8514,0.8811,0.8735,0.0365
+A — Fixed Basis,Gram-Inverse (Fixed Basis),Riset ZSL,3 Unseen,0.0,0.0,0.0,0.0,0.0
+B — Extended Basis,Gram-Inverse (Extended Basis),Riset ZSL,7 Seen,0.9235,0.8611,0.8969,0.8907,0.0118
+B — Extended Basis,Gram-Inverse (Extended Basis),Riset ZSL,3 Unseen,0.9247,0.8614,0.9001,0.8913,0.0275

@@ -1,31 +1,31 @@
 ﻿split,intent,group,f1,precision,recall,support
-Split-A,Mengisyaratkan Butuh Bantuan Profesional,unseen,0.0,0.0,0.0,51
-Split-A,Mengisyaratkan Gejala Fisik,unseen,0.0,0.0,0.0,47
-Split-A,Menyatakan Perasaan Benci dan Jijik,seen,0.9032,0.9767,0.84,50
-Split-A,Menyatakan Perasaan Marah dan Frustasi,seen,0.9024,0.925,0.881,42
-Split-A,Menyatakan Perasaan Percaya,seen,0.8718,0.9444,0.8095,42
-Split-A,Menyatakan Perasaan Sebelum Menghadapi Kejadian,seen,0.7778,0.913,0.6774,31
-Split-A,Menyatakan Perasaan Sedih dan Kehilangan,seen,0.9126,0.9592,0.8704,54
-Split-A,Menyatakan Perasaan Takut dan Kecemasan,seen,0.9032,0.9333,0.875,64
-Split-A,Menyatakan Rasa Syukur dan Apresiasi,seen,0.9655,1.0,0.9333,45
-Split-A,Menyatakan Reaksi Terkejut dan Tidak Terduga,unseen,0.0,0.0,0.0,27
-Split-B,Mengisyaratkan Butuh Bantuan Profesional,seen,0.9697,1.0,0.9412,51
-Split-B,Mengisyaratkan Gejala Fisik,seen,0.9438,1.0,0.8936,47
-Split-B,Menyatakan Perasaan Benci dan Jijik,unseen,0.0,0.0,0.0,50
-Split-B,Menyatakan Perasaan Marah dan Frustasi,seen,0.9383,0.9744,0.9048,42
-Split-B,Menyatakan Perasaan Percaya,seen,0.9114,0.973,0.8571,42
-Split-B,Menyatakan Perasaan Sebelum Menghadapi Kejadian,unseen,0.0,0.0,0.0,31
-Split-B,Menyatakan Perasaan Sedih dan Kehilangan,seen,0.9143,0.9412,0.8889,54
-Split-B,Menyatakan Perasaan Takut dan Kecemasan,seen,0.8926,0.9474,0.8438,64
-Split-B,Menyatakan Rasa Syukur dan Apresiasi,unseen,0.0,0.0,0.0,45
-Split-B,Menyatakan Reaksi Terkejut dan Tidak Terduga,seen,0.7755,0.8636,0.7037,27
-Split-C,Mengisyaratkan Butuh Bantuan Profesional,seen,0.98,1.0,0.9608,51
-Split-C,Mengisyaratkan Gejala Fisik,seen,0.9438,1.0,0.8936,47
-Split-C,Menyatakan Perasaan Benci dan Jijik,seen,0.9149,0.9773,0.86,50
-Split-C,Menyatakan Perasaan Marah dan Frustasi,unseen,0.0,0.0,0.0,42
-Split-C,Menyatakan Perasaan Percaya,unseen,0.0,0.0,0.0,42
-Split-C,Menyatakan Perasaan Sebelum Menghadapi Kejadian,seen,0.807,0.8846,0.7419,31
-Split-C,Menyatakan Perasaan Sedih dan Kehilangan,unseen,0.0,0.0,0.0,54
-Split-C,Menyatakan Perasaan Takut dan Kecemasan,seen,0.8976,0.9048,0.8906,64
-Split-C,Menyatakan Rasa Syukur dan Apresiasi,seen,0.9773,1.0,0.9556,45
-Split-C,Menyatakan Reaksi Terkejut dan Tidak Terduga,seen,0.7917,0.9048,0.7037,27
+Split-A,Mengisyaratkan Butuh Bantuan Profesional,unseen,0.0,0.0,0.0,91
+Split-A,Mengisyaratkan Gejala Fisik,unseen,0.8152,0.7107,0.9556,90
+Split-A,Menyatakan Perasaan Benci dan Jijik,seen,0.0,0.0,0.0,106
+Split-A,Menyatakan Perasaan Marah dan Frustasi,seen,0.1481,0.8571,0.0811,74
+Split-A,Menyatakan Perasaan Percaya,seen,0.0235,0.25,0.0123,81
+Split-A,Menyatakan Perasaan Sebelum Menghadapi Kejadian,seen,0.4545,0.5435,0.3906,64
+Split-A,Menyatakan Perasaan Sedih dan Kehilangan,seen,0.0962,1.0,0.0505,99
+Split-A,Menyatakan Perasaan Takut dan Kecemasan,seen,0.0741,0.7143,0.0391,128
+Split-A,Menyatakan Rasa Syukur dan Apresiasi,seen,0.3832,0.3306,0.4556,90
+Split-A,Menyatakan Reaksi Terkejut dan Tidak Terduga,unseen,0.0,0.0,0.0,58
+Split-B,Mengisyaratkan Butuh Bantuan Profesional,seen,0.0,0.0,0.0,91
+Split-B,Mengisyaratkan Gejala Fisik,seen,0.8152,0.7107,0.9556,90
+Split-B,Menyatakan Perasaan Benci dan Jijik,unseen,0.0,0.0,0.0,106
+Split-B,Menyatakan Perasaan Marah dan Frustasi,seen,0.1481,0.8571,0.0811,74
+Split-B,Menyatakan Perasaan Percaya,seen,0.0235,0.25,0.0123,81
+Split-B,Menyatakan Perasaan Sebelum Menghadapi Kejadian,unseen,0.4545,0.5435,0.3906,64
+Split-B,Menyatakan Perasaan Sedih dan Kehilangan,seen,0.0962,1.0,0.0505,99
+Split-B,Menyatakan Perasaan Takut dan Kecemasan,seen,0.0741,0.7143,0.0391,128
+Split-B,Menyatakan Rasa Syukur dan Apresiasi,unseen,0.3832,0.3306,0.4556,90
+Split-B,Menyatakan Reaksi Terkejut dan Tidak Terduga,seen,0.0,0.0,0.0,58
+Split-C,Mengisyaratkan Butuh Bantuan Profesional,seen,0.0,0.0,0.0,91
+Split-C,Mengisyaratkan Gejala Fisik,seen,0.8152,0.7107,0.9556,90
+Split-C,Menyatakan Perasaan Benci dan Jijik,seen,0.0,0.0,0.0,106
+Split-C,Menyatakan Perasaan Marah dan Frustasi,unseen,0.1481,0.8571,0.0811,74
+Split-C,Menyatakan Perasaan Percaya,unseen,0.0235,0.25,0.0123,81
+Split-C,Menyatakan Perasaan Sebelum Menghadapi Kejadian,seen,0.4545,0.5435,0.3906,64
+Split-C,Menyatakan Perasaan Sedih dan Kehilangan,unseen,0.0962,1.0,0.0505,99
+Split-C,Menyatakan Perasaan Takut dan Kecemasan,seen,0.0741,0.7143,0.0391,128
+Split-C,Menyatakan Rasa Syukur dan Apresiasi,seen,0.3832,0.3306,0.4556,90
+Split-C,Menyatakan Reaksi Terkejut dan Tidak Terduga,seen,0.0,0.0,0.0,58

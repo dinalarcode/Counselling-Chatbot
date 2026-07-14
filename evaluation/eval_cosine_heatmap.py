@@ -4,7 +4,8 @@ LABAN Cosine Similarity Heatmap Evaluation
 Assesses the consistency of the model's ability to establish semantic
 connections between input (utterance) embeddings and label embeddings.
 
-This evaluation uses the currently active backbone (IndoBERTweet) and the
+This evaluation uses the currently active backbone (IndoBERT — selected as the
+production model after comparative evaluation) and the
 trained checkpoint to produce three visualizations:
 
 1. **Label-vs-Label Heatmap** — Cosine similarity between all pairs of
@@ -55,18 +56,20 @@ RESULTS_DIR = os.path.join(ROOT, "evaluation", "results")
 os.makedirs(RESULTS_DIR, exist_ok=True)
 
 # -- Configuration -----------------------------------------------------------
-MODEL_NAME   = "indolem/indobertweet-base-uncased"
+MODEL_NAME   = "indobenchmark/indobert-base-p1"   # Production backbone — selected over IndoBERTweet, mBERT, and MiniLM-multi based on highest Test F1-Micro in backbone comparison
 HIDDEN_SIZE  = 768
 MAX_LEN      = 50
 BATCH_SIZE   = 16
 THRESHOLD    = 0.5
 RANDOM_SEED  = 42
 DEVICE       = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-CHECKPOINT   = os.path.join(ROOT, "checkpoint", "IndoBERT_multi_label_zsl.pt")
+CHECKPOINT   = os.path.join(ROOT, "checkpoint", "IndoBERT_multi_label.pt")
 
 # -- Dataset path -------------------------------------------------------------
-AUG_CSV  = os.path.join(ROOT, "data", "augmentation", "dataset_multiintent_augmented.csv")
-ORIG_CSV = os.path.join(ROOT, "data", "dataset_multiintent.csv")
+from config import opt
+
+AUG_CSV  = opt.MULTIINTENT_AUG_CSV
+ORIG_CSV = opt.MULTIINTENT_CSV
 DATASET_CSV = AUG_CSV if os.path.exists(AUG_CSV) else ORIG_CSV
 
 # -- Short display names for intent labels (fits heatmap cells) --------------

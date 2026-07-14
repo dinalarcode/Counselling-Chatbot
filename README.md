@@ -173,23 +173,27 @@ Ensure these files/directories exist before running:
 | Path | Description | How to Obtain |
 |---|---|---|
 | `checkpoint/IndoBERT_multi_label_zsl.pt` | Trained LABAN classifier weights | Included in repo or train via `models/multilabel/run_trainer.py` |
-| `data/faiss_bible_index/` | Pre-built FAISS Bible index | Auto-built on first run from the enriched CSV |
-| `data/faiss_qna_index/` | Pre-built FAISS QnA index | Auto-built on first run from `data/dataset_qna.csv` |
-| `data/verse_retrieval/alkitab_tb_enriched_groq.csv` | AVI-enriched Bible verses | Generate via the AVI pipeline (see below) |
+| `data/verse_data/faiss_bible_index/` | Pre-built FAISS Bible index | Auto-built on first run from the enriched CSV |
+| `data/qna-intent_data/faiss_qna_index/` | Pre-built FAISS QnA index | Auto-built on first run from `data/qna-intent_data/dataset_qna.csv` |
+| `data/verse_data/alkitab_tb_enriched_groq.csv` | AVI-enriched Bible verses | Generate via the AVI pipeline (see below) |
+
+> All data paths are defined as constants on the `opt` config singleton in `config.py`
+> (`opt.QNA_CSV`, `opt.BIBLE_ENRICHED_CSV`, `opt.FAISS_BIBLE_INDEX`, …). Reference those
+> rather than hardcoding a path.
 
 #### Building the AVI (Augmented Vector Indexing) Pipeline (if needed)
 
-If `data/verse_retrieval/alkitab_tb_enriched_groq.csv` does not exist:
+If `data/verse_data/alkitab_tb_enriched_groq.csv` does not exist:
 
 ```bash
 # Step 1: Generate chapter-level theological summaries via LLM
-python data/verse_retrieval/generate_chapter_summaries.py
+python data/verse_data/avi_system/generate_chapter_summaries.py
 
 # Step 2: Prepend summaries to each verse to create the enriched CSV
-python data/verse_retrieval/prepare_enriched_bible.py
+python data/verse_data/avi_system/prepare_enriched_bible.py
 ```
 
-> **Note:** The FAISS index is built automatically on first startup if `data/faiss_bible_index/` doesn't exist. This takes ~15–45 minutes (one-time cost).
+> **Note:** The FAISS index is built automatically on first startup if `data/verse_data/faiss_bible_index/` doesn't exist. This takes ~15–45 minutes (one-time cost).
 
 ---
 
@@ -363,7 +367,7 @@ The_Chatbot/
 │       └── seeds.json              # Augmentation seed data
 │
 ├── evaluation/                     # Evaluation and benchmarking
-│   ├── eval_ragas.py               # RAGAS evaluation framework
+│   ├── ragas_manager/             # RAGAS AspectCritic eval (ragas_engine.py + listof_ragaslist.py)
 │   ├── eval_cosine_heatmap.py      # Cosine similarity heatmap analysis
 │   ├── eval_seen_unseen.py         # Seen/unseen data evaluation
 │   └── compare_embed_models.py     # Embedding model comparison
@@ -385,7 +389,7 @@ The project includes several evaluation tools under `evaluation/`:
 
 | Script | Purpose |
 |---|---|
-| `eval_ragas.py` | End-to-end RAG evaluation using the RAGAS framework (faithfulness, relevance, etc.) |
+| `ragas_manager/ragas_engine.py` | End-to-end RAG evaluation using the RAGAS framework (faithfulness, relevance, etc.) |
 | `eval_seen_unseen.py` | Evaluates classifier performance on seen vs. unseen intent data |
 | `eval_cosine_heatmap.py` | Generates cosine similarity heatmaps between intents and Bible verses |
 | `compare_embed_models.py` | Benchmarks different embedding models for verse retrieval quality |
@@ -393,7 +397,7 @@ The project includes several evaluation tools under `evaluation/`:
 ### Running RAGAS Evaluation
 
 ```bash
-python evaluation/eval_ragas.py
+python evaluation/ragas_manager/ragas_engine.py
 ```
 
 > Requires `GEMINI_API_KEY` in `.env` (uses Gemini as the RAGAS judge by default).

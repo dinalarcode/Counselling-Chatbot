@@ -1,0 +1,4 @@
+﻿split,skenario,eval_method,unseen_intents,f1_macro_unseen3,precision_unseen3,recall_unseen3
+Split-A,ZSL Capability (3 Unseen),Pure Cosine Similarity (Dual-Encoder Backbone),Mengisyaratkan Butuh Bantuan Profesional; Mengisyaratkan Gejala Fisik; Menyatakan Reaksi Terkejut dan Tidak Terduga,0.3415,0.6463,0.3082
+Split-B,ZSL Capability (3 Unseen),Pure Cosine Similarity (Dual-Encoder Backbone),Menyatakan Perasaan Benci dan Jijik; Menyatakan Rasa Syukur dan Apresiasi; Menyatakan Perasaan Sebelum Menghadapi Kejadian,0.1754,0.7862,0.1514
+Split-C,ZSL Capability (3 Unseen),Pure Cosine Similarity (Dual-Encoder Backbone),Menyatakan Perasaan Marah dan Frustasi; Menyatakan Perasaan Percaya; Menyatakan Perasaan Sedih dan Kehilangan,0.09,0.6444,0.0513

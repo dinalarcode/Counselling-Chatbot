@@ -9,6 +9,6 @@ checkpoint/
 
 venv/
 __pycache__/config.cpython-313.pyc
-data/augmentation/raw_generated/
+data/qna-intent_data/augmentation_system/raw_generated/
 
 .env

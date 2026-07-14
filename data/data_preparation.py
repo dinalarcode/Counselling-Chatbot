@@ -12,8 +12,8 @@ pd.set_option('display.max_columns', None)
 
 # Toggle: set to True to use the augmented (larger) dataset
 USE_AUGMENTED = True
-_aug_path = 'data/augmentation/dataset_multiintent_augmented.csv'
-_orig_path = 'data/dataset_multiintent.csv'
+_aug_path = opt.MULTIINTENT_AUG_CSV
+_orig_path = opt.MULTIINTENT_CSV
 
 # Use augmented only if toggled ON AND the file exists
 if USE_AUGMENTED and os.path.exists(_aug_path):

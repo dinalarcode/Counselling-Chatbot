@@ -1,0 +1,2 @@
+﻿skenario,num_intents,eval_method,f1_macro,precision_macro,recall_macro,checkpoint
+Baseline Produksi (10 Seen),10,Gram-Inverse Logit (Full Production Head),0.8909,0.9239,0.8612,IndoBERT_multi_label_zsl.pt
