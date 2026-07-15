@@ -40,6 +40,7 @@ PROFESSIONAL_KEYWORDS = [
 DECLINE_SIGNALS = [
     re.compile(r'\btidak\b', re.IGNORECASE),
     re.compile(r'\bnggak\b', re.IGNORECASE),
+    re.compile(r'\bengga\b', re.IGNORECASE),
     re.compile(r'\bgak\b', re.IGNORECASE),
     re.compile(r'\bga\b', re.IGNORECASE),
     re.compile(r'\bsudah\s+cukup\b', re.IGNORECASE),
@@ -55,7 +56,7 @@ DECLINE_SIGNALS = [
 SPIRITUAL_CONSENT_DECLINE = [
     re.compile(r'\btidak\b', re.IGNORECASE),
     re.compile(r'\bnggak\b', re.IGNORECASE),
-    re.compile(r'\benggak\b', re.IGNORECASE),
+    re.compile(r'\bengga\b', re.IGNORECASE),
     re.compile(r'\bjangan\b', re.IGNORECASE),
     re.compile(r'\bbelum\b', re.IGNORECASE),
     re.compile(r'\bnanti\s+(saja|aja|dulu)\b', re.IGNORECASE),
@@ -118,7 +119,7 @@ MAX_TURNS = {
 # Phrases signaling the user has nothing more to share, bypassing the pembahasan minimum.
 PEMBAHASAN_EARLY_EXIT_SIGNALS = [
     re.compile(r'\btidak\s+ada\b', re.IGNORECASE),
-    re.compile(r'\benggak\s+ada\b', re.IGNORECASE),
+    re.compile(r'\bengga\s+ada\b', re.IGNORECASE),
     re.compile(r'\bnggak\s+ada\b', re.IGNORECASE),
     re.compile(r'\bgak\s+ada\b', re.IGNORECASE),
     re.compile(r'\bga\s+ada\b', re.IGNORECASE),
@@ -137,6 +138,16 @@ PEMBAHASAN_EARLY_EXIT_SIGNALS = [
     re.compile(r'\bsegitu\s+aja\b', re.IGNORECASE),
     re.compile(r'\bselesai\b', re.IGNORECASE),
     re.compile(r'\bsudah\s+selesai\b', re.IGNORECASE),
+]
+
+# Decline patterns for the exploration gateway question at the end of pembahasan.
+# Bare negatives plus the existing "nothing more to share" phrases.
+EXPLORATION_DECLINE_SIGNALS = PEMBAHASAN_EARLY_EXIT_SIGNALS + [
+    re.compile(r'^\s*(tidak|nggak|enggak|engga|gak|ga)\s*[.!]*\s*$', re.IGNORECASE),
+    re.compile(r'\btidak\s+(ada|usah|perlu)\b', re.IGNORECASE),
+    re.compile(r'\b(nggak|gak|ga)\s+(ada|usah|perlu)\b', re.IGNORECASE),
+    re.compile(r'\b(sudah|udah)\s*(cukup|kok|semua)?\s*$', re.IGNORECASE),
+    re.compile(r'\bcukup\b', re.IGNORECASE),
 ]
 
 # Transition signal patterns per stage in Indonesian phrases, matched after the minimum turns.

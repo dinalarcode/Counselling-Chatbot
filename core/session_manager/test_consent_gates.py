@@ -114,7 +114,50 @@ def test_accept_relaxation_reaches_relaksasi():
     assert sm.chosen_technique == "Pernapasan 4-7-8"
 
 
+def test_exploration_gateway_decline_advances_pre_generation():
+    stub = StubRAGEngine()
+    sm = SessionManager(stub)
+    sm.chat("halo")  # pembukaan auto-advances.
+    sm.chat("aku merasa sedih karena masalah pekerjaan")
+    sm.chat("atasanku sering memarahiku tanpa alasan")
+    sm.chat("aku merasa tertekan setiap hari")  # Turn 3: closing question asked, gateway armed.
+    assert sm.asking_exploration_consent is True
+    assert sm.current_stage == "pembahasan"
+
+    # A bare "tidak" is a decline: the stage advances BEFORE generation so this very
+    # turn is answered with the intervensi prompt instead of an empathetic hallucination.
+    sm.chat("tidak")
+    assert sm.asking_exploration_consent is False
+    assert sm.current_stage == "intervensi"
+    assert stub.calls[-1]["current_stage"] == "intervensi"
+    assert sm.complaint_summary == "ringkasan keluhan"
+
+
+def test_exploration_gateway_yes_extends_pembahasan():
+    stub = StubRAGEngine()
+    sm = SessionManager(stub)
+    sm.chat("halo")
+    sm.chat("aku merasa sedih karena masalah pekerjaan")
+    sm.chat("atasanku sering memarahiku tanpa alasan")
+    sm.chat("aku merasa tertekan setiap hari")  # Turn 3: gateway armed.
+    assert sm.asking_exploration_consent is True
+
+    # A "yes, there's more" answer stays in pembahasan with an extended turn ceiling and re-arms the gateway.
+    sm.chat("iya, masih ada yang ingin kuceritakan tentang keluargaku")
+    assert sm.current_stage == "pembahasan"
+    assert sm.pembahasan_max_extension == 2
+    assert stub.calls[-1]["current_stage"] == "pembahasan"
+    assert sm.asking_exploration_consent is True
+
+    # The next decline still routes straight into intervensi.
+    sm.chat("nggak ada lagi")
+    assert sm.current_stage == "intervensi"
+    assert stub.calls[-1]["current_stage"] == "intervensi"
+
+
 if __name__ == "__main__":
     test_decline_relaxation_skips_to_penutupan_with_recap()
     test_accept_relaxation_reaches_relaksasi()
+    test_exploration_gateway_decline_advances_pre_generation()
+    test_exploration_gateway_yes_extends_pembahasan()
     print("OK - consent gateway self-checks passed")

@@ -252,7 +252,9 @@ class RAGEngine:
         intents_for_verse = override_intents if override_intents else detected_intents
         # Solusi delays the verse until turn 2 (after the user replies to the practical solution) and never on the consent-question turn.
         solusi_verse_blocked = current_stage == 'solusi' and (turn_in_stage < 2 or ask_relaxation_consent)
-        if current_stage in self.BIBLE_VERSE_STAGES and intents_for_verse and spiritual_consent is True and not solusi_verse_blocked:
+        # Relaksasi delays the verse until turn 2 so the written technique steps are delivered before any scripture.
+        relaksasi_verse_blocked = current_stage == 'relaksasi' and turn_in_stage < 2
+        if current_stage in self.BIBLE_VERSE_STAGES and intents_for_verse and spiritual_consent is True and not solusi_verse_blocked and not relaksasi_verse_blocked:
             verse_results = self.vector_db.retrieve_verse_with_llm(
                 intents=intents_for_verse,
                 user_input=user_input,

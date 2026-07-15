@@ -7,7 +7,8 @@ from core.session_manager.Listof_List import (
     PROFESSIONAL_KEYWORDS, DECLINE_SIGNALS, SPIRITUAL_CONSENT_DECLINE,
     SPIRITUAL_CONSENT_AFFIRM, RELAXATION_CONSENT_DECLINE, RELAXATION_CONSENT_AFFIRM,
     MIN_TURNS, MAX_TURNS,
-    PEMBAHASAN_EARLY_EXIT_SIGNALS, TRANSITION_SIGNALS, _COMPILED_SIGNALS,
+    PEMBAHASAN_EARLY_EXIT_SIGNALS, EXPLORATION_DECLINE_SIGNALS,
+    TRANSITION_SIGNALS, _COMPILED_SIGNALS,
 )
 
 
@@ -28,6 +29,7 @@ class SessionManager:
     MIN_TURNS = MIN_TURNS
     MAX_TURNS = MAX_TURNS
     PEMBAHASAN_EARLY_EXIT_SIGNALS = PEMBAHASAN_EARLY_EXIT_SIGNALS
+    EXPLORATION_DECLINE_SIGNALS = EXPLORATION_DECLINE_SIGNALS
     TRANSITION_SIGNALS = TRANSITION_SIGNALS
     _COMPILED_SIGNALS = _COMPILED_SIGNALS
 
@@ -53,6 +55,9 @@ class SessionManager:
         self.relaxation_consent = None
         self.relaxation_consent_asked = False  # One-shot flag so the relaxation offer is shown once.
         self.relaxation_skipped = False  # True when relaksasi was skipped so penutupan opens with a recap.
+        # Exploration gateway state for the yes/no closing question at the end of pembahasan.
+        self.asking_exploration_consent = False  # True while awaiting the yes/no answer to the pembahasan closing question.
+        self.pembahasan_max_extension = 0        # Extra pembahasan turns granted when the user still has more to share.
         # Ephemeral pembahasan history cleared right after summary generation at the pembahasan to intervensi transition.
         self.temp_pembahasan_history = []   # List of user message and bot response tuples.
         self.complaint_summary = None       # One-sentence summary injected into later stages.
@@ -93,8 +98,24 @@ class SessionManager:
             if answer is not None:
                 self.relaxation_consent = answer
 
+        # Exploration gateway: the previous bot turn closed with the "anything else?" question,
+        # so this input is a yes/no answer, not a narrative to empathize with.
+        forced_by_gate = False
+        if self.asking_exploration_consent and self.current_stage == 'pembahasan':
+            self.asking_exploration_consent = False
+            if self._detect_exploration_decline(user_input):
+                # Decline: advance to intervensi NOW so this very turn is generated with the intervensi prompt.
+                self._advance_stage()
+                self.turn_count = 1
+                self.turn_in_stage = 1
+                forced_by_gate = True
+                print("[Session] exploration gateway: decline detected, advancing to intervensi pre-generation")
+            elif self.pembahasan_max_extension < 4:  # ponytail: hard cap so repeated 'yes' can't loop pembahasan forever
+                self.pembahasan_max_extension += 2
+                print(f"[Session] exploration gateway: user has more to share, max extended by 2 (total +{self.pembahasan_max_extension})")
+
         # Transition decision is computed before generation so consent gates can hold the stage one turn.
-        wants_transition = self._should_transition(user_input)
+        wants_transition = False if forced_by_gate else self._should_transition(user_input)
 
         # A stage whose consent question was already asked transitions now that the user's answer turn has arrived.
         if self.current_stage == 'intervensi' and self.spiritual_consent_asked:
@@ -186,6 +207,11 @@ class SessionManager:
         # Record solusi turns for technique extraction at the solusi to relaksasi transition.
         self._record_solusi_turn(user_input, result['response'])
 
+        # The turn-3 closing question was just asked (rag_engine injects PEMBAHASAN_TURN3_PROMPT at
+        # pembahasan turn_in_stage >= 3), so the next input must be evaluated as a yes/no answer.
+        if self.current_stage == 'pembahasan' and self.turn_in_stage >= 3 and not wants_transition:
+            self.asking_exploration_consent = True
+
         # Emergency skip keyword safety net that catches cases the classifier misses.
         keyword_triggered = self._detect_professional_keywords(user_input)
 
@@ -269,8 +295,11 @@ class SessionManager:
         if stage == 'pembukaan' and self.turn_count >= self.MIN_TURNS[stage]:
             return True
 
-        # Maximum turns exceeded forces a transition.
-        if self.turn_count >= self.MAX_TURNS.get(stage, 99):
+        # Maximum turns exceeded forces a transition; pembahasan honors the gateway extension.
+        max_turns = self.MAX_TURNS.get(stage, 99)
+        if stage == 'pembahasan':
+            max_turns += self.pembahasan_max_extension
+        if self.turn_count >= max_turns:
             return True
 
         # Pembahasan early-exit allows immediate transition regardless of turn count to respect user autonomy.
@@ -397,6 +426,14 @@ class SessionManager:
                 return True
         return False
 
+    def _detect_exploration_decline(self, user_input):
+        """Return True if the user declines further exploration at the pembahasan closing question."""
+        text_lower = user_input.lower().strip()
+        for pattern in self.EXPLORATION_DECLINE_SIGNALS:
+            if pattern.search(text_lower):
+                return True
+        return False
+
     def _detect_spiritual_consent(self, user_input):
         """Interpret the user's reply to the spiritual consent question as True, False, or None when unclear."""
         text_lower = user_input.lower().strip()
@@ -509,6 +546,8 @@ class SessionManager:
         self.relaxation_consent = None
         self.relaxation_consent_asked = False
         self.relaxation_skipped = False
+        self.asking_exploration_consent = False
+        self.pembahasan_max_extension = 0
         self.temp_pembahasan_history = []
         self.complaint_summary = None
         self.temp_solusi_history = []
