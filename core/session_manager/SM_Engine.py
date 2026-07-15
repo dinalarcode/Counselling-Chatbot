@@ -1,5 +1,6 @@
 """Session manager engine that drives automatic stage progression for the counseling chatbot."""
 
+import re
 from collections import Counter
 
 from core.session_manager.Listof_List import (
@@ -7,6 +8,41 @@ from core.session_manager.Listof_List import (
     PROFESSIONAL_KEYWORDS, DECLINE_SIGNALS, SPIRITUAL_CONSENT_DECLINE,
     SPIRITUAL_CONSENT_AFFIRM, MIN_TURNS, MAX_TURNS,
     PEMBAHASAN_EARLY_EXIT_SIGNALS, TRANSITION_SIGNALS, _COMPILED_SIGNALS,
+)
+
+# ── Dialogue-state heuristics ────────────────────────────────────────────
+# ponytail: keyword/regex heuristics; upgrade to LLM extraction if precision matters.
+
+# Kata kunci perasaan → label perasaan yang disimpan di known_feeling.
+FEELING_KEYWORDS = {
+    'cemas': 'cemas', 'khawatir': 'khawatir', 'takut': 'takut', 'sedih': 'sedih',
+    'capek': 'lelah', 'lelah': 'lelah', 'kesepian': 'kesepian',
+    'marah': 'marah', 'frustasi': 'frustasi', 'frustrasi': 'frustasi',
+    'kecewa': 'kecewa', 'nangis': 'sedih', 'menangis': 'sedih',
+    'sakit hati': 'sakit hati', 'benci': 'benci', 'gelisah': 'gelisah',
+    'nggak tenang': 'gelisah', 'stres': 'stres', 'stress': 'stres',
+    'bingung': 'bingung', 'malu': 'malu', 'bersalah': 'bersalah',
+    'kesal': 'kesal', 'putus asa': 'putus asa', 'hampa': 'hampa',
+}
+
+# Pola penyebab: klausa setelah kata penghubung sebab disimpan di known_cause.
+CAUSE_PATTERN = re.compile(
+    r'(?:karena|gara-gara|soalnya|setelah|sejak|akibat)\s+(.{4,90})', re.IGNORECASE
+)
+
+# Frasa pembatas topik dari pengguna → user_set_boundary.
+BOUNDARY_PATTERNS = [re.compile(p) for p in (
+    r'\budahlah\b', r'n?g?gak usah dibahas', r'males? cerita', r'malas cerita',
+    r'\bskip\b', r'lupain aja', r'lupakan (saja|aja)', r'n?g?gak penting',
+    r'\bterserah\b', r'\bwhatever\b', r'ganti topik',
+)]
+
+# Pola pertanyaan konselor yang menandai already_asked_feeling / already_asked_cause.
+FEELING_QUESTION_PATTERN = re.compile(
+    r'(bagaimana (perasaan|kabar)|apa yang[^?]*rasakan|perasaanmu[^?]*\?)', re.IGNORECASE
+)
+CAUSE_QUESTION_PATTERN = re.compile(
+    r'(apa yang membuat|kenapa|mengapa|apa penyebab)[^?]*\?', re.IGNORECASE
 )
 
 
@@ -52,6 +88,8 @@ class SessionManager:
         # Ephemeral solusi history cleared right after technique extraction at the solusi to relaksasi transition.
         self.temp_solusi_history = []       # List of user message and bot response tuples.
         self.chosen_technique = None        # Technique name injected into the relaksasi prompt.
+        # Dialogue state object injected into the LLM prompt so it avoids re-asking known things.
+        self.dialogue_state = self._new_dialogue_state()
 
     def chat(self, user_input):
         """Main entry point for a conversation turn handling state, RAG generation, and transitions."""
@@ -73,6 +111,9 @@ class SessionManager:
         self.conversation_history.append(("user", user_input))
         self.turn_count += 1
         self.turn_in_stage += 1
+
+        # Update the dialogue state from the user's message before generation.
+        self._update_dialogue_state(user_input)
 
         # Capture the sticky reply to the spiritual consent question so a clear yes or no is honored even without a transition.
         if self.spiritual_consent_asked and self.spiritual_consent is None:
@@ -104,7 +145,8 @@ class SessionManager:
             ask_spiritual_consent=ask_consent,
             turn_in_stage=self.turn_in_stage,
             complaint_summary=self.complaint_summary,
-            chosen_technique=self.chosen_technique
+            chosen_technique=self.chosen_technique,
+            dialogue_state=self.dialogue_state
         )
 
         # Mark the consent question as shown so it is not repeated.
@@ -125,6 +167,11 @@ class SessionManager:
         turn_intents = result['context_used']['intents']
         for intent in turn_intents:
             self.accumulated_intents[intent] += 1
+
+        # Backfill known_feeling from classifier labels when keywords missed it, then update asked/closing flags from the response.
+        if self.dialogue_state["known_feeling"] is None and turn_intents:
+            self.dialogue_state["known_feeling"] = turn_intents[0]
+        self._update_dialogue_state_from_response(result['response'])
 
         # Track the physical symptom intent across the entire session.
         if self.PHYSICAL_SYMPTOM_INTENT in turn_intents:
@@ -425,6 +472,57 @@ class SessionManager:
         """Snapshot primary intents when transitioning out of pembahasan for later verse retrieval."""
         self._update_primary_intents()
 
+    def _new_dialogue_state(self):
+        """Return a fresh dialogue state object for a new session."""
+        return {
+            "turn_number": 0,
+            "known_feeling": None,
+            "known_cause": None,
+            "already_asked_feeling": False,
+            "already_asked_cause": False,
+            "user_set_boundary": False,
+            "last_closing_act": None,
+        }
+
+    def _update_dialogue_state(self, user_input):
+        """Update the dialogue state from the user's message, before response generation."""
+        state = self.dialogue_state
+        state["turn_number"] += 1
+        text = user_input.lower()
+
+        if state["known_feeling"] is None:
+            for keyword, feeling in FEELING_KEYWORDS.items():
+                if keyword in text:
+                    state["known_feeling"] = feeling
+                    break
+
+        if state["known_cause"] is None:
+            match = CAUSE_PATTERN.search(user_input)
+            if match:
+                state["known_cause"] = match.group(1).strip().rstrip('.!?')
+
+        # ponytail: per-turn flag — the boundary applies to the current utterance, not the whole session.
+        state["user_set_boundary"] = any(p.search(text) for p in BOUNDARY_PATTERNS)
+
+    def _update_dialogue_state_from_response(self, response_text):
+        """Update asked-question flags and the closing act category from the generated response."""
+        state = self.dialogue_state
+        if FEELING_QUESTION_PATTERN.search(response_text):
+            state["already_asked_feeling"] = True
+        if CAUSE_QUESTION_PATTERN.search(response_text):
+            state["already_asked_cause"] = True
+        state["last_closing_act"] = self._classify_closing_act(response_text)
+
+    def _classify_closing_act(self, response_text):
+        """Categorize how the response closes so the prompt can forbid repeating the same style."""
+        # ponytail: string heuristic on the response tail; upgrade to an LLM router if categories need to be exact.
+        tail = response_text.strip()[-220:].lower()
+        if '?' not in tail:
+            return 'refleksi'
+        if re.search(r'(coba|langkah|pilih|bersedia|mau mencoba|bagaimana kalau|apakah (kamu|anda) mau)', tail):
+            return 'tawaran_langkah'
+        return 'pertanyaan_mendalam'
+
     def reset(self):
         """Reset the session to start a new counseling session."""
         self.current_stage = 'pembukaan'
@@ -445,3 +543,25 @@ class SessionManager:
         self.complaint_summary = None
         self.temp_solusi_history = []
         self.chosen_technique = None
+        self.dialogue_state = self._new_dialogue_state()
+
+
+# Self-check for the dialogue-state heuristics: python -m core.session_manager.SM_Engine
+if __name__ == "__main__":
+    sm = SessionManager(rag_engine=None)
+    sm._update_dialogue_state("Saya cemas karena skripsi saya belum selesai.")
+    assert sm.dialogue_state["known_feeling"] == "cemas"
+    assert "skripsi" in sm.dialogue_state["known_cause"]
+    assert sm.dialogue_state["user_set_boundary"] is False
+    sm._update_dialogue_state("Udahlah nggak usah dibahas.")
+    assert sm.dialogue_state["user_set_boundary"] is True
+    assert sm.dialogue_state["turn_number"] == 2
+    sm._update_dialogue_state_from_response("Aku mengerti. Bagaimana perasaanmu hari ini?")
+    assert sm.dialogue_state["already_asked_feeling"] is True
+    assert sm.dialogue_state["last_closing_act"] == "pertanyaan_mendalam"
+    sm._update_dialogue_state_from_response("Kamu sudah berjuang keras, dan itu terlihat.")
+    assert sm.dialogue_state["last_closing_act"] == "refleksi"
+    sm.rag_engine = object()  # reset() only touches own attributes
+    sm.reset()
+    assert sm.dialogue_state["turn_number"] == 0
+    print("dialogue-state self-check OK")

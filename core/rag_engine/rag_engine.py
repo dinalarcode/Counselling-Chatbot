@@ -1,5 +1,6 @@
 """RAG engine orchestrating intent classification, FAISS retrieval, LLM reranking, and response generation."""
 
+import json
 import os
 import time
 from dotenv import load_dotenv
@@ -101,7 +102,13 @@ class RAGEngine:
                 "detected_intents",
                 "stage_instruction",
                 "example_answer",
-                "bible_section"
+                "bible_section",
+                "known_feeling",
+                "known_cause",
+                "already_asked_feeling",
+                "already_asked_cause",
+                "user_set_boundary",
+                "last_closing_act"
             ],
             template=MAIN_PROMPT_TEMPLATE
         )
@@ -165,7 +172,7 @@ class RAGEngine:
             print(f"[Technique] Failed to extract chosen technique: {e}")
             return None
 
-    def generate_response(self, user_input, current_stage="pembahasan", override_intents=None, has_physical_symptoms=False, excluded_books=None, excluded_verses=None, spiritual_consent=None, ask_spiritual_consent=False, turn_in_stage=0, complaint_summary=None, chosen_technique=None):
+    def generate_response(self, user_input, current_stage="pembahasan", override_intents=None, has_physical_symptoms=False, excluded_books=None, excluded_verses=None, spiritual_consent=None, ask_spiritual_consent=False, turn_in_stage=0, complaint_summary=None, chosen_technique=None, dialogue_state=None):
         """Generate a counseling response for the given stage, intents, consent, and session context."""
         # Get the stage-specific behavioral instruction.
         stage_instruction = self.STAGE_INSTRUCTIONS.get(
@@ -251,13 +258,27 @@ class RAGEngine:
                 f'{verse_display}'
             )
 
+        # Build the state variables injected into the prompt, with safe defaults for callers without a session (e.g. ragas_engine).
+        state = dialogue_state or {}
+        state_vars = {
+            "known_feeling": state.get("known_feeling") or "belum diketahui",
+            "known_cause": state.get("known_cause") or "belum diketahui",
+            "already_asked_feeling": "true" if state.get("already_asked_feeling") else "false",
+            "already_asked_cause": "true" if state.get("already_asked_cause") else "false",
+            "user_set_boundary": "true" if state.get("user_set_boundary") else "false",
+            "last_closing_act": state.get("last_closing_act") or "belum ada",
+        }
+        # State log per turn for testing — keep until the state tracking is validated.
+        print(f"[STATE] {json.dumps(state if dialogue_state else state_vars, ensure_ascii=False)}")
+
         # Format the inputs and invoke the LLM chain.
         response = self.chain.invoke({
             "user_input": user_input,
             "detected_intents": intents_str,
             "stage_instruction": stage_instruction,
             "example_answer": example_answer,
-            "bible_section": bible_section
+            "bible_section": bible_section,
+            **state_vars
         })
 
         _t4 = time.perf_counter()

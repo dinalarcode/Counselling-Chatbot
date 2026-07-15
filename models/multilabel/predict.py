@@ -9,7 +9,7 @@ def _print_stage(title):
     print(f"\n{'=' * 60}\n--- {title} ---\n{'=' * 60}")
 
 class predictor:
-    def __init__(self, model_path = 'checkpoint/IndoBERT_multi_label.pt', thresold = 0.5):
+    def __init__(self, model_path = 'checkpoint/IndoBERT_multi_label_zsl.pt', thresold = 0.5):
         self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device ('cpu')
         self.tokenizer = AutoTokenizer.from_pretrained(opt.MODEL_NAME)
         self.thresold = thresold
