@@ -13,8 +13,9 @@ from config import opt
 # Static prompts and config lists for the engine.
 from core.rag_engine.Listof_RAGlist import (
     STAGE_INSTRUCTIONS, PHYSICAL_SYMPTOM_CBT_GUIDANCE, SPIRITUAL_CONSENT_PROMPT,
-    BIBLE_VERSE_STAGES, PEMBAHASAN_TURN3_PROMPT, SKIP_CLASSIFICATION_STAGES,
-    MAIN_PROMPT_TEMPLATE,
+    RELAXATION_CONSENT_PROMPT, SOLUSI_PRACTICAL_TURN_PROMPT, SOLUSI_SPIRITUAL_TURN_PROMPT,
+    PENUTUPAN_RECAP_PROMPT, BIBLE_VERSE_STAGES, PEMBAHASAN_TURN3_PROMPT,
+    SKIP_CLASSIFICATION_STAGES, MAIN_PROMPT_TEMPLATE,
 )
 
 # Load environment variables.
@@ -77,6 +78,10 @@ class RAGEngine:
     STAGE_INSTRUCTIONS = STAGE_INSTRUCTIONS
     PHYSICAL_SYMPTOM_CBT_GUIDANCE = PHYSICAL_SYMPTOM_CBT_GUIDANCE
     SPIRITUAL_CONSENT_PROMPT = SPIRITUAL_CONSENT_PROMPT
+    RELAXATION_CONSENT_PROMPT = RELAXATION_CONSENT_PROMPT
+    SOLUSI_PRACTICAL_TURN_PROMPT = SOLUSI_PRACTICAL_TURN_PROMPT
+    SOLUSI_SPIRITUAL_TURN_PROMPT = SOLUSI_SPIRITUAL_TURN_PROMPT
+    PENUTUPAN_RECAP_PROMPT = PENUTUPAN_RECAP_PROMPT
     BIBLE_VERSE_STAGES = BIBLE_VERSE_STAGES
     PEMBAHASAN_TURN3_PROMPT = PEMBAHASAN_TURN3_PROMPT
     SKIP_CLASSIFICATION_STAGES = SKIP_CLASSIFICATION_STAGES
@@ -165,7 +170,7 @@ class RAGEngine:
             print(f"[Technique] Failed to extract chosen technique: {e}")
             return None
 
-    def generate_response(self, user_input, current_stage="pembahasan", override_intents=None, has_physical_symptoms=False, excluded_books=None, excluded_verses=None, spiritual_consent=None, ask_spiritual_consent=False, turn_in_stage=0, complaint_summary=None, chosen_technique=None):
+    def generate_response(self, user_input, current_stage="pembahasan", override_intents=None, has_physical_symptoms=False, excluded_books=None, excluded_verses=None, spiritual_consent=None, ask_spiritual_consent=False, ask_relaxation_consent=False, turn_in_stage=0, complaint_summary=None, chosen_technique=None, closing_recap=False, solusi_history=None):
         """Generate a counseling response for the given stage, intents, consent, and session context."""
         # Get the stage-specific behavioral instruction.
         stage_instruction = self.STAGE_INSTRUCTIONS.get(
@@ -174,8 +179,17 @@ class RAGEngine:
         )
 
         # Inject the ephemeral complaint summary into later stages so the LLM retains the core issue across turns.
-        if complaint_summary and current_stage in ('intervensi', 'solusi', 'relaksasi'):
+        if complaint_summary and (current_stage in ('intervensi', 'solusi', 'relaksasi') or closing_recap):
             stage_instruction = f"Konteks Keluhan Klien: {complaint_summary}\n\n" + stage_instruction
+
+        # When relaksasi was skipped, feed the raw solusi transcript and open penutupan with a session recap.
+        if closing_recap and current_stage == 'penutupan':
+            if solusi_history:
+                transcript = "\n".join(
+                    f"Klien: {u}\nKonselor: {b}" for u, b in solusi_history
+                )
+                stage_instruction = f"Ringkasan Diskusi Solusi:\n{transcript}\n\n" + stage_instruction
+            stage_instruction = self.PENUTUPAN_RECAP_PROMPT + " " + stage_instruction
 
         # Inject the chosen relaxation technique for relaksasi so the LLM only guides the agreed technique.
         if chosen_technique and current_stage == 'relaksasi':
@@ -192,9 +206,20 @@ class RAGEngine:
         if has_physical_symptoms and current_stage in ('solusi', 'relaksasi'):
             stage_instruction = stage_instruction + " " + self.PHYSICAL_SYMPTOM_CBT_GUIDANCE
 
-        # Ask for spiritual consent at the final solusi turn so consent resolves before any verse is introduced.
-        if ask_spiritual_consent and current_stage == 'solusi':
+        # Paced solusi delivery: practical content first, spiritual perspective only after consent and a user reply.
+        if current_stage == 'solusi' and not ask_relaxation_consent:
+            if turn_in_stage >= 2 and spiritual_consent is True:
+                stage_instruction = stage_instruction + " " + self.SOLUSI_SPIRITUAL_TURN_PROMPT
+            else:
+                stage_instruction = stage_instruction + " " + self.SOLUSI_PRACTICAL_TURN_PROMPT
+
+        # Ask for spiritual consent at the end of intervensi so consent resolves before solusi introduces verses.
+        if ask_spiritual_consent and current_stage == 'intervensi':
             stage_instruction = stage_instruction + " " + self.SPIRITUAL_CONSENT_PROMPT
+
+        # Ask for relaxation consent at the end of solusi so the user chooses whether relaksasi runs.
+        if ask_relaxation_consent and current_stage == 'solusi':
+            stage_instruction = stage_instruction + " " + self.RELAXATION_CONSENT_PROMPT
 
         _t0 = time.perf_counter()
 
@@ -225,7 +250,9 @@ class RAGEngine:
         bible_book_abbr = ""
         # Conditional RAG where verses are retrieved only when the user has explicitly given spiritual consent.
         intents_for_verse = override_intents if override_intents else detected_intents
-        if current_stage in self.BIBLE_VERSE_STAGES and intents_for_verse and spiritual_consent is True:
+        # Solusi delays the verse until turn 2 (after the user replies to the practical solution) and never on the consent-question turn.
+        solusi_verse_blocked = current_stage == 'solusi' and (turn_in_stage < 2 or ask_relaxation_consent)
+        if current_stage in self.BIBLE_VERSE_STAGES and intents_for_verse and spiritual_consent is True and not solusi_verse_blocked:
             verse_results = self.vector_db.retrieve_verse_with_llm(
                 intents=intents_for_verse,
                 user_input=user_input,

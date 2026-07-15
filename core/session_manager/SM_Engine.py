@@ -5,7 +5,8 @@ from collections import Counter
 from core.session_manager.Listof_List import (
     STAGE_ORDER, PROFESSIONAL_STAGE, PROFESSIONAL_INTENT, PHYSICAL_SYMPTOM_INTENT,
     PROFESSIONAL_KEYWORDS, DECLINE_SIGNALS, SPIRITUAL_CONSENT_DECLINE,
-    SPIRITUAL_CONSENT_AFFIRM, MIN_TURNS, MAX_TURNS,
+    SPIRITUAL_CONSENT_AFFIRM, RELAXATION_CONSENT_DECLINE, RELAXATION_CONSENT_AFFIRM,
+    MIN_TURNS, MAX_TURNS,
     PEMBAHASAN_EARLY_EXIT_SIGNALS, TRANSITION_SIGNALS, _COMPILED_SIGNALS,
 )
 
@@ -22,6 +23,8 @@ class SessionManager:
     DECLINE_SIGNALS = DECLINE_SIGNALS
     SPIRITUAL_CONSENT_DECLINE = SPIRITUAL_CONSENT_DECLINE
     SPIRITUAL_CONSENT_AFFIRM = SPIRITUAL_CONSENT_AFFIRM
+    RELAXATION_CONSENT_DECLINE = RELAXATION_CONSENT_DECLINE
+    RELAXATION_CONSENT_AFFIRM = RELAXATION_CONSENT_AFFIRM
     MIN_TURNS = MIN_TURNS
     MAX_TURNS = MAX_TURNS
     PEMBAHASAN_EARLY_EXIT_SIGNALS = PEMBAHASAN_EARLY_EXIT_SIGNALS
@@ -46,6 +49,10 @@ class SessionManager:
         # Tri-state spiritual consent gating all Bible verse injection in later stages.
         self.spiritual_consent = None
         self.spiritual_consent_asked = False  # One-shot flag so the consent question is shown once.
+        # Tri-state relaxation consent deciding whether relaksasi runs or is skipped to penutupan.
+        self.relaxation_consent = None
+        self.relaxation_consent_asked = False  # One-shot flag so the relaxation offer is shown once.
+        self.relaxation_skipped = False  # True when relaksasi was skipped so penutupan opens with a recap.
         # Ephemeral pembahasan history cleared right after summary generation at the pembahasan to intervensi transition.
         self.temp_pembahasan_history = []   # List of user message and bot response tuples.
         self.complaint_summary = None       # One-sentence summary injected into later stages.
@@ -80,16 +87,48 @@ class SessionManager:
             if answer is not None:
                 self.spiritual_consent = answer
 
-        # Ask spiritual consent on the final solusi turn so the yes or no question stays separate from exploration.
+        # Capture the sticky reply to the relaxation consent question; an ambiguous answer stays None and defaults to proceeding.
+        if self.relaxation_consent_asked and self.relaxation_consent is None:
+            answer = self._detect_relaxation_consent(user_input)
+            if answer is not None:
+                self.relaxation_consent = answer
+
+        # Transition decision is computed before generation so consent gates can hold the stage one turn.
+        wants_transition = self._should_transition(user_input)
+
+        # A stage whose consent question was already asked transitions now that the user's answer turn has arrived.
+        if self.current_stage == 'intervensi' and self.spiritual_consent_asked:
+            wants_transition = True
+        if self.current_stage == 'solusi' and self.relaxation_consent_asked:
+            wants_transition = True
+
+        # Hold solusi until turn 2 has delivered the spiritual solution the user consented to (practical then verse pacing).
+        if (
+            wants_transition
+            and self.current_stage == 'solusi'
+            and self.spiritual_consent is True
+            and self.turn_in_stage <= 2
+            and not self.relaxation_consent_asked
+        ):
+            wants_transition = False
+
+        # Consent gates: instead of transitioning, hold the stage one turn and ask the consent question.
         ask_consent = (
-            self.current_stage == 'solusi'
-            and self.turn_in_stage >= self.MAX_TURNS.get('solusi', 3)
+            wants_transition
+            and self.current_stage == 'intervensi'
             and not self.spiritual_consent_asked
         )
+        ask_relaxation = (
+            wants_transition
+            and self.current_stage == 'solusi'
+            and not self.relaxation_consent_asked
+        )
+        if ask_consent or ask_relaxation:
+            wants_transition = False
 
-        # Only relaksasi retrieves verses, so pass accumulated primary intents there for best results.
+        # Solusi and relaksasi retrieve verses, so pass accumulated primary intents there for best results.
         override_intents = None
-        if self.current_stage == 'relaksasi' and self.primary_intents:
+        if self.current_stage in ('solusi', 'relaksasi') and self.primary_intents:
             override_intents = self.primary_intents
 
         # Generate response from RAG engine.
@@ -102,14 +141,19 @@ class SessionManager:
             excluded_verses=self.used_verses,
             spiritual_consent=self.spiritual_consent,
             ask_spiritual_consent=ask_consent,
+            ask_relaxation_consent=ask_relaxation,
             turn_in_stage=self.turn_in_stage,
             complaint_summary=self.complaint_summary,
-            chosen_technique=self.chosen_technique
+            chosen_technique=self.chosen_technique,
+            closing_recap=(self.current_stage == 'penutupan' and self.relaxation_skipped),
+            solusi_history=self.temp_solusi_history if self.relaxation_skipped else None
         )
 
-        # Mark the consent question as shown so it is not repeated.
+        # Mark the consent questions as shown so they are not repeated.
         if ask_consent:
             self.spiritual_consent_asked = True
+        if ask_relaxation:
+            self.relaxation_consent_asked = True
 
         # Track which book and exact verse were used for session-level exclusion.
         chosen_book = result['context_used'].get('bible_book_abbr', '')
@@ -160,7 +204,7 @@ class SessionManager:
         transitioned = False
         previous_stage = self.current_stage
 
-        if self._should_transition(user_input):
+        if wants_transition:
             # Penutupan to bantuan_profesional when the user accepts the referral offer.
             if self.current_stage == 'penutupan':
                 return self._enter_professional_stage(user_input)
@@ -263,6 +307,13 @@ class SessionManager:
             self.turn_count = 0
             self.turn_in_stage = 0  # Reset per-stage counter on transition.
 
+            # Relaxation declined skips relaksasi entirely, landing on penutupan which opens with a recap.
+            if self.current_stage == 'relaksasi' and self.relaxation_consent is False:
+                self.stage_index += 1
+                self.current_stage = self.STAGE_ORDER[self.stage_index]
+                self.relaxation_skipped = True
+                print("[Session] relaksasi skipped by user consent, jumping to penutupan with recap")
+
             # When advancing to intervensi, snapshot intents and generate a one-sentence complaint summary for later prompts.
             if self.current_stage == 'intervensi':
                 self._snapshot_primary_intents()
@@ -360,6 +411,20 @@ class SessionManager:
 
         return None
 
+    def _detect_relaxation_consent(self, user_input):
+        """Interpret the user's reply to the relaxation consent question as True, False, or None when unclear."""
+        text_lower = user_input.lower().strip()
+
+        for pattern in self.RELAXATION_CONSENT_DECLINE:
+            if pattern.search(text_lower):
+                return False
+
+        for pattern in self.RELAXATION_CONSENT_AFFIRM:
+            if pattern.search(text_lower):
+                return True
+
+        return None
+
     def _detect_decline_signal(self, user_input):
         """Return True if the user declines the professional referral at penutupan."""
         text_lower = user_input.lower().strip()
@@ -441,6 +506,9 @@ class SessionManager:
         self.used_verses = set()
         self.spiritual_consent = None
         self.spiritual_consent_asked = False
+        self.relaxation_consent = None
+        self.relaxation_consent_asked = False
+        self.relaxation_skipped = False
         self.temp_pembahasan_history = []
         self.complaint_summary = None
         self.temp_solusi_history = []

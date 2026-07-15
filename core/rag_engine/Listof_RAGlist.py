@@ -34,8 +34,8 @@ STAGE_INSTRUCTIONS = {
     ),
     "solusi": (
         "Bantu pengguna merumuskan langkah-langkah konkret yang bisa mereka ambil. "
-        "Berikan saran praktis yang realistis dan dorong mereka untuk bertindak. "
-        "Jangan menyertakan ayat Alkitab di tahap ini. "
+        "Berikan saran praktis dan psikologis yang realistis dan dorong mereka untuk bertindak. "
+        "Berikan solusi secara bertahap, jangan menumpuk semua saran sekaligus dalam satu respons. "
         "Berikan jawaban yang singkat, padat, dan bermakna."
     ),
     "relaksasi": (
@@ -94,16 +94,48 @@ PHYSICAL_SYMPTOM_CBT_GUIDANCE = (
     "suasana hati secara keseluruhan."
 )
 
-# Spiritual consent question injected at the final solusi turn so consent resolves before relaksasi.
+# Spiritual consent question injected at the end of intervensi so consent resolves before solusi.
 SPIRITUAL_CONSENT_PROMPT = (
     "Pada giliran ini, Anda HANYA boleh menanyakan kesediaan klien untuk menggunakan Alkitab. "
     "DILARANG mengajukan pertanyaan lain agar klien fokus menjawab ya atau tidak. "
     "Tanyakan dengan lembut dan persis seperti ini: "
-    "'Apakah Anda bersedia melihat masalah ini dari sudut pandang firman Tuhan atau Alkitab?'"
+    "'Apakah Anda bersedia jika kita melihat masalah ini dari perspektif Firman Tuhan?'"
 )
 
-# Stages where bible verses are retrieved and injected, restricted to relaksasi only.
-BIBLE_VERSE_STAGES = ['relaksasi']
+# Relaxation consent question injected at the end of solusi so the user chooses whether relaksasi runs.
+RELAXATION_CONSENT_PROMPT = (
+    "Pada giliran ini, Anda HANYA boleh menawarkan latihan relaksasi kepada klien. "
+    "DILARANG mengajukan pertanyaan lain agar klien fokus menjawab ya atau tidak. "
+    "Tanyakan dengan lembut dan persis seperti ini: "
+    "'Apakah Anda mau mencoba teknik relaksasi atau pernapasan untuk menenangkan diri?'"
+)
+
+# Addendum for solusi turn 1 or when spiritual consent is absent: practical content only, no verses.
+SOLUSI_PRACTICAL_TURN_PROMPT = (
+    "Pada giliran ini, fokuskan respons HANYA pada solusi praktis dan psikologis. "
+    "Jangan menyertakan ayat Alkitab atau pembahasan rohani di giliran ini."
+)
+
+# Addendum for solusi turn 2 and beyond when spiritual consent is given: introduce the verse gently.
+SOLUSI_SPIRITUAL_TURN_PROMPT = (
+    "Klien sudah merespons solusi praktis sebelumnya dan telah bersedia melihat masalah ini "
+    "dari perspektif Firman Tuhan. Pada giliran ini, akui dulu tanggapan klien secara singkat, "
+    "lalu perkenalkan perspektif rohani dengan lembut menggunakan bagian 'Ayat Alkitab Relevan' "
+    "sebagai solusi spiritual yang melengkapi solusi praktis tadi — bukan menggantikannya."
+)
+
+# Recap opening for penutupan when relaksasi was skipped by user choice.
+PENUTUPAN_RECAP_PROMPT = (
+    "Klien memilih untuk tidak melakukan latihan relaksasi, jadi sesi langsung menuju penutupan. "
+    "AWALI respons dengan merangkum perjalanan sesi secara lembut dan berurutan: "
+    "(1) masalah yang klien ceritakan, (2) solusi praktis yang sudah disepakati, "
+    "(3) solusi rohani atau ayat yang sudah dibahas (jika ada). "
+    "Gunakan 'Konteks Keluhan Klien' dan 'Ringkasan Diskusi Solusi' di atas sebagai bahan rangkuman. "
+    "Setelah rangkuman, lanjutkan penutupan hangat seperti biasa."
+)
+
+# Stages where bible verses are retrieved and injected: paced delivery in solusi plus relaksasi.
+BIBLE_VERSE_STAGES = ['solusi', 'relaksasi']
 
 # Prompt injected at pembahasan turn 3 or later asking if the user has anything else to share.
 PEMBAHASAN_TURN3_PROMPT = (

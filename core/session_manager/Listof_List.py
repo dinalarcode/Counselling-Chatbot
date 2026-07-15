@@ -77,6 +77,24 @@ SPIRITUAL_CONSENT_AFFIRM = [
     re.compile(r'\b(firman|alkitab|ayat|tuhan|rohani)\b', re.IGNORECASE),
 ]
 
+# Decline patterns for the relaxation consent question reuse the generic spiritual decline words.
+RELAXATION_CONSENT_DECLINE = SPIRITUAL_CONSENT_DECLINE
+
+# Affirmative patterns for the relaxation consent question: generic yes words plus relaxation keywords.
+RELAXATION_CONSENT_AFFIRM = [
+    re.compile(r'\b(iya|ya|yah|yaudah|yauda)\b', re.IGNORECASE),
+    re.compile(r'\bmau\b', re.IGNORECASE),
+    re.compile(r'\bboleh\b', re.IGNORECASE),
+    re.compile(r'\bbersedia\b', re.IGNORECASE),
+    re.compile(r'\btentu\b', re.IGNORECASE),
+    re.compile(r'\bsila(h)?kan\b', re.IGNORECASE),
+    re.compile(r'\bsetuju\b', re.IGNORECASE),
+    re.compile(r'\b(oke|ok|okay|oce)\b', re.IGNORECASE),
+    re.compile(r'\b(ayo|mari)\b', re.IGNORECASE),
+    re.compile(r'\bbaik(lah)?\b', re.IGNORECASE),
+    re.compile(r'\b(relaksasi|napas|pernapasan|teknik|coba)\b', re.IGNORECASE),
+]
+
 # Minimum turns required before a stage can transition.
 MIN_TURNS = {
     'pembukaan': 1,
