@@ -1,6 +1,6 @@
-# 📖 Chatbot Konseling Berbasis Alkitab
+# Chatbot Konseling Berbasis Alkitab
 
-A Bible-based Christian counseling chatbot that combines **multi-label intent classification** (LABAN/IndoBERT), **RAG-powered Bible verse retrieval** (FAISS + LLM reranker), and **LLM-driven empathetic responses** to guide users through a structured counseling session — all in **Bahasa Indonesia**.
+A Bible-based Christian counseling chatbot that combines **multi-label intent classification** (LABAN/IndoBERT), **RAG-powered Bible verse retrieval** (FAISS + LLM reranker), and **LLM-driven empathetic responses** to guide users through a structured counseling session in **Bahasa Indonesia**.
 
 ---
 
@@ -91,11 +91,11 @@ Flask Web UI (JSON API)
 
 | Provider | Environment Variable | Sign-up |
 |---|---|---|
-| **Groq** (default) | `GROQ_API_KEY` | [console.groq.com](https://console.groq.com) |
+| **Groq** | `GROQ_API_KEY` | [console.groq.com](https://console.groq.com) |
 | **Google Gemini** | `GEMINI_API_KEY` | [aistudio.google.com](https://aistudio.google.com) |
 | **OpenAI** | `OPENAI_API_KEY` | [platform.openai.com](https://platform.openai.com) |
 
-> **Note:** Only the API key for your chosen provider (`CHATBOT_LLM_PROVIDER` in `config.py`) is required. Groq is the default and offers a generous free tier.
+> **Note:** Only the API key for your chosen provider (`CHATBOT_LLM_PROVIDER` in `config.py`) is required. Gemini is the default.
 
 ---
 
@@ -172,7 +172,7 @@ Ensure these files/directories exist before running:
 
 | Path | Description | How to Obtain |
 |---|---|---|
-| `checkpoint/IndoBERT_multi_label_zsl.pt` | Trained LABAN classifier weights | Included in repo or train via `models/multilabel/run_trainer.py` |
+| `checkpoint/IndoBERT_multi_label.pt` | Trained LABAN classifier weights | Included in repo or train via `models/multilabel/run_trainer.py` |
 | `data/verse_data/faiss_bible_index/` | Pre-built FAISS Bible index | Auto-built on first run from the enriched CSV |
 | `data/qna-intent_data/faiss_qna_index/` | Pre-built FAISS QnA index | Auto-built on first run from `data/qna-intent_data/dataset_qna.csv` |
 | `data/verse_data/alkitab_tb_enriched_groq.csv` | AVI-enriched Bible verses | Generate via the AVI pipeline (see below) |
