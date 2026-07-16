@@ -1,18 +1,5 @@
 """Static data for the vector DB manager including stopwords, biblical synonyms, and diversity constants."""
 
-from Sastrawi.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFactory
-
-# Indonesian stopwords from the Sastrawi list plus colloquial extras.
-_sastrawi_factory = StopWordRemoverFactory()
-STOPWORDS_ID = set(_sastrawi_factory.get_stop_words())
-# Add informal or colloquial words that are not in Sastrawi.
-STOPWORDS_ID.update({
-    'kak', 'nggak', 'gak', 'dong', 'sih', 'nih', 'deh', 'lho', 'kan',
-    'kok', 'banget', 'kayak', 'gimana', 'gitu', 'udah', 'terus',
-    'aja', 'emang', 'doang', 'cuma', 'tuh', 'yah', 'wah',
-    'gatau', 'gapaham', 'gajelas', 'gamau', 'gaada', 'gabisa',
-})
-
 # Maps each of the 10 LABAN intents to formal TB Bible vocabulary injected into the FAISS query for expansion.
 BIBLICAL_SYNONYMS = {
     "Mengisyaratkan Butuh Bantuan Profesional": (

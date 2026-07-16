@@ -11,7 +11,7 @@ from config import opt
 
 # Static stopwords, biblical synonyms, and diversity constants.
 from core.vectordb_manager.listof_vdblist import (
-    STOPWORDS_ID, BIBLICAL_SYNONYMS, OVERSAMPLE_FACTOR, MAX_PER_CHAPTER,
+    BIBLICAL_SYNONYMS, OVERSAMPLE_FACTOR, MAX_PER_CHAPTER,
 )
 
 
@@ -279,17 +279,6 @@ class VectorDBManager:
         if ":" in reference:
             return reference.rsplit(":", 1)[0].strip()
         return reference.strip()
-
-    def _extract_keywords(self, text):
-        """Extract keywords from text by removing stopwords and return them as a joined string."""
-        words = re.findall(r'\b[a-zA-Z]{3,}\b', text.lower())
-        keywords = [w for w in words if w not in STOPWORDS_ID]
-        return " ".join(keywords)
-
-    def _get_keyword_list(self, text):
-        """Return the list of keywords from text after removing stopwords."""
-        words = re.findall(r'\b[a-zA-Z]{3,}\b', text.lower())
-        return [w for w in words if w not in STOPWORDS_ID]
 
     # QnA index unchanged.
 
