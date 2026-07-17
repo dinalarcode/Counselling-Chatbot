@@ -161,7 +161,16 @@ PENUTUPAN_RECAP_PROMPT = (
 # Stages where bible verses are retrieved and injected: paced delivery in solusi plus relaksasi.
 BIBLE_VERSE_STAGES = ['solusi', 'relaksasi']
 
-# Prompt injected at pembahasan turn 3 or later asking if the user has anything else to share.
+# Prompt untuk giliran tengah blok perpanjangan: eksplorasi murni, tanpa pertanyaan gerbang.
+PEMBAHASAN_EXPLORE_PROMPT = (
+    "Klien baru saja menyatakan masih ada hal yang ingin diceritakan. "
+    "Fokuskan giliran ini SEPENUHNYA untuk menggali cerita baru tersebut dengan "
+    "pertanyaan terbuka yang eksploratif. "
+    "DILARANG KERAS menanyakan apakah masih ada hal lain yang ingin diceritakan, "
+    "dan DILARANG memberikan solusi, kesimpulan, atau menyinggung Alkitab."
+)
+
+# Prompt injected only on the final turn of the current exploration block, asking if the user has anything else to share.
 PEMBAHASAN_TURN3_PROMPT = (
     "Anda telah mengeksplorasi masalah klien. Pada giliran ini, tanggapi singkat lalu "
     "Anda HARUS menutup respons dengan pertanyaan tertutup persis seperti ini: "

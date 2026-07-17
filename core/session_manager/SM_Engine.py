@@ -110,9 +110,10 @@ class SessionManager:
                 self.turn_in_stage = 1
                 forced_by_gate = True
                 print("[Session] exploration gateway: decline detected, advancing to intervensi pre-generation")
-            elif self.pembahasan_max_extension < 4:  # ponytail: hard cap so repeated 'yes' can't loop pembahasan forever
-                self.pembahasan_max_extension += 2
-                print(f"[Session] exploration gateway: user has more to share, max extended by 2 (total +{self.pembahasan_max_extension})")
+            else:
+                # Perpanjang blok eksplorasi 3 giliran; berulang sampai klien menjawab tidak.
+                self.pembahasan_max_extension += 3
+                print(f"[Session] exploration gateway: user has more to share, block extended by 3 (total +{self.pembahasan_max_extension})")
 
         # Transition decision is computed before generation so consent gates can hold the stage one turn.
         wants_transition = False if forced_by_gate else self._should_transition(user_input)
@@ -147,6 +148,13 @@ class SessionManager:
         if ask_consent or ask_relaxation:
             wants_transition = False
 
+        # Gerbang eksplorasi hanya ditanyakan pada giliran terakhir blok saat ini (3 + perpanjangan).
+        ask_exploration_gate = (
+            self.current_stage == 'pembahasan'
+            and not wants_transition
+            and self.turn_in_stage >= 3 + self.pembahasan_max_extension
+        )
+
         # Solusi and relaksasi retrieve verses, so pass accumulated primary intents there for best results.
         override_intents = None
         if self.current_stage in ('solusi', 'relaksasi') and self.primary_intents:
@@ -163,6 +171,7 @@ class SessionManager:
             spiritual_consent=self.spiritual_consent,
             ask_spiritual_consent=ask_consent,
             ask_relaxation_consent=ask_relaxation,
+            ask_exploration_gate=ask_exploration_gate,
             turn_in_stage=self.turn_in_stage,
             complaint_summary=self.complaint_summary,
             chosen_technique=self.chosen_technique,
@@ -207,9 +216,9 @@ class SessionManager:
         # Record solusi turns for technique extraction at the solusi to relaksasi transition.
         self._record_solusi_turn(user_input, result['response'])
 
-        # The turn-3 closing question was just asked (rag_engine injects PEMBAHASAN_TURN3_PROMPT at
-        # pembahasan turn_in_stage >= 3), so the next input must be evaluated as a yes/no answer.
-        if self.current_stage == 'pembahasan' and self.turn_in_stage >= 3 and not wants_transition:
+        # The closing question was just asked (rag_engine injected PEMBAHASAN_TURN3_PROMPT this turn),
+        # so the next input must be evaluated as a yes/no answer.
+        if ask_exploration_gate:
             self.asking_exploration_consent = True
 
         # Emergency skip keyword safety net that catches cases the classifier misses.

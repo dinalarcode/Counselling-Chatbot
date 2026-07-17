@@ -15,6 +15,7 @@ from core.rag_engine.Listof_RAGlist import (
     STAGE_INSTRUCTIONS, PHYSICAL_SYMPTOM_CBT_GUIDANCE, SPIRITUAL_CONSENT_PROMPT,
     RELAXATION_CONSENT_PROMPT, SOLUSI_PRACTICAL_TURN_PROMPT, SOLUSI_SPIRITUAL_TURN_PROMPT,
     PENUTUPAN_RECAP_PROMPT, BIBLE_VERSE_STAGES, PEMBAHASAN_TURN3_PROMPT,
+    PEMBAHASAN_EXPLORE_PROMPT,
     SKIP_CLASSIFICATION_STAGES, MAIN_PROMPT_TEMPLATE,
 )
 
@@ -84,6 +85,7 @@ class RAGEngine:
     PENUTUPAN_RECAP_PROMPT = PENUTUPAN_RECAP_PROMPT
     BIBLE_VERSE_STAGES = BIBLE_VERSE_STAGES
     PEMBAHASAN_TURN3_PROMPT = PEMBAHASAN_TURN3_PROMPT
+    PEMBAHASAN_EXPLORE_PROMPT = PEMBAHASAN_EXPLORE_PROMPT
     SKIP_CLASSIFICATION_STAGES = SKIP_CLASSIFICATION_STAGES
 
     def __init__(self):
@@ -170,7 +172,7 @@ class RAGEngine:
             print(f"[Technique] Failed to extract chosen technique: {e}")
             return None
 
-    def generate_response(self, user_input, current_stage="pembahasan", override_intents=None, has_physical_symptoms=False, excluded_books=None, excluded_verses=None, spiritual_consent=None, ask_spiritual_consent=False, ask_relaxation_consent=False, turn_in_stage=0, complaint_summary=None, chosen_technique=None, closing_recap=False, solusi_history=None):
+    def generate_response(self, user_input, current_stage="pembahasan", override_intents=None, has_physical_symptoms=False, excluded_books=None, excluded_verses=None, spiritual_consent=None, ask_spiritual_consent=False, ask_relaxation_consent=False, ask_exploration_gate=False, turn_in_stage=0, complaint_summary=None, chosen_technique=None, closing_recap=False, solusi_history=None):
         """Generate a counseling response for the given stage, intents, consent, and session context."""
         # Get the stage-specific behavioral instruction.
         stage_instruction = self.STAGE_INSTRUCTIONS.get(
@@ -198,9 +200,12 @@ class RAGEngine:
                 f"Pandu klien HANYA dengan teknik tersebut. "
             ) + stage_instruction
 
-        # After 3 pembahasan turns the LLM must explicitly ask if the user has anything else to share.
-        if current_stage == 'pembahasan' and turn_in_stage >= 3:
-            stage_instruction = stage_instruction + " " + self.PEMBAHASAN_TURN3_PROMPT
+        # Pertanyaan gerbang hanya pada giliran terakhir blok; giliran tengah blok perpanjangan fokus menggali cerita baru.
+        if current_stage == 'pembahasan':
+            if ask_exploration_gate:
+                stage_instruction = stage_instruction + " " + self.PEMBAHASAN_TURN3_PROMPT
+            elif turn_in_stage >= 3:
+                stage_instruction = stage_instruction + " " + self.PEMBAHASAN_EXPLORE_PROMPT
 
         # Inject CBT physical symptom guidance when applicable.
         if has_physical_symptoms and current_stage in ('solusi', 'relaksasi'):
